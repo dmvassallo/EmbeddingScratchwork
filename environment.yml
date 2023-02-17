@@ -1,0 +1,11 @@
+name: EmbeddingScratchwork
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.11
+  - ipykernel
+  - numpy
+  - openai
+  - requests
