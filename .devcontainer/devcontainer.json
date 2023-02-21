@@ -10,7 +10,11 @@
                 "MS-vsliveshare.vsliveshare",
                 "stkb.rewrap",
                 "streetsidesoftware.code-spell-checker"
-            ]
+            ],
+            "settings": {
+                "gitlens.showWelcomeOnInstall": false,
+                "gitlens.showWhatsNewAfterUpgrades": false
+            }
         }
     },
     "onCreateCommand": ".devcontainer/onCreate"
