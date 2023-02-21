@@ -1,4 +1,4 @@
 {
-    "image": "mcr.microsoft.com/devcontainers/miniconda:0-3", 
-    "postCreateCommand": ".devcontainer/postCreate"
+    "image": "mcr.microsoft.com/devcontainers/base:0-bullseye", 
+    "onCreateCommand": ".devcontainer/onCreate"
 }
