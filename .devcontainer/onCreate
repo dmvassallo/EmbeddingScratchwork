@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -e
+
+# TODO: Do this in a different directory.
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
+chmod +x Mambaforge-Linux-x86_64.sh
+./Mambaforge-Linux-x86_64.sh -b
+rm Mambaforge-Linux-x86_64.sh
+~/mambaforge/condabin/mamba init --all
+~/mambaforge/condabin/mamba update --all --yes
+
+~/mambaforge/condabin/mamba env create
