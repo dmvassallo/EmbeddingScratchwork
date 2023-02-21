@@ -1,4 +1,17 @@
 {
-    "image": "mcr.microsoft.com/devcontainers/base:0-bullseye", 
+    "image": "mcr.microsoft.com/devcontainers/base:0-bullseye",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "bierner.markdown-preview-github-styles",
+                "eamodio.gitlens",
+                "mhutchie.git-graph",
+                "ms-python.python",
+                "MS-vsliveshare.vsliveshare",
+                "stkb.rewrap",
+                "streetsidesoftware.code-spell-checker"
+            ]
+        }
+    },
     "onCreateCommand": ".devcontainer/onCreate"
 }
