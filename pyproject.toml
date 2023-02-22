@@ -1,6 +1,21 @@
-# Currently, this file exists only to allow "pip install -e ." to succeed when
-# run in the conda environment. In the future we might support poetry, in which
-# case this file will be repaced with a generated file that lists dependencies.
+# FIXME: Previously, this file existed only to allow "pip install -e ." to
+# succeed when run in the conda environment. Now that we're going to support
+# poetry too, pyproject.toml should include dependencies and the target Python
+# versions. Here's a possible approach for achieving that:
+#
+#   1. Rename this file to pyproject.toml.old.
+#   2. Run "poetry init" to create a new pyproject.toml file.
+#   3. Run "poetry add" commands for any still-absent dependencies/groups.
+#   4. Copy missing parts from pyproject.toml.old to pyproject.toml.
+#   5. Run "poetry install".
+#   6. Run "poetry run python -m unittest". Verify that all tests pass.
+#   7. Make sure the notebooks work when they use the poetry environment.
+#   8. Uncomment "poetry install" in .devcontainer/onCreate.
+#   9. Delete pyproject.toml.old. (Keep the tab open for these directions.)
+#  10. Commit and push to a feature branch. Merge to main via PR.
+#  11. Trigger a new Codespaces prebuild on main.
+#  12. Add poetry-based CI test jobs (via PR). Keep the conda jobs too.
+#  13. Enable Dependabot security updates and transitive version updates.
 
 [tool.poetry]
 name = "EmbeddingScratchwork"
