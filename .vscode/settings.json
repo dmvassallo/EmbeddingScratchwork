@@ -1,5 +1,20 @@
 {
-    "files.trimTrailingWhitespace": true,
+    "cSpell.words": [
+        "bierner",
+        "conda",
+        "devcontainer",
+        "devcontainers",
+        "dtype",
+        "eamodio",
+        "ipykernel",
+        "mhutchie",
+        "numpy",
+        "openai",
+        "scratchwork",
+        "stkb",
+        "Vassallo"
+    ],
     "files.insertFinalNewline": true,
-    "files.trimFinalNewlines": true
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true
 }
