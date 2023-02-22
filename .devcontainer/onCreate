@@ -2,6 +2,13 @@
 
 set -e
 
+# Customize git configuration for shell prompt and terminal colors.
+ln -s -- "$(realpath .devcontainer/git_prompt_activate.bash)" \
+    ~/.git_prompt_activate.bash
+printf '\n%s\n' '. ~/.git_prompt_activate.bash' >>~/.bashrc
+git config --global color.diff.new blue
+git config --global devcontainers-theme.hide-status 1
+
 # TODO: Do this in a different directory.
 wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
 chmod +x Mambaforge-Linux-x86_64.sh
