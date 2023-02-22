@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -eu
 
 # Customize git configuration for shell prompt and terminal colors.
 ln -s -- "$(realpath .devcontainer/git_prompt_activate.bash)" \
@@ -16,9 +16,13 @@ chmod +x Mambaforge-Linux-x86_64.sh
 ./Mambaforge-Linux-x86_64.sh -b
 rm Mambaforge-Linux-x86_64.sh
 ~/mambaforge/condabin/mamba init --all
+~/mambaforge/condabin/conda config --set auto_activate_base false
 ~/mambaforge/condabin/mamba update --all --yes
 cd -
 
 # Set up project environment for conda/mamba.
 ~/mambaforge/condabin/mamba env create
 ~/mambaforge/condabin/mamba run --name EmbeddingScratchwork pip install -e .
+
+# Set up project environment for poetry.
+# poetry install  # FIXME: Uncomment once pyproject.toml lists dependencies.
