@@ -1,5 +1,24 @@
 {
-    "files.trimTrailingWhitespace": true,
+    "cSpell.language": "en,es",
+    "cSpell.words": [
+        "bierner",
+        "conda",
+        "devcontainer",
+        "devcontainers",
+        "dtype",
+        "eamodio",
+        "ipykernel",
+        "mhutchie",
+        "numpy",
+        "openai",
+        "scratchwork",
+        "stkb",
+        "Vassallo"
+    ],
+    "cSpell.ignoreWords": [
+        "spanish",
+    ],
     "files.insertFinalNewline": true,
-    "files.trimFinalNewlines": true
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true
 }

@@ -1,4 +1,4 @@
-"""Embed function for OpenAI API experimenation."""
+"""Embed function for OpenAI API experimentation."""
 
 import os
 
