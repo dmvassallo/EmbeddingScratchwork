@@ -19,6 +19,9 @@ def embed_many(texts):
         input=texts,
         model='text-embedding-ada-002',
     )
-    # FIXME: Deal with the out of order case.
-    embeds = [d['embedding'] for d in response['data']]
+
+    def key(element):
+        return element['index']
+
+    embeds = [d['embedding'] for d in sorted(response['data'], key=key)]
     return np.array(embeds, dtype=np.float32)
