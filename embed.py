@@ -1,5 +1,7 @@
 """Embed function for OpenAI API experimentation."""
 
+import operator
+
 import numpy as np
 import openai
 
@@ -20,5 +22,5 @@ def embed_many(texts):
         model='text-embedding-ada-002',
     )
 
-    data = sorted(response['data'], key=lambda x: x['index'])
+    data = sorted(response['data'], key=operator.itemgetter('index'))
     return np.array([datum['embedding'] for datum in data], dtype=np.float32)
