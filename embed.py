@@ -20,8 +20,5 @@ def embed_many(texts):
         model='text-embedding-ada-002',
     )
 
-    def key(element):
-        return element['index']
-
-    embeds = [d['embedding'] for d in sorted(response['data'], key=key)]
-    return np.array(embeds, dtype=np.float32)
+    data = sorted(response['data'], key=lambda x: x['index'])
+    return np.array([datum['embedding'] for datum in data], dtype=np.float32)
