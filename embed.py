@@ -1,4 +1,4 @@
-"""Embed function for OpenAI API experimentation."""
+"""Embed functions for OpenAI API experimentation."""
 
 import operator
 
