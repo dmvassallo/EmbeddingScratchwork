@@ -5,7 +5,9 @@ channels:
 
 dependencies:
   - python=3.11
+  - flake8
   - ipykernel
   - numpy
   - openai
+  - parameterized
   - requests

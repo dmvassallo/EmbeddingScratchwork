@@ -10,7 +10,9 @@
         "dtype",
         "eamodio",
         "ipykernel",
+        "lionsleep",
         "mhutchie",
+        "ndarray",
         "numpy",
         "openai",
         "scratchwork",
@@ -22,5 +24,14 @@
     ],
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
-    "files.trimTrailingWhitespace": true
+    "files.trimTrailingWhitespace": true,
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        ".",
+        "-p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true
 }
