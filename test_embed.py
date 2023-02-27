@@ -11,6 +11,7 @@ from embed import embed_one, embed_many
 
 
 class TestEmbedOne(unittest.TestCase):
+    """Tests for embed_one."""
 
     def test_returns_numpy_array(self):
         result = embed_one("Your text string goes here")
@@ -23,7 +24,6 @@ class TestEmbedOne(unittest.TestCase):
         result = embed_one("Your text string goes here")
         self.assertEqual(result.shape, (1536,))
 
-
     @parameterized.expand([
         ("catrun", "The cat runs.", "El gato corre."),
         ("dogwalk", "The dog walks.", "El perro camina."),
@@ -35,3 +35,9 @@ class TestEmbedOne(unittest.TestCase):
         embedding_es = embed_one(text_es)
         result = np.dot(embedding_en, embedding_es)
         self.assertGreaterEqual(result, 0.9)
+
+    def test_different_meanings_are_dissimilar(self):
+        sentence_one = embed_one("Your text string goes here")
+        sentence_two = embed_one("The cat runs.")
+        result = np.dot(sentence_one, sentence_two)
+        self.assertLess(result, 0.8)
