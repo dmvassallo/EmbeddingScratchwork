@@ -64,4 +64,14 @@ class TestEmbedMany(unittest.TestCase):
     def test_shape_is_model_dimension(self):
         self.assertEqual(self._many.shape, (5, 1536))
 
-    # FIXME: Add the rest of the test cases.
+    def test_en_and_es_sentences_are_very_similar(self):
+        with self.subTest('catrun'):
+            result = np.dot(self._many[1], self._many[2])
+            self.assertGreaterEqual(result, 0.9)
+        with self.subTest('dogwalk'):
+            result = np.dot(self._many[3], self._many[4])
+            self.assertGreaterEqual(result, 0.9)
+
+    def test_different_meanings_are_dissimilar(self):
+        result = np.dot(self._many[0], self._many[1])
+        self.assertLess(result, 0.8)
