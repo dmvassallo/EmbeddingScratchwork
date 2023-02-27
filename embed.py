@@ -5,7 +5,6 @@ import operator
 import numpy as np
 import openai
 
-
 def embed_one(text):
     """Embed a single piece of text."""
     response = openai.Embedding.create(
