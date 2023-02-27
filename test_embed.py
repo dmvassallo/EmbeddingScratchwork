@@ -5,6 +5,7 @@
 import unittest
 
 import numpy as np
+from parameterized import parameterized
 
 from embed import embed_one, embed_many
 
@@ -22,8 +23,15 @@ class TestEmbedOne(unittest.TestCase):
         result = embed_one("Your text string goes here")
         self.assertEqual(result.shape, (1536,))
 
-    def test_en_and_es_sentence_are_very_similar(self):
-        catrun_en = embed_one("The cat runs.")
-        catrun_es = embed_one("El gato corre.")
-        result = np.dot(catrun_en, catrun_es)
+
+    @parameterized.expand([
+        ("catrun", "The cat runs.", "El gato corre."),
+        ("dogwalk", "The dog walks.", "El perro camina."),
+        ("lionsleep", "The lion sleeps.", "El león duerme."),
+    ])
+    def test_en_and_es_sentence_are_very_similar(
+            self, _name, text_en, text_es):
+        embedding_en = embed_one(text_en)
+        embedding_es = embed_one(text_es)
+        result = np.dot(embedding_en, embedding_es)
         self.assertGreaterEqual(result, 0.9)

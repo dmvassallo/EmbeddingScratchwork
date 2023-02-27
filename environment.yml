@@ -8,4 +8,5 @@ dependencies:
   - ipykernel
   - numpy
   - openai
+  - parameterized
   - requests
