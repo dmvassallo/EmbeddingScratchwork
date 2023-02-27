@@ -1,6 +1,6 @@
 """Tests for the embed module."""
 
-# FIXME: Reduce calls to API.
+# FIXME: Reduce calls to API. Maybe use functools.cache.
 
 import unittest
 
@@ -41,3 +41,27 @@ class TestEmbedOne(unittest.TestCase):
         sentence_two = embed_one("The cat runs.")
         result = np.dot(sentence_one, sentence_two)
         self.assertLess(result, 0.8)
+
+
+class TestEmbedMany(unittest.TestCase):
+    """Tests for embed_many."""
+
+    def setUp(self):
+        self._many = embed_many([
+            "Your text string goes here",
+            "The cat runs.",
+            "El gato corre.",
+            "The dog walks.",
+            "El perro camina.",
+        ])
+
+    def test_returns_numpy_array(self):
+        with self.subTest('ndarray'):
+            self.assertIsInstance(self._many, np.ndarray)
+        with self.subTest('float32'):
+            self.assertIsInstance(self._many[0][0], np.float32)
+
+    def test_shape_is_model_dimension(self):
+        self.assertEqual(self._many.shape, (5, 1536))
+
+    # FIXME: Add the rest of the test cases.
