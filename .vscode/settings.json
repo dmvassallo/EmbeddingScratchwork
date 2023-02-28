@@ -16,6 +16,7 @@
         "ndarray",
         "numpy",
         "openai",
+        "repr",
         "scratchwork",
         "stkb",
         "tablefmt",
