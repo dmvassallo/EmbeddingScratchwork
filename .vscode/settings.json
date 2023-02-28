@@ -9,6 +9,7 @@
         "dogwalk",
         "dtype",
         "eamodio",
+        "floatfmt",
         "ipykernel",
         "lionsleep",
         "mhutchie",
@@ -17,6 +18,7 @@
         "openai",
         "scratchwork",
         "stkb",
+        "tablefmt",
         "Vassallo"
     ],
     "cSpell.ignoreWords": [
