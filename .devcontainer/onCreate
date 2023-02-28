@@ -10,14 +10,14 @@ git config --global color.diff.new blue
 git config --global devcontainers-theme.hide-status 1
 
 # Set up Mambaforge, which provides conda and mamba.
-pushd /tmp
+cd /tmp
 wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
 chmod +x Mambaforge-Linux-x86_64.sh
 ./Mambaforge-Linux-x86_64.sh -b
 rm Mambaforge-Linux-x86_64.sh
 ~/mambaforge/condabin/mamba init --all
 ~/mambaforge/condabin/mamba update --all --yes
-popd
+cd -
 
 # Set up project environment for conda/mamba.
 ~/mambaforge/condabin/mamba env create
