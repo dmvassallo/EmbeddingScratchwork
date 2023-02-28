@@ -4,7 +4,6 @@
 # shellcheck shell=bash
 # shellcheck disable=SC1091  # Not checking /usr/lib/git-core/git-sh-prompt.
 # shellcheck disable=SC2016  # PS1 will contain $ syntax for later expansion.
-# shellcheck disable=SC2034  # GIT_PS1_ vars will be assigned for later use.
 
 if test "$(git config devcontainers-theme.hide-status)" = 1 ||
    test "$(git config codespaces-theme.hide-status)" = 1
