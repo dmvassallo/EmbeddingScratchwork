@@ -2,10 +2,12 @@
 
 import operator
 
+import backoff
 import numpy as np
 import openai
 
 
+@backoff.on_exception(backoff.expo, openai.error.RateLimitError)
 def embed_one(text):
     """Embed a single piece of text."""
     response = openai.Embedding.create(
@@ -15,6 +17,7 @@ def embed_one(text):
     return np.array(response['data'][0]['embedding'], dtype=np.float32)
 
 
+@backoff.on_exception(backoff.expo, openai.error.RateLimitError)
 def embed_many(texts):
     """Embed multiple pieces of text."""
     response = openai.Embedding.create(
