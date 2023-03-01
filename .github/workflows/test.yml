@@ -20,6 +20,6 @@ jobs:
         uses: mamba-org/provision-with-micromamba@v15
 
       - name: Run Unit Tests
-        run: python -m unittest
+        run: python -m unittest -v
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
