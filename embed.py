@@ -1,5 +1,7 @@
 """Embed functions for OpenAI API experimentation."""
 
+__all__ = ['embed_one', 'embed_many']
+
 import operator
 
 import backoff
