@@ -1,0 +1,25 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    name: Unit Tests
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+
+      - name: Install Conda environment from environment.yml
+        uses: mamba-org/provision-with-micromamba@v15
+
+      - name: Run Unit Tests
+        run: python -m unittest -v
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
