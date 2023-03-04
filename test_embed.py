@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Tests for the embed module."""
 
 # FIXME: Reduce calls to API. Maybe use functools.cache.
@@ -75,3 +76,7 @@ class TestEmbedMany(unittest.TestCase):
     def test_different_meanings_are_dissimilar(self):
         result = np.dot(self._many[0], self._many[1])
         self.assertLess(result, 0.8)
+
+
+if __name__ == '__main__':
+    unittest.main()
