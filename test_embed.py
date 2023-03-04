@@ -1,5 +1,8 @@
 #!/usr/bin/env python
+
 """Tests for the embed module."""
+
+# pylint: disable=missing-function-docstring
 
 # FIXME: Reduce calls to API. Maybe use functools.cache.
 

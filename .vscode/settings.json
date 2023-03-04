@@ -17,6 +17,7 @@
         "ndarray",
         "numpy",
         "openai",
+        "pylint",
         "repr",
         "scratchwork",
         "stkb",
