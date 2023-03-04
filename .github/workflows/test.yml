@@ -9,6 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.11', '3.10', '3.9', '3.8', '3.7']
 
     runs-on: ${{ matrix.os }}
 
@@ -19,6 +20,11 @@ jobs:
     steps:
       - name: Check out source repository
         uses: actions/checkout@v3
+
+      - name: Substitute Python version
+        run: |
+          perl -i -spwe 's/^ *- python=\K.+$/$pyver/' -- \
+              -pyver=${{ matrix.python-version }} environment.yml
 
       - name: Install Conda environment from environment.yml
         uses: mamba-org/provision-with-micromamba@v15
