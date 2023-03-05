@@ -20,6 +20,8 @@
         "ndarray",
         "numpy",
         "openai",
+        "prebuild",
+        "prebuilds",
         "pylint",
         "repr",
         "scratchwork",

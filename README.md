@@ -96,14 +96,15 @@ codespace on main.”
 If you want your [API
 key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key)
 to automatically be available in a codespace, you can use your own fork and set
-up a [repository
-secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
+up a repository secret. *Of course, do not commit your key to your repository.*
 
 1. [Fork the
-   repository.](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
-2. On the GitHub page for your fork of the repository, click “Settings.”
+   repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
+   if you haven’t already, and go to your fork on GitHub.
+2. Click the “Settings” tab. (You want the settings for your repository, not
+   for your whole GitHub account.)
 3. In Settings, on the left, under “Security,” expand “Secrets and variables”
-   and click “Codespaces.”
+   and click “**Codespaces**.”
 4. Click “New repository secret.”
 5. Put `OPENAI_API_KEY` as the name—this is so that it will appear in the
    codespace as the value of the environment variable of the same name, which
@@ -129,7 +130,7 @@ running dev containers on your own machine.
 
 ## Usage
 
-#### Activating the conda environment
+### Activating the conda environment
 
 To activate the conda environment in your shell:
 
@@ -144,10 +145,72 @@ For specific information about how to do this with VS Code, see [Using Python
 environments in VS
 Code](https://code.visualstudio.com/docs/python/environments).
 
-#### Where to start
+### Where to start
 
 You may want to start in the [`embed.ipynb`](embed.ipynb) notebook, then look
 in, adapt, and/or use the functions defined in [`embed.py`](embed.py).
+
+## CI/CD in forks
+
+### Continuous integration checks
+
+This repository defines CI checks in several [GitHub Actions
+workflows](.github/workflows/). Forks inherit them. Some will run without
+problems. Some others—the automated tests in
+[`test_embed.py`](test_embed.py)—cannot run successfully without an OpenAI API
+key.
+
+Since your API key must *not* be committed or otherwise disclosed, the way to
+make it available to CI (if you wish to do so) is by setting up a [repository
+secret for GitHub
+actions](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository). This differs from any repository secret you may have created for your fork’s *codespaces*, because it is a repository secret for *actions* rather than codespaces:
+
+1. Go to your fork on GitHub.
+2. Click the “Settings” tab. (You want the settings for your repository, not
+   for your whole GitHub account.)
+3. In Settings, on the left, under “Security,” expand “Secrets and variables”
+   and click “**Actions**.”
+4. Click “New repository secret.”
+5. Put `OPENAI_API_KEY` as the name—this is so that it will appear in the
+   codespace as the value of the environment variable of the same name, which
+   is consulted for the OpenAI API key. As the value, put the OpenAI API key
+   that you generated for the specific purpose of using for this codespace.
+6. Click “Add secret.”
+
+<!-- FIXME: Add links to both OpenAI's and GitHub's relevant security guides. -->
+
+### Codespace prebuilds
+
+Currently, a dev container for EmbeddingScratchwork takes several minutes to
+create because it downloads and installs development tools and dependencies. To
+do this ahead of time instead of each time you create a codespace, you can
+[configure
+prebuilds](https://docs.github.com/en/codespaces/prebuilding-your-codespaces/configuring-prebuilds).
+As of this writing, this repository has prebuilds configured. We do *not*
+guarantee that this will remain the case. But the bigger issue is that, if you
+want prebuilds for your *fork*, you must set them up separately.
+
+You may want to trigger prebuilds on a schedule, such as once per day, rather
+than on each push. This is because the most common situation where a
+prebuild—of this particular repository—becomes out of date is when there are
+updates to the development tools that are installed in the dev container, or to
+the project’s dependencies.
+
+Prebuilds use GitHub Codespaces
+[storage](https://docs.github.com/en/billing/managing-billing-for-github-codespaces/viewing-your-github-codespaces-usage),
+which can bring you closer to the monthly cap and, if you pay for additional
+Codespaces usage/storage, can cause you to incur greater costs than otherwise.
+When configuring a prebuild, you can decrease this effect by setting “Template
+history” to 1 instead of the default of 2. Especially if you made your fork
+mainly for personal experimentation or to open pull requests on this
+repository—rather than to take the software in a substantially different
+direction—you may well consider your prebuild important only for your own use.
+In that case, reducing its “Region availability” to only your region would be a
+good way to decrease your Codespaces storage even further.
+
+We have found it helpful to [disable prebuild
+optimization](https://docs.github.com/en/codespaces/troubleshooting/troubleshooting-prebuilds#preventing-out-of-date-prebuilds-being-used)
+for prebuilds on this repository.
 
 ## Further reading
 
