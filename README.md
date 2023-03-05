@@ -10,14 +10,15 @@ It uses
 which is [OpenAI’s second-generation embedding
 model](https://openai.com/blog/new-and-improved-embedding-model).
 
-Many embedding models, including text-embedding-ada-002, return
-[normalized](https://en.wikipedia.org/wiki/Unit_vector) embeddings, whose
-[cosine similarities](https://en.wikipedia.org/wiki/Cosine_similarity) are
-therefore equal to their [dot
+Many embedding models, [including all of
+OpenAI’s](https://platform.openai.com/docs/guides/embeddings/which-distance-function-should-i-use),
+return [normalized](https://en.wikipedia.org/wiki/Unit_vector) embeddings,
+whose [cosine similarities](https://en.wikipedia.org/wiki/Cosine_similarity)
+are therefore equal to their [dot
 products](https://en.wikipedia.org/wiki/Dot_product). We compute similarities
 with [NumPy](https://numpy.org/): individually with
-[`np.dot`](https://numpy.org/doc/stable/reference/generated/numpy.dot.html),
-and batched with
+[`np.dot`](https://numpy.org/doc/stable/reference/generated/numpy.dot.html), or
+batched with
 [`@`](https://numpy.org/doc/stable/reference/routines.linalg.html#the-operator)
 ([matrix
 multiplication](https://numpy.org/doc/stable/reference/generated/numpy.matmul.html)).
@@ -44,13 +45,16 @@ ranges.
 experiments, calling functions in `embed.py`.
 
 [`structure.ipynb`](structure.ipynb) examines the JSON responses returned by
-OpenAI embeddings API endpoint.
+the OpenAI embeddings API endpoint.
 
 ## Setup
 
 ### Way 1: Local
 
 #### Obtaining and installing
+
+Clone the repository and create its
+[`conda`](https://en.wikipedia.org/wiki/Conda_(package_manager)) environment:
 
 ```sh
 git clone https://github.com/dmvassallo/EmbeddingScratchwork.git
@@ -59,13 +63,20 @@ conda env create
 ```
 
 - If you fork the project, remember to replace the URL with that of your fork.
-- `mamba` may be used in place of `conda` if it installed.
+- [`mamba`](https://mamba.readthedocs.io/en/latest/installation.html) may be
+  used in place of `conda` if it is installed.
 
 #### Your OpenAI API key
 
-You need an OpenAI API key. If it is in an environment variable named
-`OPENAI_API_KEY` then it will be used automatically. Otherwise you can assign
-it to `openai.api_key` in your Python code.
+You need an [OpenAI API
+key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key).
+If it is in an environment variable named `OPENAI_API_KEY` then it will be used
+automatically. Otherwise you can assign it to `openai.api_key` in your Python
+code.
+
+However you handle your key, make sure not to commit it to any repository. See
+[Best Practices for API Key
+Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 
 ### Way 2: GitHub Codespaces
 
@@ -82,8 +93,11 @@ codespace on main.”
 
 #### Your OpenAI API key
 
-If you want your API key to automatically be available in a codespace, you can
-use your own fork and set up a repository secret.
+If you want your [API
+key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key)
+to automatically be available in a codespace, you can use your own fork and set
+up a [repository
+secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
 
 1. [Fork the
    repository.](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
@@ -101,7 +115,8 @@ To expand on the point, in step 5, about using a key that is just for this,
 rather than one you also use for anything else: that way, if somehow it is
 accidentally disclosed, you only need to invalidate that specific key, and when
 you do, none of your other projects or uses of the OpenAI API should be
-affected.
+affected. See [Best Practices for API Key
+Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 
 ### 3. Local dev container
 
@@ -125,6 +140,10 @@ conda activate EmbeddingScratchwork
 Or activate the environment in an editor/IDE, such as VS Code, by selecting the
 environment (or the `python` interpreter in it) in the editor/IDE’s interface.
 
+For specific information about how to do this with VS Code, see [Using Python
+environments in VS
+Code](https://code.visualstudio.com/docs/python/environments).
+
 #### Where to start
 
 You may want to start in the [`embed.ipynb`](embed.ipynb) notebook, then look
@@ -136,3 +155,7 @@ The [OpenAI Cookbook repository](https://github.com/openai/openai-cookbook) is
 the most important source of examples for using OpenAI embeddings. Example
 notebooks for embeddings appear [together with other example
 notebooks](https://github.com/openai/openai-cookbook/tree/main/examples).
+
+See [Best Practices for API Key
+Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety)
+for information on how to avoid inadvertently disclosing your OpenAI API key.
