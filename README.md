@@ -36,8 +36,8 @@ them as NumPy arrays: rank-1 arrays (vectors) for individual embeddings, or
 rank-2 arrays (matrices) for batches of embeddings.
 
 [`test_embed.py`](test_embed.py) has automated tests of the functions in
-`embed.py`, including that some examples’ similarities are within expected
-ranges.
+`embed.py`. This includes testing that some examples’ similarities are within
+expected ranges.
 
 ### Notebooks
 
@@ -163,7 +163,10 @@ key.
 Since your API key must *not* be committed or otherwise disclosed, the way to
 make it available to CI (if you wish to do so) is by setting up a [repository
 secret for GitHub
-actions](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository). This differs from any repository secret you may have created for your fork’s *codespaces*, because it is a repository secret for *actions* rather than codespaces:
+actions](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
+This differs from any repository secret you may have created for your fork’s
+*codespaces*, because it is a repository secret for *actions* rather than
+codespaces:
 
 1. Go to your fork on GitHub.
 2. Click the “Settings” tab. (You want the settings for your repository, not
@@ -179,9 +182,12 @@ actions](https://docs.github.com/en/actions/security-guides/encrypted-secrets#cr
 
 It’s a good idea to read the relevant security guides:
 
-- [Security hardening for GitHub Actions](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions) (GitHub)
+- [Security hardening for GitHub
+  Actions](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions)
+  (GitHub)
 - [Best Practices for API Key
-Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety) (OpenAI)
+Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety)
+(OpenAI)
 
 ### Codespace prebuilds
 
