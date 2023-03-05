@@ -2,9 +2,9 @@
 
 # EmbeddingScratchwork
 
-This is a demonstration and scratchwork repository for ways of acccessing and using OpenAI [embeddings](https://platform.openai.com/docs/guides/embeddings/what-are-embeddings). It uses [text-embedding-ada-002](https://platform.openai.com/docs/guides/embeddings/embedding-models), which is [OpenAI’s second-generation embedding model](https://openai.com/blog/new-and-improved-embedding-model).
+This is a demonstration and scratchwork repository for ways of accessing and using OpenAI [embeddings](https://platform.openai.com/docs/guides/embeddings/what-are-embeddings). It uses [text-embedding-ada-002](https://platform.openai.com/docs/guides/embeddings/embedding-models), which is [OpenAI’s second-generation embedding model](https://openai.com/blog/new-and-improved-embedding-model).
 
-Many embedding models, including that text-embedding-ada-002, return [normalized](https://en.wikipedia.org/wiki/Unit_vector) embeddings, whose [cosine similarities](https://en.wikipedia.org/wiki/Cosine_similarity) are therefore equal to their [dot products](https://en.wikipedia.org/wiki/Dot_product). We compute similarities with [NumPy](https://numpy.org/): individually with [`np.dot`](https://numpy.org/doc/stable/reference/generated/numpy.dot.html), and batched with [`@`](https://numpy.org/doc/stable/reference/routines.linalg.html#the-operator) ([matrix multiplication](https://numpy.org/doc/stable/reference/generated/numpy.matmul.html)).
+Many embedding models, including text-embedding-ada-002, return [normalized](https://en.wikipedia.org/wiki/Unit_vector) embeddings, whose [cosine similarities](https://en.wikipedia.org/wiki/Cosine_similarity) are therefore equal to their [dot products](https://en.wikipedia.org/wiki/Dot_product). We compute similarities with [NumPy](https://numpy.org/): individually with [`np.dot`](https://numpy.org/doc/stable/reference/generated/numpy.dot.html), and batched with [`@`](https://numpy.org/doc/stable/reference/routines.linalg.html#the-operator) ([matrix multiplication](https://numpy.org/doc/stable/reference/generated/numpy.matmul.html)).
 
 ## License
 
@@ -14,7 +14,7 @@ Many embedding models, including that text-embedding-ada-002, return [normalized
 
 ### Modules
 
-[`embed.py`](embed.py) contains functions that retieve embeddings and return them as NumPy arrays: rank-1 arrays (vectors) for individual embeddings, or rank-2 arrays (matrices) for batches of embeddings.
+[`embed.py`](embed.py) contains functions that retrieve embeddings and return them as NumPy arrays: rank-1 arrays (vectors) for individual embeddings, or rank-2 arrays (matrices) for batches of embeddings.
 
 [`test_embed.py`](test_embed.py) has automated tests of the functions in `embed.py`, including that some examples’ similarities are within expected ranges.
 
@@ -53,7 +53,7 @@ At [the repository page](https://github.com/dmvassallo/EmbeddingScratchwork.git)
 
 #### Your OpenAI API key
 
-If you want your API key to automatically be available in a codespace, you can use your own fork and set up a respository secret.
+If you want your API key to automatically be available in a codespace, you can use your own fork and set up a repository secret.
 
 1. [Fork the repository.](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
 2. On the GitHub page for your fork of the repository, click “Settings.”
@@ -62,7 +62,7 @@ If you want your API key to automatically be available in a codespace, you can u
 5. Put `OPENAI_API_KEY` as the name—this is so that it will appear in the codespace as the value of the environment variable of the same name, which is consulted for the OpenAI API key. As the value, put the OpenAI API key that you generated for the specific purpose of using for this codespace.
 6. Click “Add secret.”
 
-To expand on the point, in step 5, about using a key that is just for this, rather than one you also use for anything else: that way, if somehow it is acccidentally disclosed, you only need to invalidate that specific key, and when you do, none of your other projects or uses of the OpenAI API should be affected.
+To expand on the point, in step 5, about using a key that is just for this, rather than one you also use for anything else: that way, if somehow it is accidentally disclosed, you only need to invalidate that specific key, and when you do, none of your other projects or uses of the OpenAI API should be affected.
 
 ### 3. Local dev container
 
