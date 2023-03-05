@@ -123,7 +123,7 @@ Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-s
 
 Dev containers are often used in codespaces but you can also run them locally
 with VS Code and Docker. [Here are some general
-instructions](https://code.visualstudio.com/docs/devcontainers/tutoriak) for
+instructions](https://code.visualstudio.com/docs/devcontainers/tutorial) for
 running dev containers on your own machine.
 
 <!-- TODO: Expand the "3. Local dev container" subsection considerably. -->
