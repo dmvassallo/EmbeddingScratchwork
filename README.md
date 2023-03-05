@@ -177,7 +177,11 @@ actions](https://docs.github.com/en/actions/security-guides/encrypted-secrets#cr
    that you generated for the specific purpose of using for this codespace.
 6. Click “Add secret.”
 
-<!-- FIXME: Add links to both OpenAI's and GitHub's relevant security guides. -->
+It’s a good idea to read the relevant security guides:
+
+- [Security hardening for GitHub Actions](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions) (GitHub)
+- [Best Practices for API Key
+Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety) (OpenAI)
 
 ### Codespace prebuilds
 
@@ -218,7 +222,3 @@ The [OpenAI Cookbook repository](https://github.com/openai/openai-cookbook) is
 the most important source of examples for using OpenAI embeddings. Example
 notebooks for embeddings appear [together with other example
 notebooks](https://github.com/openai/openai-cookbook/tree/main/examples).
-
-See [Best Practices for API Key
-Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety)
-for information on how to avoid inadvertently disclosing your OpenAI API key.
