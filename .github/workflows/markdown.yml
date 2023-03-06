@@ -11,7 +11,18 @@ jobs:
     name: Check links
     runs-on: ubuntu-latest
     steps:
-    - name: Check out source repository
-      uses: actions/checkout@v3
-    - name: Check Markdown links
-      uses: gaurav-nelson/github-action-markdown-link-check@1.0.15
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Check Markdown links
+        uses: gaurav-nelson/github-action-markdown-link-check@1.0.15
+
+  markdownlint-cli2:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Markdown Lint
+        uses: DavidAnson/markdownlint-cli2-action@v9
+        with:
+          globs: '**/*.md'
