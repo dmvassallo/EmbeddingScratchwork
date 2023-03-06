@@ -1,5 +1,9 @@
 <!-- SPDX-License-Identifier: 0BSD -->
 
+<!--
+   TODO: If we make an SVG logo, put it here (with alt text for accessibility).
+-->
+
 # EmbeddingScratchwork
 
 This is a demonstration and scratchwork repository for ways of accessing and
