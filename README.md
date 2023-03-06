@@ -91,7 +91,7 @@ page](https://github.com/dmvassallo/EmbeddingScratchwork.git) (or your fork),
 click the green “Code” button. Click the “Codespaces” tab and click “Create
 codespace on main.”
 
-#### Your OpenAI API key
+#### Your OpenAI API key in the codespace
 
 If you want your [API
 key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key)
