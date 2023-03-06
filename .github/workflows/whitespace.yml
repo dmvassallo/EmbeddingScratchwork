@@ -1,0 +1,14 @@
+name: Check whitespace
+
+on: [push, pull_request]
+
+jobs:
+  trailing:
+    name: Trailing whitespace
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Scan for trailing whitespace
+        uses: |
+          ! git ls-files -z | xargs -0 grep -Hn --color '\s$' --
