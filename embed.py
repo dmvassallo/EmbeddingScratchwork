@@ -2,7 +2,7 @@
 
 __all__ = ['embed_one', 'embed_many']
 
-import operator 
+import operator
 
 import backoff
 import numpy as np
