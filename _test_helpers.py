@@ -7,11 +7,16 @@ __all__ = ['lazy_if', 'cache_by']
 
 import functools
 
+try:
+    _cache = functools.cache
+except AttributeError:
+    _cache = functools.lru_cache(maxsize=None)
+
 
 def lazy_if(condition_getter, decorator):
     """Use the decorator if a condition, computed at most once, is true."""
     def conditional_decorator(func):
-        @functools.cache
+        @_cache
         def maybe_decorated():
             return decorator(func) if condition_getter() else func
 
