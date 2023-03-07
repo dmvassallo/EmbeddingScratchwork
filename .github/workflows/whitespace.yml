@@ -1,0 +1,23 @@
+name: Check whitespace
+
+on: [push, pull_request]
+
+jobs:
+  end-of-line:
+    name: End-of-line blanks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Scan for lines with trailing whitespace
+        run: |
+          ! git ls-files -z | xargs -0 grep -Hn --color '\s$' --
+
+  end-of-file:
+    name: End-of-file newlines
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Scan for wrong number of trailing newlines
+        uses: fernandrone/linelint@0.0.6
