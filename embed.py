@@ -1,5 +1,7 @@
 """Embed functions for OpenAI API experimentation."""
 
+# TODO: Add 4 more functions: 2 using embeddings_utils, and 2 using requests.
+
 __all__ = ['embed_one', 'embed_many']
 
 import operator
