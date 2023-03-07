@@ -1,0 +1,49 @@
+....................
+----------------------------------------------------------------------
+Ran 20 tests in 16.666s
+
+OK
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache ATTEMPT.
+Cache ATTEMPT.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache ATTEMPT.
+Cache ATTEMPT.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache ATTEMPT.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache MISS.
+Cache ATTEMPT.
+Cache ATTEMPT.

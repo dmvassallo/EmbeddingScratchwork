@@ -6,18 +6,41 @@
 
 # FIXME: Reduce calls to API. Maybe use functools.cache.
 
+import os
+import pickle
+import re
 from typing import Any
 import unittest
 
 import numpy as np
 from parameterized import parameterized, parameterized_class
 
+from _test_helpers import lazy_if, cache_by
 from embed import embed_one, embed_many, embed_one_eu, embed_many_eu
 
 
+_SHOULD_CACHE = re.compile(r'\A\s*(?:yes|true|\+?0*[1-9][0-9]*)\s*\Z', re.I)
+"""Regular expression that _should_cache matches to an environment variable."""
+
+
+def _should_cache():
+    """
+    Decide if tests in this module should cache calls to embedding functions.
+
+    This is done if the TESTS_CACHE_EMBEDDING_CALLS environment variable exists
+    and holds "yes" or "true" (case-insensitively), or a positive integer.
+    """
+    value = os.environ.get('TESTS_CACHE_EMBEDDING_CALLS', default='')
+    return _SHOULD_CACHE.match(value)
+
+
+_maybe_cache = lazy_if(_should_cache, cache_by(pickle.dumps))
+"""Decorator that adds caching if TESTS_CACHE_EMBEDDING_CALLS says to do so."""
+
+
 @parameterized_class(('name', 'func'), [
-    (embed_one.__name__, staticmethod(embed_one)),
-    (embed_one_eu.__name__, staticmethod(embed_one_eu)),
+    (embed_one.__name__, staticmethod(_maybe_cache(embed_one))),
+    (embed_one_eu.__name__, staticmethod(_maybe_cache(embed_one_eu))),
 ])
 class TestEmbedOne(unittest.TestCase):
     """Tests for embed_one and embed_one_eu."""
@@ -55,8 +78,8 @@ class TestEmbedOne(unittest.TestCase):
 
 
 @parameterized_class(('name', 'func'), [
-    (embed_many.__name__, staticmethod(embed_many)),
-    (embed_many_eu.__name__, staticmethod(embed_many_eu)),
+    (embed_many.__name__, staticmethod(_maybe_cache(embed_many))),
+    (embed_many_eu.__name__, staticmethod(_maybe_cache(embed_many_eu))),
 ])
 class TestEmbedMany(unittest.TestCase):
     """Tests for embed_many and embed_many_eu."""
