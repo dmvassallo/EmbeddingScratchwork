@@ -3,8 +3,18 @@ name: Test
 on: [push, pull_request]
 
 jobs:
+  check-for-api-key:
+    name: Check for OpenAI API key
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check OPENAI_API_KEY repository secret
+        run: |
+          grep -q '^sk-' <<<'${{ secrets.OPENAI_API_KEY }}'
+
   test:
     name: Unit Tests
+
+    needs: check-for-api-key
 
     strategy:
       matrix:
@@ -28,6 +38,9 @@ jobs:
 
       - name: Install Conda environment from environment.yml
         uses: mamba-org/provision-with-micromamba@v15
+
+      - name: Print Python version
+        run: python -V
 
       - name: Run Unit Tests
         run: python -m unittest -v
