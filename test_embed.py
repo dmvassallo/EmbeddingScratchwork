@@ -6,6 +6,7 @@
 
 # FIXME: Reduce calls to API. Maybe use functools.cache.
 
+from typing import Any
 import unittest
 
 import numpy as np
@@ -20,6 +21,8 @@ from embed import embed_one, embed_many, embed_one_eu, embed_many_eu
 ])
 class TestEmbedOne(unittest.TestCase):
     """Tests for embed_one and embed_one_eu."""
+
+    func: Any
 
     def test_returns_numpy_array(self):
         result = self.func("Your text string goes here")
@@ -57,6 +60,8 @@ class TestEmbedOne(unittest.TestCase):
 ])
 class TestEmbedMany(unittest.TestCase):
     """Tests for embed_many and embed_many_eu."""
+
+    func: Any
 
     def setUp(self):
         self._many = self.func([
