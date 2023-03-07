@@ -33,10 +33,8 @@ def cache_by(key):
         def wrapper(*args, **kwargs):
             cache_key = key(*args, **kwargs)
             try:
-                print('Cache ATTEMPT.')
                 return cache[cache_key]
             except KeyError:
-                print('Cache MISS.')
                 value = func(*args, **kwargs)
                 cache[cache_key] = value
                 return value
