@@ -4,8 +4,6 @@
 
 # pylint: disable=missing-function-docstring
 
-# FIXME: Reduce calls to API. Maybe use functools.cache.
-
 import os
 import pickle
 import re
