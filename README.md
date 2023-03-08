@@ -33,13 +33,13 @@ multiplication](https://numpy.org/doc/stable/reference/generated/numpy.matmul.ht
 
 ## What’s here
 
-### Modules
+### Major Modules
 
 [`embed.py`](embed.py) contains functions that retrieve embeddings and return
 them as NumPy arrays: rank-1 arrays (vectors) for individual embeddings, or
 rank-2 arrays (matrices) for batches of embeddings.
 
-[`test_embed.py`](test_embed.py) has automated tests of the functions in
+[`test_embed.py`](tests/test_embed.py) has automated tests of the functions in
 `embed.py`. This includes testing that some examples’ similarities are within
 expected ranges.
 
@@ -161,8 +161,8 @@ in, adapt, and/or use the functions defined in [`embed.py`](embed.py).
 This repository defines CI checks in several [GitHub Actions
 workflows](.github/workflows/). Forks inherit them. Some will run without
 problems. Some others—the automated tests in
-[`test_embed.py`](test_embed.py)—cannot run successfully without an OpenAI API
-key.
+[`test_embed.py`](tests/test_embed.py)—cannot run successfully without an
+OpenAI API key.
 
 Since your API key must *not* be committed or otherwise disclosed, the way to
 make it available to CI (if you wish to do so) is by setting up a [repository
