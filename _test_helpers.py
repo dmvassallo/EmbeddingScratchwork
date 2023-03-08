@@ -1,32 +1,14 @@
 """Helper decorators for testing. This supports test_embed.py."""
 
-# TODO: If the project is restructured in such a way that it has a tests
-#       directory, this module should go in there and be renamed _helpers.py.
+# FIXME: Eliminate the need for this module, if possible, perhaps by adding a
+#        dependency (or dev dependency) on a library like cachetools.
+#
+# TODO: If this module is kept, and the project is restructured to have a tests
+#       directory, this module should go there and be renamed _helpers.py.
 
-__all__ = ['lazy_if', 'cache_by']
+__all__ = ['cache_by']
 
 import functools
-
-try:
-    _cache = functools.cache
-except AttributeError:
-    _cache = functools.lru_cache(maxsize=None)
-
-
-def lazy_if(condition_getter, decorator):
-    """Use the decorator if a condition, computed at most once, is true."""
-    def conditional_decorator(func):
-        @_cache
-        def maybe_decorated():
-            return decorator(func) if condition_getter() else func
-
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            return maybe_decorated()(*args, **kwargs)
-
-        return wrapper
-
-    return conditional_decorator
 
 
 def cache_by(key):

@@ -13,36 +13,18 @@ import unittest
 import numpy as np
 from parameterized import parameterized, parameterized_class
 
-from _test_helpers import lazy_if, cache_by
+import _test_helpers
 from embed import embed_one, embed_many, embed_one_eu, embed_many_eu
 
-
-_SHOULD_CACHE_RE = re.compile(r'\A\s*(?:yes|true|\+?0*[1-9][0-9]*)\s*\Z', re.I)
-"""Regex pattern that ``_should_cache`` matches to an environment variable."""
-
-
-def _should_cache():
-    """
-    Decide if tests in this module should cache calls to embedding functions.
-
-    This is done if the ``TESTS_CACHE_EMBEDDING_CALLS`` environment variable
-    exists and holds "yes" or "true" (case-insensitively) or a positive
-    integer.
-    """
-    value = os.environ.get('TESTS_CACHE_EMBEDDING_CALLS', default='')
-    return _SHOULD_CACHE_RE.match(value)
-
-
-_maybe_cache = lazy_if(_should_cache, cache_by(pickle.dumps))
-"""
-Decorator that adds caching if ``TESTS_CACHE_EMBEDDING_CALLS`` says to do so.
-
-This happens dynamically and lazily, so it can be changed after the module is
-imported, any time before the first test-case call to a wrapper function. That
-is, even though ``_maybe_cache`` is called at import time due to its presence
-in ``@parameterized_class`` decorations, whether caching happens is not decided
-until the function returned by ``_maybe_cache`` is called for the first time.
-"""
+# Tests cache calls to embedding functions if the TESTS_CACHE_EMBEDDING_CALLS
+# environment variable exists and holds "yes" or "true" (case insensitively),
+# or any positive integer (represented in base-10).
+if re.match(pattern=r'\A\s*(?:yes|true|\+?0*[1-9][0-9]*)\s*\Z',
+            string=os.environ.get('TESTS_CACHE_EMBEDDING_CALLS', default=''),
+            flags=re.IGNORECASE):
+    _maybe_cache = _test_helpers.cache_by(pickle.dumps)
+else:
+    _maybe_cache = lambda func: func
 
 
 @parameterized_class(('name', 'func'), [
