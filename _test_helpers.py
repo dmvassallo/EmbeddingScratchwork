@@ -3,32 +3,30 @@
 # TODO: If this module is kept, and the project is restructured to have a tests
 #       directory, then this module should go there and be renamed _helpers.py.
 
-__all__ = ['get_maybe_caching_decorator']
+__all__ = ['configure_logging', 'get_maybe_caching_decorator']
 
 import functools
+import logging
 import os
 import pickle
 import re
 
 
-def _cache_by(key):
-    """Like ``functools.cache``, but uses an arbitrary key selector."""
-    def decorator(func):
-        cache = {}
+def configure_logging():
+    """
+    Set logging level from the ``TESTS_LOGGING_LEVEL`` environment variable.
 
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            cache_key = key(*args, **kwargs)
-            try:
-                return cache[cache_key]
-            except KeyError:
-                value = func(*args, **kwargs)
-                cache[cache_key] = value
-                return value
-
-        return wrapper
-
-    return decorator
+    If the variable is absent or empty, then no configuration is performed.
+    Otherwise, the variable is treated as a string that names the logging
+    level. It is case-insensitive. For example, ``DEBUG`` may be written as
+    ``Debug``. Numeric and custom-defined logging levels are not supported.
+    """
+    level = os.environ.get('TESTS_LOGGING_LEVEL', default='').strip().upper()
+    if not level:
+        return
+    if level not in {'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'}:
+        raise ValueError(f'unrecognized logging level {level!r}')
+    logging.basicConfig(level=getattr(logging, level))
 
 
 def get_maybe_caching_decorator():
@@ -53,3 +51,23 @@ def get_maybe_caching_decorator():
         return _cache_by(pickle.dumps)
 
     return lambda func: func
+
+
+def _cache_by(key):
+    """Like ``functools.cache``, but uses an arbitrary key selector."""
+    def decorator(func):
+        cache = {}
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            cache_key = key(*args, **kwargs)
+            try:
+                return cache[cache_key]
+            except KeyError:
+                value = func(*args, **kwargs)
+                cache[cache_key] = value
+                return value
+
+        return wrapper
+
+    return decorator

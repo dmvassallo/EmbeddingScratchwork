@@ -13,6 +13,7 @@ from parameterized import parameterized, parameterized_class
 import _test_helpers
 from embed import embed_one, embed_many, embed_one_eu, embed_many_eu
 
+_test_helpers.configure_logging()
 _maybe_cache = _test_helpers.get_maybe_caching_decorator()
 
 
