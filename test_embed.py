@@ -17,7 +17,7 @@ from _test_helpers import lazy_if, cache_by
 from embed import embed_one, embed_many, embed_one_eu, embed_many_eu
 
 
-_SHOULD_CACHE = re.compile(r'\A\s*(?:yes|true|\+?0*[1-9][0-9]*)\s*\Z', re.I)
+_SHOULD_CACHE_RE = re.compile(r'\A\s*(?:yes|true|\+?0*[1-9][0-9]*)\s*\Z', re.I)
 """Regular expression that _should_cache matches to an environment variable."""
 
 
@@ -29,7 +29,7 @@ def _should_cache():
     and holds "yes" or "true" (case-insensitively), or a positive integer.
     """
     value = os.environ.get('TESTS_CACHE_EMBEDDING_CALLS', default='')
-    return _SHOULD_CACHE.match(value)
+    return _SHOULD_CACHE_RE.match(value)
 
 
 _maybe_cache = lazy_if(_should_cache, cache_by(pickle.dumps))
