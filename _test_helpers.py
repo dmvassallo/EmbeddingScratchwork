@@ -12,7 +12,7 @@ import re
 
 
 def _cache_by(key):
-    """Like functools.cache, but uses an arbitrary key selector."""
+    """Like ``functools.cache``, but uses an arbitrary key selector."""
     def decorator(func):
         cache = {}
 
@@ -38,7 +38,7 @@ def get_maybe_caching_decorator():
     The decision of whether to cache or not is made eagerly, in this function.
 
     If the ``TESTS_CACHE_EMBEDDING_CALLS`` environment variable exists and
-    holds "yes" or "true" (case insensitively) or any positive integer, the
+    holds ``yes`` or ``true`` (case insensitively) or any positive integer, the
     returned decorator caches. Pickling is used for cache keys, so non-hashable
     arguments are supported, and arguments of different types are treated as
     different, even if equal.
