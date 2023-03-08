@@ -18,7 +18,7 @@ from embed import embed_one, embed_many, embed_one_eu, embed_many_eu
 
 
 _SHOULD_CACHE_RE = re.compile(r'\A\s*(?:yes|true|\+?0*[1-9][0-9]*)\s*\Z', re.I)
-"""Regular expression ``_should_cache`` matches to an environment variable."""
+"""Regex pattern that ``_should_cache`` matches to an environment variable."""
 
 
 def _should_cache():
