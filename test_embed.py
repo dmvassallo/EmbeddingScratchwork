@@ -33,7 +33,15 @@ def _should_cache():
 
 
 _maybe_cache = lazy_if(_should_cache, cache_by(pickle.dumps))
-"""Decorator that adds caching if TESTS_CACHE_EMBEDDING_CALLS says to do so."""
+"""
+Decorator that adds caching if ``TESTS_CACHE_EMBEDDING_CALLS`` says to do so.
+
+This happens dynamically and lazily, so it can be changed after the module is
+imported, any time before the first test-case call to a wrapper function. That
+is, even though ``_maybe_cache`` is called at import time due to its presence
+in ``@parameterized_class`` decorations, whether caching happens is not decided
+until the function returned by ``_maybe_cache`` is called for the first time.
+"""
 
 
 @parameterized_class(('name', 'func'), [
