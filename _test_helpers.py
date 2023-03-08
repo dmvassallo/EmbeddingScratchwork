@@ -5,13 +5,58 @@
 
 __all__ = ['configure_logging', 'get_maybe_caching_decorator']
 
+import atexit
+import collections
 import functools
 import logging
 import os
 import pickle
 import re
 
-_cache_hits = _cache_misses = 0
+_cache_stats = collections.Counter()
+"""Mapping that tracks global cache miss and cache hit counts."""
+
+
+@atexit.register
+def _report_nontrivial_cache_statistics():
+    """Log global cache statistics, IF any caching has been performed."""
+    if _cache_stats:
+        logging.info('Cache stats: %r', _cache_stats)
+
+
+def _cache_by(key, *, stats):
+    """
+    Like ``functools.cache``, but uses an arbitrary key selector.
+
+    This also logs and counts cache hits and misses.
+    """
+    def decorator(func):
+        cache = {}
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            cache_key = key(*args, **kwargs)
+            try:
+                value = cache[cache_key]
+            except KeyError:
+                stats['misses'] += 1
+                logging.debug('Cache MISS #%d: %s',
+                              stats['misses'], wrapper.__name__)
+                value = cache[cache_key] = func(*args, **kwargs)
+            else:
+                stats['hits'] += 1
+                logging.debug('Cache HIT #%d: %s',
+                              stats['hits'], wrapper.__name__)
+            return value
+
+        return wrapper
+
+    return decorator
+
+
+def _identity_function(arg):
+    """Return the argument unchanged."""
+    return arg
 
 
 def configure_logging():
@@ -50,39 +95,6 @@ def get_maybe_caching_decorator():
         string=os.environ.get('TESTS_CACHE_EMBEDDING_CALLS', default=''),
         flags=re.IGNORECASE,
     ):
-        return _cache_by(pickle.dumps)
+        return _cache_by(pickle.dumps, stats=_cache_stats)
 
-    return lambda func: func
-
-
-def _cache_by(key):
-    """
-    Like ``functools.cache``, but uses an arbitrary key selector.
-
-    This also logs, and globally counts cache hits and misses.
-    """
-    def decorator(func):
-        cache = {}
-
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            # FIXME: Count in a way that avoids using global state.
-            global _cache_hits, _cache_misses
-
-            cache_key = key(*args, **kwargs)
-            try:
-                value = cache[cache_key]
-            except KeyError:
-                _cache_misses += 1
-                logging.debug('Cache MISS (global count: %d): %s',
-                              _cache_misses, wrapper.__name__)
-                value = cache[cache_key] = func(*args, **kwargs)
-            else:
-                _cache_hits += 1
-                logging.debug('Cache HIT (global count: %d): %s',
-                              _cache_hits, wrapper.__name__)
-            return value
-
-        return wrapper
-
-    return decorator
+    return _identity_function
