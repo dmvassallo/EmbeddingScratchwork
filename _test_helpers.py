@@ -11,6 +11,8 @@ import os
 import pickle
 import re
 
+_cache_hits = _cache_misses = 0
+
 
 def configure_logging():
     """
@@ -54,19 +56,32 @@ def get_maybe_caching_decorator():
 
 
 def _cache_by(key):
-    """Like ``functools.cache``, but uses an arbitrary key selector."""
+    """
+    Like ``functools.cache``, but uses an arbitrary key selector.
+
+    This also logs, and globally counts cache hits and misses.
+    """
     def decorator(func):
         cache = {}
 
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
+            # FIXME: Count in a way that avoids using global state.
+            global _cache_hits, _cache_misses
+
             cache_key = key(*args, **kwargs)
             try:
-                return cache[cache_key]
+                value = cache[cache_key]
             except KeyError:
-                value = func(*args, **kwargs)
-                cache[cache_key] = value
-                return value
+                _cache_misses += 1
+                logging.debug('Cache MISS (global count: %d): %s',
+                              _cache_misses, wrapper.__name__)
+                value = cache[cache_key] = func(*args, **kwargs)
+            else:
+                _cache_hits += 1
+                logging.debug('Cache HIT (global count: %d): %s',
+                              _cache_hits, wrapper.__name__)
+            return value
 
         return wrapper
 
