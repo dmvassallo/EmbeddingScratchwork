@@ -1,8 +1,5 @@
 """Helper decorators for testing. This supports test_embed.py."""
 
-# TODO: If this module is kept, and the project is restructured to have a tests
-#       directory, then this module should go there and be renamed _helpers.py.
-
 __all__ = ['configure_logging', 'get_maybe_caching_decorator']
 
 import atexit
