@@ -18,15 +18,16 @@ from embed import embed_one, embed_many, embed_one_eu, embed_many_eu
 
 
 _SHOULD_CACHE_RE = re.compile(r'\A\s*(?:yes|true|\+?0*[1-9][0-9]*)\s*\Z', re.I)
-"""Regular expression that _should_cache matches to an environment variable."""
+"""Regular expression ``_should_cache`` matches to an environment variable."""
 
 
 def _should_cache():
     """
     Decide if tests in this module should cache calls to embedding functions.
 
-    This is done if the TESTS_CACHE_EMBEDDING_CALLS environment variable exists
-    and holds "yes" or "true" (case-insensitively), or a positive integer.
+    This is done if the ``TESTS_CACHE_EMBEDDING_CALLS`` environment variable
+    exists and holds "yes" or "true" (case-insensitively) or a positive
+    integer.
     """
     value = os.environ.get('TESTS_CACHE_EMBEDDING_CALLS', default='')
     return _SHOULD_CACHE_RE.match(value)
@@ -49,7 +50,7 @@ until the function returned by ``_maybe_cache`` is called for the first time.
     (embed_one_eu.__name__, staticmethod(_maybe_cache(embed_one_eu))),
 ])
 class TestEmbedOne(unittest.TestCase):
-    """Tests for embed_one and embed_one_eu."""
+    """Tests for ``embed_one`` and ``embed_one_eu``."""
 
     func: Any
 
@@ -88,7 +89,7 @@ class TestEmbedOne(unittest.TestCase):
     (embed_many_eu.__name__, staticmethod(_maybe_cache(embed_many_eu))),
 ])
 class TestEmbedMany(unittest.TestCase):
-    """Tests for embed_many and embed_many_eu."""
+    """Tests for ``embed_many`` and ``embed_many_eu``."""
 
     func: Any
 
