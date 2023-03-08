@@ -1,17 +1,17 @@
 """Helper decorators for testing. This supports test_embed.py."""
 
-# FIXME: Eliminate the need for this module, if possible, perhaps by adding a
-#        dependency (or dev dependency) on a library like cachetools.
-#
 # TODO: If this module is kept, and the project is restructured to have a tests
-#       directory, this module should go there and be renamed _helpers.py.
+#       directory, then this module should go there and be renamed _helpers.py.
 
-__all__ = ['cache_by']
+__all__ = ['get_maybe_caching_decorator']
 
 import functools
+import os
+import pickle
+import re
 
 
-def cache_by(key):
+def _cache_by(key):
     """Like functools.cache, but uses an arbitrary key selector."""
     def decorator(func):
         cache = {}
@@ -29,3 +29,27 @@ def cache_by(key):
         return wrapper
 
     return decorator
+
+
+def get_maybe_caching_decorator():
+    """
+    Get a decorator to use on unary functions that may or may not add caching.
+
+    The decision of whether to cache or not is made eagerly, in this function.
+
+    If the ``TESTS_CACHE_EMBEDDING_CALLS`` environment variable exists and
+    holds "yes" or "true" (case insensitively) or any positive integer, the
+    returned decorator caches. Pickling is used for cache keys, so non-hashable
+    arguments are supported, and arguments of different types are treated as
+    different, even if equal.
+
+    Otherwise, the returned decorator is just an identity function.
+    """
+    if re.match(
+        pattern=r'\A\s*(?:yes|true|\+?0*[1-9][0-9]*)\s*\Z',
+        string=os.environ.get('TESTS_CACHE_EMBEDDING_CALLS', default=''),
+        flags=re.IGNORECASE,
+    ):
+        return _cache_by(pickle.dumps)
+
+    return lambda func: func

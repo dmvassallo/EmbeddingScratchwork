@@ -4,9 +4,6 @@
 
 # pylint: disable=missing-function-docstring
 
-import os
-import pickle
-import re
 from typing import Any
 import unittest
 
@@ -16,15 +13,7 @@ from parameterized import parameterized, parameterized_class
 import _test_helpers
 from embed import embed_one, embed_many, embed_one_eu, embed_many_eu
 
-# Tests cache calls to embedding functions if the TESTS_CACHE_EMBEDDING_CALLS
-# environment variable exists and holds "yes" or "true" (case insensitively),
-# or any positive integer (represented in base-10).
-if re.match(pattern=r'\A\s*(?:yes|true|\+?0*[1-9][0-9]*)\s*\Z',
-            string=os.environ.get('TESTS_CACHE_EMBEDDING_CALLS', default=''),
-            flags=re.IGNORECASE):
-    _maybe_cache = _test_helpers.cache_by(pickle.dumps)
-else:
-    _maybe_cache = lambda func: func
+_maybe_cache = _test_helpers.get_maybe_caching_decorator()
 
 
 @parameterized_class(('name', 'func'), [
