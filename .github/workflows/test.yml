@@ -23,6 +23,9 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    permissions:
+      contents: write
+
     defaults:
       run:
         shell: bash -l {0}
@@ -42,7 +45,12 @@ jobs:
       - name: Print Python version
         run: python -V
 
+      - name: Set up mutex
+        uses: EliahKagan/actions-mutex@v2
+
       - name: Run Unit Tests
         run: python -m unittest -v
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TESTS_CACHE_EMBEDDING_CALLS: 'yes'
+          TESTS_LOGGING_LEVEL: 'INFO'
