@@ -23,6 +23,9 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    permissions:
+      contents: write
+
     defaults:
       run:
         shell: bash -l {0}
@@ -41,6 +44,9 @@ jobs:
 
       - name: Print Python version
         run: python -V
+
+      - name: Set up mutex
+        uses: EliahKagan/actions-mutex@v2
 
       - name: Run Unit Tests
         run: python -m unittest -v
