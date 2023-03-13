@@ -178,10 +178,10 @@ codespaces:
 3. In Settings, on the left, under “Security,” expand “Secrets and variables”
    and click “**Actions**.”
 4. Click “New repository secret.”
-5. Put `OPENAI_API_KEY` as the name—this is so that it will appear in the
-   codespace as the value of the environment variable of the same name, which
-   is consulted for the OpenAI API key. As the value, put the OpenAI API key
-   that you generated for the specific purpose of using for this codespace.
+5. Put `OPENAI_API_KEY` as the name (because
+   [`test.yml`](.github/workflows/test.yml) is written to expect the secret to
+   have that name). As the value, put the OpenAI API key that you generated for
+   the specific purpose of using for CI on this project.
 6. Click “Add secret.”
 
 It’s a good idea to read the relevant security guides:
