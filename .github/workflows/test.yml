@@ -19,7 +19,7 @@ jobs:
       - name: Read TESTS_CI_NONBLOCKING variable
         id: read-blocking-config-variable
         run: |
-          # Allowed values are "false", "true", "no", "yes", "0", "1", and "".
+          # Allowed values: "false" (or "no", "0", ""), "true" (or "yes", "1").
 
           shopt -s nocaseglob  # Case-insensitive pattern-matching.
 

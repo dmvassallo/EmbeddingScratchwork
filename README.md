@@ -116,11 +116,15 @@ up a repository secret. *Of course, do not commit your key to your repository.*
    that you generated for the specific purpose of using for this codespace.
 6. Click “Add secret.”
 
+#### Security if your OpenAI API key in the codespace (important)
+
 To expand on the point, in step 5, about using a key that is just for this,
-rather than one you also use for anything else: that way, if somehow it is
-accidentally disclosed, you only need to invalidate that specific key, and when
-you do, none of your other projects or uses of the OpenAI API should be
-affected. See [Best Practices for API Key
+rather than one you also use for anything else: That way, if somehow it is
+accidentally disclosed, you only need to invalidate that specific key. When
+you do invalidate it, none of your other projects or uses of the OpenAI API
+should be affected.
+
+See [Best Practices for API Key
 Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 
 ### 3. Local dev container
@@ -151,8 +155,22 @@ Code](https://code.visualstudio.com/docs/python/environments).
 
 ### Where to start
 
-You may want to start in the [`embed.ipynb`](embed.ipynb) notebook, then look
+You may want to start in the [`embed.ipynb`](embed.ipynb) notebook.
+
+Then look
 in, adapt, and/or use the functions defined in [`embed.py`](embed.py).
+
+### Automated tests
+
+There are three good ways to run the automated tests in
+[`test_embed.py`](tests/test_embed.py):
+
+- In a terminal, activate the environment, then run `python -m unittest`.
+- In VS Code, activate the environment, then click the [beaker
+  icon](https://jpearson.blog/2021/09/01/test-explorer-in-visual-studio-code/)
+  and run the tests there.
+- [Let CI run the tests](#continuous-integration-checks) on many combinations
+  of platforms and Python versions.
 
 ## CI/CD in forks
 
@@ -163,6 +181,8 @@ workflows](.github/workflows/). Forks inherit them. Some will run without
 problems. Some others—the automated tests in
 [`test_embed.py`](tests/test_embed.py)—cannot run successfully without an
 OpenAI API key.
+
+#### Your OpenAI API key in CI checks
 
 Since your API key must *not* be committed or otherwise disclosed, the way to
 make it available to CI (if you wish to do so) is by setting up a [repository
@@ -184,14 +204,45 @@ codespaces:
    that you generated for the specific purpose of using for this codespace.
 6. Click “Add secret.”
 
+#### Security of your OpenAI API key in CI checks (important)
+
 It’s a good idea to read the relevant security guides:
 
 - [Security hardening for GitHub
   Actions](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions)
   (GitHub)
 - [Best Practices for API Key
-Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety)
-(OpenAI)
+  Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety)
+  (OpenAI)
+
+#### Deciding if `python -m unittest` should block
+
+If you set a [configuration
+variable](https://docs.github.com/en/actions/learn-github-actions/variables#creating-configuration-variables-for-a-repository)
+for your fork called `TESTS_CI_NONBLOCKING`, then this determines whether CI
+actions can perform multiple `python -m unittest` runs at the same time. A
+value of `true` permits this. A value of `false` prohibits it; multiple test
+jobs still run concurrently to download and install their dependencies, but
+actually running the tests is only done by one job at a time. The default, if
+you don’t set `TESTS_CI_NONBLOCKING`, is `false`.
+
+This only affects CI, not [manual test runs](#automated-tests). The goal is to
+make this project’s CI checks work even for users whose OpenAI accounts are
+still on the trial period, whose [rate
+limits](https://platform.openai.com/docs/guides/rate-limits) are [much
+stricter](https://platform.openai.com/docs/guides/rate-limits/what-are-the-rate-limits-for-our-api).
+All functions in this project that access the API use [exponential
+backoff](https://platform.openai.com/docs/guides/rate-limits/retrying-with-exponential-backoff),
+so most will succeed even if run concurrently. However, when rate limits are
+very low, it is faster to run the tests in series. Furthermore, some of
+them—[the
+ones](https://github.com/dmvassallo/EmbeddingScratchwork/blob/4de223db30253cefba10fa6e3f846550ccd986ee/embed.py#L39-L54)
+that use
+[`embeddings_utils`](https://github.com/openai/openai-python/blob/v0.27.2/openai/embeddings_utils.py#L17)—do
+not keep retrying enough times to reliably succeed with these much lower rate
+limits.
+
+If your OpenAI account is past the trial period, your CI checks should run faster if you set `TESTS_CI_NONBLOCKING` to `true`.
 
 ### Codespace prebuilds
 
