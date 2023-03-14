@@ -8,13 +8,54 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check OPENAI_API_KEY repository secret
+        run: grep -q '^sk-' <<<'${{ secrets.OPENAI_API_KEY }}'
+
+  read-blocking-config:
+    name: Read blocking configuration
+    runs-on: ubuntu-latest
+    outputs:
+      use-mutex: ${{ steps.read-blocking-config-variable.outputs.use-mutex }}
+    steps:
+      - name: Read TESTS_CI_NONBLOCKING variable
+        id: read-blocking-config-variable
         run: |
-          grep -q '^sk-' <<<'${{ secrets.OPENAI_API_KEY }}'
+          # Allowed values are "false", "true", "no", "yes", "0", "1", and "".
+
+          shopt -s nocaseglob  # Case-insensitive pattern-matching.
+
+          readonly -a no_var_warning=(
+              'No GitHub Actions configuration variable TESTS_CI_NONBLOCKING.'
+              'Treating it as if set to false.'
+              'To make your intentions clear, set the configuration variable.'
+              'https://docs.github.com/en/actions/learn-github-actions/variables#creating-configuration-variables-for-a-repository'
+          )
+
+          case "$TESTS_CI_NONBLOCKING" in
+          '' )
+              # Nonblocking mode is *implicitly* off, so we WILL use the mutex.
+              printf '%s\n' "${no_var_warning[@]}" >&2  # Warn in step output.
+              echo "::warning ::${no_var_warning[*]}"  # Annotate workflow.
+              ;&
+          false | no | 0 )  # Or fell through.
+              # Nonblocking mode is off, so we WILL use the mutex.
+              echo "use-mutex=true" >>"$GITHUB_OUTPUT"
+              ;;
+          true | yes | 1 )
+              # Nonblocking mode is on, so we will NOT use the mutex.
+              echo "use-mutex=false" >>"$GITHUB_OUTPUT"
+              ;;
+          * )
+              printf 'Unrecognized value "%s"\n' "$TESTS_CI_NONBLOCKING" >&2
+              exit 1
+              ;;
+          esac
+        env:
+          TESTS_CI_NONBLOCKING: ${{ vars.TESTS_CI_NONBLOCKING }}
 
   test:
     name: Unit Tests
 
-    needs: check-for-api-key
+    needs: [check-for-api-key, read-blocking-config]
 
     strategy:
       matrix:
@@ -46,10 +87,7 @@ jobs:
         run: python -V
 
       - name: Set up mutex
-        if: >-
-          vars.TESTS_CI_NONBLOCKING != 'true' &&
-          vars.TESTS_CI_NONBLOCKING != 'yes' &&
-          vars.TESTS_CI_NONBLOCKING != '1'
+        if: needs.read-blocking-config.outputs.use-mutex != 'false'
         uses: EliahKagan/actions-mutex@v2
 
       - name: Run Unit Tests
