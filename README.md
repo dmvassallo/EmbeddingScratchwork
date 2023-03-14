@@ -120,9 +120,9 @@ up a repository secret. *Of course, do not commit your key to your repository.*
 
 To expand on the point, in step 5, about using a key that is just for this,
 rather than one you also use for anything else: That way, if somehow it is
-accidentally disclosed, you only need to invalidate that specific key. When
-you do invalidate it, none of your other projects or uses of the OpenAI API
-should be affected.
+accidentally disclosed, you only need to invalidate that specific key. When you
+do invalidate it, none of your other projects or uses of the OpenAI API should
+be affected.
 
 See [Best Practices for API Key
 Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
@@ -157,8 +157,8 @@ Code](https://code.visualstudio.com/docs/python/environments).
 
 You may want to start in the [`embed.ipynb`](embed.ipynb) notebook.
 
-Then look
-in, adapt, and/or use the functions defined in [`embed.py`](embed.py).
+Then look in, adapt, and/or use the functions defined in
+[`embed.py`](embed.py).
 
 ### Automated tests
 
@@ -242,7 +242,8 @@ that use
 not keep retrying enough times to reliably succeed with these much lower rate
 limits.
 
-If your OpenAI account is past the trial period, your CI checks should run faster if you set `TESTS_CI_NONBLOCKING` to `true`.
+If your OpenAI account is past the trial period, your CI checks should run
+faster if you set `TESTS_CI_NONBLOCKING` to `true`.
 
 ### Codespace prebuilds
 
