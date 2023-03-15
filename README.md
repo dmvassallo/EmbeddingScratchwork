@@ -159,10 +159,14 @@ in, adapt, and/or use the functions defined in [`embed.py`](embed.py).
 ### Continuous integration checks
 
 This repository defines CI checks in several [GitHub Actions
-workflows](.github/workflows/). Forks inherit them. Some will run without
-problems. Some others—the automated tests in
+workflows](.github/workflows/). Forks inherit them, and they [can be
+enabled](https://github.com/github/docs/issues/15761) in a fork’s [“Actions”
+tab](https://loopkit.github.io/loopdocs/gh-actions/gh-first-time/#first-use-of-actions-tab).
+Some will run without problems. Some others—the automated tests in
 [`test_embed.py`](test_embed.py)—cannot run successfully without an OpenAI API
 key.
+
+#### Your OpenAI API key in CI checks
 
 Since your API key must *not* be committed or otherwise disclosed, the way to
 make it available to CI (if you wish to do so) is by setting up a [repository
