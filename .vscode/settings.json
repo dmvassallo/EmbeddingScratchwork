@@ -31,7 +31,6 @@
         "mhutchie",
         "micromamba",
         "ndarray",
-        "nocaseglob",
         "nonblocking",
         "numpy",
         "openai",
@@ -43,7 +42,6 @@
         "scratchwork",
         "sh",
         "shellcheck",
-        "shopt",
         "stkb",
         "tablefmt",
         "Vassallo"

@@ -16,39 +16,14 @@ jobs:
     outputs:
       use-mutex: ${{ steps.read-blocking-config-variable.outputs.use-mutex }}
     steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+
       - name: Read TESTS_CI_NONBLOCKING variable
         id: read-blocking-config-variable
         run: |
           # Allowed values: "false" (or "no", "0", ""), "true" (or "yes", "1").
-
-          shopt -s nocaseglob  # Case-insensitive pattern-matching.
-
-          readonly -a no_var_warning=(
-              'No GitHub Actions configuration variable TESTS_CI_NONBLOCKING.'
-              'Treating it as if set to false.'
-              'To make your intentions clear, set the configuration variable.'
-              'https://docs.github.com/en/actions/learn-github-actions/variables#creating-configuration-variables-for-a-repository'
-          )
-
-          case "$TESTS_CI_NONBLOCKING" in
-          '' )
-              # Nonblocking mode is *implicitly* off, so we WILL use the mutex.
-              printf '%s\n' "${no_var_warning[@]}" >&2  # Warn in step output.
-              echo "::warning ::${no_var_warning[*]}"  # Annotate workflow.
-              ;&
-          false | no | 0 )  # Or fell through.
-              # Nonblocking mode is off, so we WILL use the mutex.
-              echo "use-mutex=true" >>"$GITHUB_OUTPUT"
-              ;;
-          true | yes | 1 )
-              # Nonblocking mode is on, so we will NOT use the mutex.
-              echo "use-mutex=false" >>"$GITHUB_OUTPUT"
-              ;;
-          * )
-              printf 'Unrecognized value "%s"\n' "$TESTS_CI_NONBLOCKING" >&2
-              exit 1
-              ;;
-          esac
+          .github/workflows/get-blocking-config
         env:
           TESTS_CI_NONBLOCKING: ${{ vars.TESTS_CI_NONBLOCKING }}
 
