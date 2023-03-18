@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "EmbeddingScratchwork"
+version = "0.1.0"
+description = "Scratch work for embeddings"
+authors = [
+    "David Vassallo <vassallo.davidm@gmail.com>",
+    "Eliah Kagan <degeneracypressure@gmail.com>",
+]
+packages = [
+    { include = "embed.py" },
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
