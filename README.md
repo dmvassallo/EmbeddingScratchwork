@@ -45,11 +45,11 @@ expected ranges.
 
 ### Notebooks
 
-[`embed.ipynb`](embed.ipynb) is the main notebook. It shows some usage and
-experiments, calling functions in `embed.py`.
+[`embed.ipynb`](notebooks/embed.ipynb) is the main notebook. It shows some
+usage and experiments, calling functions in `embed.py`.
 
-[`structure.ipynb`](structure.ipynb) examines the JSON responses returned by
-the OpenAI embeddings API endpoint.
+[`structure.ipynb`](notebooks/structure.ipynb) examines the JSON responses
+returned by the OpenAI embeddings API endpoint.
 
 ## Setup
 
@@ -64,6 +64,8 @@ Clone the repository and create its
 git clone https://github.com/dmvassallo/EmbeddingScratchwork.git
 cd EmbeddingScratchwork
 conda env create
+conda activate EmbeddingScratchwork
+pip install -e .
 ```
 
 - If you fork the project, remember to replace the URL with that of your fork.
@@ -151,8 +153,9 @@ Code](https://code.visualstudio.com/docs/python/environments).
 
 ### Where to start
 
-You may want to start in the [`embed.ipynb`](embed.ipynb) notebook, then look
-in, adapt, and/or use the functions defined in [`embed.py`](embed.py).
+You may want to start in the [`embed.ipynb`](notebooks/embed.ipynb) notebook,
+then look in, adapt, and/or use the functions defined in
+[`embed.py`](embed.py).
 
 ## CI/CD in forks
 
