@@ -13,11 +13,13 @@
         "dogwalk",
         "dtype",
         "eamodio",
+        "Eliah",
         "fernandrone",
         "floatfmt",
         "gaurav",
         "ipykernel",
         "ipynb",
+        "Kagan",
         "lionsleep",
         "mhutchie",
         "micromamba",
@@ -33,6 +35,7 @@
         "shellcheck",
         "stkb",
         "tablefmt",
+        "tamasfe",
         "Vassallo"
     ],
     "cSpell.ignoreWords": [

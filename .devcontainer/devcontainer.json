@@ -10,7 +10,8 @@
                 "MS-vsliveshare.vsliveshare",
                 "stkb.rewrap",
                 "streetsidesoftware.code-spell-checker",
-                "streetsidesoftware.code-spell-checker-spanish"
+                "streetsidesoftware.code-spell-checker-spanish",
+                "tamasfe.even-better-toml"
             ],
             "settings": {
                 "gitlens.showWelcomeOnInstall": false,
