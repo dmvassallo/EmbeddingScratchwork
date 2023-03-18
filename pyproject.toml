@@ -1,3 +1,7 @@
+# Currently, this file exists only to allow "pip install -e ." to succeed when
+# run in the conda environment. In the future we might support poetry, in which
+# case this file will be repaced with a generated file that lists dependencies.
+
 [tool.poetry]
 name = "EmbeddingScratchwork"
 version = "0.1.0"
