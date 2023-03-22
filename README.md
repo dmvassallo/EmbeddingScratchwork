@@ -116,7 +116,7 @@ up a repository secret. *Of course, do not commit your key to your repository.*
    that you generated for the specific purpose of using for this codespace.
 6. Click “Add secret.”
 
-#### Security if your OpenAI API key in the codespace (important)
+#### Security of your OpenAI API key in the codespace (important)
 
 To expand on the point, in step 5, about using a key that is just for this,
 rather than one you also use for anything else: That way, if somehow it is
