@@ -1,8 +1,9 @@
 <!-- SPDX-License-Identifier: 0BSD -->
 
-<!--
-   TODO: If we make an SVG logo, put it here (with alt text for accessibility).
--->
+<img src="doc/logo.svg"
+     alt="Drawing of embedding vectors for two sentences – “El gato corre.” and “The cat runs.” – and the 22.7° angle between them"
+     title="Drawing of embedding vectors for two sentences – “El gato corre.” and “The cat runs.” – and the 22.7° angle between them"
+     width="500px">
 
 # EmbeddingScratchwork
 
