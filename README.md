@@ -184,8 +184,10 @@ There are three good ways to run the automated tests in
 ### Continuous integration checks
 
 This repository defines CI checks in several [GitHub Actions
-workflows](.github/workflows/). Forks inherit them. Some will run without
-problems. Some others—the automated tests in
+workflows](.github/workflows/). Forks inherit them, and they [can be
+enabled](https://github.com/github/docs/issues/15761) in a fork’s [“Actions”
+tab](https://loopkit.github.io/loopdocs/gh-actions/gh-first-time/#first-use-of-actions-tab).
+Some will run without problems. Some others—the automated tests in
 [`test_embed.py`](tests/test_embed.py)—cannot run successfully without an
 OpenAI API key.
 
