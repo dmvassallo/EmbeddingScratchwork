@@ -4,22 +4,27 @@
 
 # pylint: disable=missing-function-docstring
 
-# FIXME: Reduce calls to API. Maybe use functools.cache.
-
+from typing import Any
 import unittest
 
 import numpy as np
 from parameterized import parameterized, parameterized_class
 
 from embed import embed_one, embed_many, embed_one_eu, embed_many_eu
+from . import _helpers
+
+_helpers.configure_logging()
+_maybe_cache = _helpers.get_maybe_caching_decorator()
 
 
 @parameterized_class(('name', 'func'), [
-    (embed_one.__name__, staticmethod(embed_one)),
-    (embed_one_eu.__name__, staticmethod(embed_one_eu)),
+    (embed_one.__name__, staticmethod(_maybe_cache(embed_one))),
+    (embed_one_eu.__name__, staticmethod(_maybe_cache(embed_one_eu))),
 ])
 class TestEmbedOne(unittest.TestCase):
-    """Tests for embed_one and embed_one_eu."""
+    """Tests for ``embed_one`` and ``embed_one_eu``."""
+
+    func: Any
 
     def test_returns_numpy_array(self):
         result = self.func("Your text string goes here")
@@ -52,11 +57,13 @@ class TestEmbedOne(unittest.TestCase):
 
 
 @parameterized_class(('name', 'func'), [
-    (embed_many.__name__, staticmethod(embed_many)),
-    (embed_many_eu.__name__, staticmethod(embed_many_eu)),
+    (embed_many.__name__, staticmethod(_maybe_cache(embed_many))),
+    (embed_many_eu.__name__, staticmethod(_maybe_cache(embed_many_eu))),
 ])
 class TestEmbedMany(unittest.TestCase):
-    """Tests for embed_many and embed_many_eu."""
+    """Tests for ``embed_many`` and ``embed_many_eu``."""
+
+    func: Any
 
     def setUp(self):
         self._many = self.func([
