@@ -4,8 +4,8 @@
 <!-- markdownlint-capture -->
 <!-- markdownlint-disable MD041 MD013 -->
 <img src="doc/logo.svg"
-     alt="Drawing of embedding vectors for two sentences – “El gato corre.” and “The cat runs.” – and the 22.7° angle between them"
-     title="Drawing of embedding vectors for two sentences – “El gato corre.” and “The cat runs.” – and the 22.7° angle between them"
+     alt="Drawing of text-embedding-ada-002 embedding vectors for two sentences – “El gato corre.” and “The cat runs.” – and the 22.7° angle between them"
+     title="Drawing of text-embedding-ada-002 embedding vectors for two sentences – “El gato corre.” and “The cat runs.” – and the 22.7° angle between them"
      width="500px">
 <!-- markdownlint-restore -->
 
