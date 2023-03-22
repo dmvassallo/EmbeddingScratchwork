@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Scan for lines with trailing whitespace
         run: |
-          ! git ls-files -z | xargs -0 grep -Hn --color '\s$' --
+          ! git ls-files -z | xargs -0 grep -IHn --color '\s$' --
 
   end-of-file:
     name: End-of-file newlines
