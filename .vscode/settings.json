@@ -43,6 +43,7 @@
         "shellcheck",
         "stkb",
         "tablefmt",
+        "tamasfe",
         "Vassallo"
     ],
     "cSpell.ignoreWords": [

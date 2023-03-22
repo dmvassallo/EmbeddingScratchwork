@@ -1,0 +1,21 @@
+# Currently, this file exists only to allow "pip install -e ." to succeed when
+# run in the conda environment. In the future we might support poetry, in which
+# case this file will be repaced with a generated file that lists dependencies.
+
+[tool.poetry]
+name = "EmbeddingScratchwork"
+version = "0.1.0"
+description = "Scratch work for embeddings"
+authors = [
+    "David Vassallo <vassallo.davidm@gmail.com>",
+    "Eliah Kagan <degeneracypressure@gmail.com>",
+]
+license = "0BSD"
+readme = "README.md"
+packages = [
+    { include = "embed.py" },
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
