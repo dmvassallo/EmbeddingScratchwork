@@ -21,3 +21,4 @@ cd -
 
 # Set up project environment for conda/mamba.
 ~/mambaforge/condabin/mamba env create
+~/mambaforge/condabin/mamba run --name EmbeddingScratchwork pip install -e .

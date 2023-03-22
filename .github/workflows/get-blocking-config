@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# This script gets the CI test blocking configuration. See test.yml.
+
+set -e
+shopt -s nocaseglob  # Case-insensitive pattern-matching.
+
+readonly -a no_var_warning=(
+    'No GitHub Actions configuration variable TESTS_CI_NONBLOCKING.'
+    'Treating it as if set to false.'
+    'To make your intentions clear, set the configuration variable.'
+    'https://docs.github.com/en/actions/learn-github-actions/variables#creating-configuration-variables-for-a-repository'
+)
+
+case "$TESTS_CI_NONBLOCKING" in
+'' )
+    # Nonblocking mode is *implicitly* off, so we WILL use the mutex.
+    printf '%s\n' "${no_var_warning[@]}" >&2  # Warn in step output.
+    printf '::warning ::%s\n' "${no_var_warning[*]}"  # Annotate workflow.
+    ;&  # Fall through.
+false | no | 0 )
+    # Nonblocking mode is off, so we WILL use the mutex.
+    printf 'use-mutex=%s\n' true >>"$GITHUB_OUTPUT"
+    ;;
+true | yes | 1 )
+    # Nonblocking mode is on, so we will NOT use the mutex.
+    printf 'use-mutex=%s\n' false >>"$GITHUB_OUTPUT"
+    ;;
+* )
+    printf 'Unrecognized value "%s"\n' "$TESTS_CI_NONBLOCKING" >&2
+    exit 1
+    ;;
+esac

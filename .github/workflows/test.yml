@@ -8,13 +8,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check OPENAI_API_KEY repository secret
+        run: grep -q '^sk-' <<<'${{ secrets.OPENAI_API_KEY }}'
+
+  read-blocking-config:
+    name: Read blocking configuration
+    runs-on: ubuntu-latest
+    outputs:
+      use-mutex: ${{ steps.read-blocking-config-variable.outputs.use-mutex }}
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+
+      - name: Read TESTS_CI_NONBLOCKING variable
+        id: read-blocking-config-variable
         run: |
-          grep -q '^sk-' <<<'${{ secrets.OPENAI_API_KEY }}'
+          # Allowed values: "false" (or "no", "0", ""), "true" (or "yes", "1").
+          .github/workflows/get-blocking-config
+        env:
+          TESTS_CI_NONBLOCKING: ${{ vars.TESTS_CI_NONBLOCKING }}
 
   test:
     name: Unit Tests
 
-    needs: check-for-api-key
+    needs: [check-for-api-key, read-blocking-config]
 
     strategy:
       matrix:
@@ -22,6 +38,9 @@ jobs:
         python-version: ['3.11', '3.10', '3.9', '3.8', '3.7']
 
     runs-on: ${{ matrix.os }}
+
+    permissions:
+      contents: write
 
     defaults:
       run:
@@ -39,10 +58,19 @@ jobs:
       - name: Install Conda environment from environment.yml
         uses: mamba-org/provision-with-micromamba@v15
 
+      - name: Make editable install
+        run: pip install -e .
+
       - name: Print Python version
         run: python -V
+
+      - name: Set up mutex
+        if: needs.read-blocking-config.outputs.use-mutex != 'false'
+        uses: EliahKagan/actions-mutex@v2
 
       - name: Run Unit Tests
         run: python -m unittest -v
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TESTS_CACHE_EMBEDDING_CALLS: 'yes'
+          TESTS_LOGGING_LEVEL: 'INFO'
