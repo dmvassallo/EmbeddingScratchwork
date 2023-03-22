@@ -188,8 +188,8 @@ workflows](.github/workflows/). Forks inherit them, and they [can be
 enabled](https://github.com/github/docs/issues/15761) in a fork’s [“Actions”
 tab](https://loopkit.github.io/loopdocs/gh-actions/gh-first-time/#first-use-of-actions-tab).
 Some will run without problems. Some others—the automated tests in
-[`test_embed.py`](tests/test_embed.py)—cannot run successfully without an OpenAI API
-key.
+[`test_embed.py`](tests/test_embed.py)—cannot run successfully without an
+OpenAI API key.
 
 #### Your OpenAI API key in CI checks
 
