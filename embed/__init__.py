@@ -18,6 +18,7 @@ import backoff
 import numpy as np
 import openai
 import openai.embeddings_utils
+import requests
 
 from . import _keys
 
@@ -66,3 +67,45 @@ def embed_many_eu(texts):
         engine='text-embedding-ada-002',
     )
     return np.array(embeddings, dtype=np.float32)
+
+
+#FIXME: Add backoff
+def embed_one_req(text):
+    """Embed a single piece of text. Use requests."""
+    payload = {
+        "input": text,
+        "model": "text-embedding-ada-002"
+    }
+    headers = {
+        "Authorization": f"Bearer {_keys.api_key}",
+        "Content-Type": "application/json"
+    }
+    response = requests.post(
+        url="https://api.openai.com/v1/embeddings",
+        json=payload,
+        headers=headers,
+    )
+    response.raise_for_status()
+    return np.array(response.json()['data'][0]['embedding'], dtype=np.float32)
+
+
+#FIXME: Add backoff
+def embed_many_req(texts):
+    """Embed multiple pieces of text. Use requests."""
+    payload = {
+        "input": texts,
+        "model": "text-embedding-ada-002"
+    }
+    headers = {
+        "Authorization": f"Bearer {_keys.api_key}",
+        "Content-Type": "application/json"
+    }
+    response = requests.post(
+        url="https://api.openai.com/v1/embeddings",
+        json=payload,
+        headers=headers,
+    )
+    response.raise_for_status()
+
+    data = sorted(response.json()['data'], key=operator.itemgetter('index'))
+    return np.array([datum['embedding'] for datum in data], dtype=np.float32)
