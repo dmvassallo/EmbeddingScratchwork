@@ -1,6 +1,6 @@
 """Embed functions for OpenAI API experimentation."""
 
-# TODO: Add 2 more functions using requests.
+# TODO: Finish and test the functions using requests.
 
 # TODO: Add a public submodule with versions of all 6 functions that cache (and
 #       check for) embeddings on disk, possibly using safetensors.
@@ -10,6 +10,8 @@ __all__ = [
     'embed_many',
     'embed_one_eu',
     'embed_many_eu',
+    'embed_one_req',
+    'embed_many_req',
 ]
 
 import operator
@@ -69,19 +71,19 @@ def embed_many_eu(texts):
     return np.array(embeddings, dtype=np.float32)
 
 
-#FIXME: Add backoff
+# FIXME: Add backoff.
 def embed_one_req(text):
     """Embed a single piece of text. Use requests."""
     payload = {
-        "input": text,
-        "model": "text-embedding-ada-002"
+        'input': text,
+        'model': 'text-embedding-ada-002'
     }
     headers = {
-        "Authorization": f"Bearer {_keys.api_key}",
-        "Content-Type": "application/json"
+        'Authorization': f'Bearer {_keys.api_key}',
+        'Content-Type': 'application/json'
     }
     response = requests.post(
-        url="https://api.openai.com/v1/embeddings",
+        url='https://api.openai.com/v1/embeddings',
         json=payload,
         headers=headers,
     )
@@ -89,19 +91,19 @@ def embed_one_req(text):
     return np.array(response.json()['data'][0]['embedding'], dtype=np.float32)
 
 
-#FIXME: Add backoff
+# FIXME: Add backoff.
 def embed_many_req(texts):
     """Embed multiple pieces of text. Use requests."""
     payload = {
-        "input": texts,
-        "model": "text-embedding-ada-002"
+        'input': texts,
+        'model': 'text-embedding-ada-002'
     }
     headers = {
-        "Authorization": f"Bearer {_keys.api_key}",
-        "Content-Type": "application/json"
+        'Authorization': f'Bearer {_keys.api_key}',
+        'Content-Type': 'application/json'
     }
     response = requests.post(
-        url="https://api.openai.com/v1/embeddings",
+        url='https://api.openai.com/v1/embeddings',
         json=payload,
         headers=headers,
     )
