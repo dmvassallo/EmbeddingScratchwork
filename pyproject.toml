@@ -13,7 +13,7 @@ authors = [
 license = "0BSD"
 readme = "README.md"
 packages = [
-    { include = "embed.py" },
+    { include = "embed" },
 ]
 
 [build-system]

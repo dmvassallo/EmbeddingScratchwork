@@ -2,7 +2,12 @@
 
 # TODO: Add 2 more functions using requests.
 
-__all__ = ['embed_one', 'embed_many', 'embed_one_eu', 'embed_many_eu']
+__all__ = [
+    'embed_one',
+    'embed_many',
+    'embed_one_eu',
+    'embed_many_eu',
+]
 
 import operator
 
