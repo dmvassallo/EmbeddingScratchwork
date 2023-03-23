@@ -15,10 +15,11 @@ __all__ = ['api_key', 'initialize']
 import os
 import sys
 import types
+from typing import Any
 
 import openai
 
-api_key = None
+api_key: Any = None
 """OpenAI API key. This should only be accessed from ``__init__.py``."""
 
 
