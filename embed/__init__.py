@@ -2,6 +2,9 @@
 
 # TODO: Add 2 more functions using requests.
 
+# TODO: Add a public submodule with versions of all 6 functions that cache (and
+#       check for) embeddings on disk, possibly using safetensors.
+
 __all__ = [
     'embed_one',
     'embed_many',

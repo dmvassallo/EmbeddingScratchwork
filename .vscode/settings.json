@@ -38,6 +38,7 @@
         "pylint",
         "pyver",
         "repr",
+        "safetensors",
         "scratchwork",
         "sh",
         "shellcheck",
