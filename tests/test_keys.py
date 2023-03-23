@@ -5,6 +5,7 @@
 import unittest
 
 import openai
+from parameterized import parameterized
 
 import embed
 
@@ -27,9 +28,12 @@ class TestApiKey(unittest.TestCase):
         embed.api_key = self._real_key_embed
         openai.api_Key = self._real_key_openai
 
-    def test_setting_sets_openai_api_key(self):
+    @parameterized.expand([
+        ('str', 'sk-fake-setting-sets'),
+        ('none', None),
+    ])
+    def test_setting_sets_openai_api_key(self, _name, pretend_key):
         """Setting ``embed.api_key`` sets both it and ``openai.api_key``."""
-        pretend_key = 'sk-fake-setting-sets'
         embed.api_key = pretend_key
         with self.subTest('embed.api_key'):
             self.assertEqual(embed.api_key, pretend_key)
