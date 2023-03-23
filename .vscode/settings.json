@@ -38,12 +38,14 @@
         "pylint",
         "pyver",
         "repr",
+        "safetensors",
         "scratchwork",
         "sh",
         "shellcheck",
         "stkb",
         "tablefmt",
         "tamasfe",
+        "unpatch",
         "Vassallo"
     ],
     "cSpell.ignoreWords": [

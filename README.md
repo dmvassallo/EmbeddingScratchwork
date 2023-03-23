@@ -40,18 +40,18 @@ multiplication](https://numpy.org/doc/stable/reference/generated/numpy.matmul.ht
 
 ### Major Modules
 
-[`embed.py`](embed.py) contains functions that retrieve embeddings and return
-them as NumPy arrays: rank-1 arrays (vectors) for individual embeddings, or
-rank-2 arrays (matrices) for batches of embeddings.
+[`embed`](embed/__init__.py) contains functions that retrieve embeddings and
+return them as NumPy arrays: rank-1 arrays (vectors) for individual embeddings,
+or rank-2 arrays (matrices) for batches of embeddings.
 
-[`test_embed.py`](tests/test_embed.py) has automated tests of the functions in
-`embed.py`. This includes testing that some examples’ similarities are within
+[`test_embed`](tests/test_embed.py) has automated tests of the functions in
+`embed`. This includes testing that some examples’ similarities are within
 expected ranges.
 
 ### Notebooks
 
 [`embed.ipynb`](notebooks/embed.ipynb) is the main notebook. It shows some
-usage and experiments, calling functions in `embed.py`.
+usage and experiments, calling functions in the `embed` module.
 
 [`structure.ipynb`](notebooks/structure.ipynb) examines the JSON responses
 returned by the OpenAI embeddings API endpoint.
@@ -82,7 +82,7 @@ pip install -e .
 You need an [OpenAI API
 key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key).
 If it is in an environment variable named `OPENAI_API_KEY` then it will be used
-automatically. Otherwise you can assign it to `openai.api_key` in your Python
+automatically. Otherwise you can assign it to `embed.api_key` in your Python
 code.
 
 However you handle your key, make sure not to commit it to any repository. See
@@ -164,13 +164,13 @@ Code](https://code.visualstudio.com/docs/python/environments).
 
 You may want to start in the [`embed.ipynb`](notebooks/embed.ipynb) notebook.
 
-Then look in, adapt, and/or use the functions defined in
-[`embed.py`](embed.py).
+Then look in, adapt, and/or use the functions defined in the
+[`embed`](embed/__init__.py) module.
 
 ### Automated tests
 
 There are three good ways to run the automated tests in
-[`test_embed.py`](tests/test_embed.py):
+[`test_embed`](tests/test_embed.py):
 
 - In a terminal, activate the environment, then run `python -m unittest`.
 - In VS Code, activate the environment, then click the [beaker
@@ -188,8 +188,8 @@ workflows](.github/workflows/). Forks inherit them, and they [can be
 enabled](https://github.com/github/docs/issues/15761) in a fork’s [“Actions”
 tab](https://loopkit.github.io/loopdocs/gh-actions/gh-first-time/#first-use-of-actions-tab).
 Some will run without problems. Some others—the automated tests in
-[`test_embed.py`](tests/test_embed.py)—cannot run successfully without an
-OpenAI API key.
+[`test_embed`](tests/test_embed.py)—cannot run successfully without an OpenAI
+API key.
 
 #### Your OpenAI API key in CI checks
 
@@ -234,6 +234,8 @@ value of `true` permits this. A value of `false` prohibits it; multiple test
 jobs still run concurrently to download and install their dependencies, but
 actually running the tests is only done by one job at a time. The default, if
 you don’t set `TESTS_CI_NONBLOCKING`, is `false`.
+
+<!-- FIXME: Change embed.py#L39-L54 link to point into embed/__init__.py. -->
 
 This only affects CI, not [manual test runs](#automated-tests). The goal is to
 make this project’s CI checks work even for users whose OpenAI accounts are

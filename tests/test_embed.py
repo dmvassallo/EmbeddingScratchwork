@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Tests for the embed module."""
+"""Tests for the embedding functions in the ``embed`` module."""
 
 # pylint: disable=missing-function-docstring
 
@@ -10,7 +10,14 @@ import unittest
 import numpy as np
 from parameterized import parameterized, parameterized_class
 
-from embed import embed_one, embed_many, embed_one_eu, embed_many_eu
+from embed import (
+    embed_one,
+    embed_many,
+    embed_one_eu,
+    embed_many_eu,
+    embed_one_req,
+    embed_many_req,
+)
 from . import _helpers
 
 _helpers.configure_logging()
@@ -20,6 +27,7 @@ _maybe_cache = _helpers.get_maybe_caching_decorator()
 @parameterized_class(('name', 'func'), [
     (embed_one.__name__, staticmethod(_maybe_cache(embed_one))),
     (embed_one_eu.__name__, staticmethod(_maybe_cache(embed_one_eu))),
+    (embed_one_req.__name__, staticmethod(_maybe_cache(embed_one_req))),
 ])
 class TestEmbedOne(unittest.TestCase):
     """Tests for ``embed_one`` and ``embed_one_eu``."""
@@ -59,6 +67,8 @@ class TestEmbedOne(unittest.TestCase):
 @parameterized_class(('name', 'func'), [
     (embed_many.__name__, staticmethod(_maybe_cache(embed_many))),
     (embed_many_eu.__name__, staticmethod(_maybe_cache(embed_many_eu))),
+    (embed_many_req.__name__, staticmethod(_maybe_cache(embed_many_req))),
+
 ])
 class TestEmbedMany(unittest.TestCase):
     """Tests for ``embed_many`` and ``embed_many_eu``."""
