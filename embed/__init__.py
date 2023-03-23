@@ -2,7 +2,15 @@
 
 # TODO: Add 2 more functions using requests.
 
-__all__ = ['embed_one', 'embed_many', 'embed_one_eu', 'embed_many_eu']
+# TODO: Add a public submodule with versions of all 6 functions that cache (and
+#       check for) embeddings on disk, possibly using safetensors.
+
+__all__ = [
+    'embed_one',
+    'embed_many',
+    'embed_one_eu',
+    'embed_many_eu',
+]
 
 import operator
 
@@ -11,7 +19,13 @@ import numpy as np
 import openai
 import openai.embeddings_utils
 
+from . import _keys
+
+# Give this module an api_key property to be accessed from the outside.
+_keys.initialize(__name__)
+
 _backoff = backoff.on_exception(backoff.expo, openai.error.RateLimitError)
+"""Backoff decorator for ``openai.Embedding.create``-based functions."""
 
 
 @_backoff

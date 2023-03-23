@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Tests for the embed module."""
+"""Tests for the embedding functions in the ``embed`` module."""
 
 # pylint: disable=missing-function-docstring
 
