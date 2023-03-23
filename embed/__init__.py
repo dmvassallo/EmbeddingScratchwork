@@ -10,6 +10,8 @@ __all__ = [
     'embed_many',
     'embed_one_eu',
     'embed_many_eu',
+    'embed_one_req',
+    'embed_many_req',
 ]
 
 import operator
@@ -69,7 +71,7 @@ def embed_many_eu(texts):
     return np.array(embeddings, dtype=np.float32)
 
 
-#FIXME: Add backoff
+# FIXME: Add backoff.
 def embed_one_req(text):
     """Embed a single piece of text. Use requests."""
     payload = {
@@ -89,7 +91,7 @@ def embed_one_req(text):
     return np.array(response.json()['data'][0]['embedding'], dtype=np.float32)
 
 
-#FIXME: Add backoff
+# FIXME: Add backoff.
 def embed_many_req(texts):
     """Embed multiple pieces of text. Use requests."""
     payload = {
