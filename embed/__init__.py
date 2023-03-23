@@ -75,15 +75,15 @@ def embed_many_eu(texts):
 def embed_one_req(text):
     """Embed a single piece of text. Use requests."""
     payload = {
-        "input": text,
-        "model": "text-embedding-ada-002"
+        'input': text,
+        'model': 'text-embedding-ada-002'
     }
     headers = {
-        "Authorization": f"Bearer {_keys.api_key}",
-        "Content-Type": "application/json"
+        'Authorization': f'Bearer {_keys.api_key}',
+        'Content-Type': 'application/json'
     }
     response = requests.post(
-        url="https://api.openai.com/v1/embeddings",
+        url='https://api.openai.com/v1/embeddings',
         json=payload,
         headers=headers,
     )
@@ -95,15 +95,15 @@ def embed_one_req(text):
 def embed_many_req(texts):
     """Embed multiple pieces of text. Use requests."""
     payload = {
-        "input": texts,
-        "model": "text-embedding-ada-002"
+        'input': texts,
+        'model': 'text-embedding-ada-002'
     }
     headers = {
-        "Authorization": f"Bearer {_keys.api_key}",
-        "Content-Type": "application/json"
+        'Authorization': f'Bearer {_keys.api_key}',
+        'Content-Type': 'application/json'
     }
     response = requests.post(
-        url="https://api.openai.com/v1/embeddings",
+        url='https://api.openai.com/v1/embeddings',
         json=payload,
         headers=headers,
     )
