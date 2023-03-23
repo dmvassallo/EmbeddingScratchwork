@@ -10,13 +10,23 @@ __all__ = [
 ]
 
 import operator
+import sys
 
 import backoff
 import numpy as np
 import openai
 import openai.embeddings_utils
 
+from . import _keys
+
+_self = sys.modules[__name__]
+"""This module, to access from its own code only. (For ``_self.api_key``.)"""
+
+# Give this module an api_key property that updates openai.api_key when set.
+_self.__class__ = _keys.KeyForwardingModule
+
 _backoff = backoff.on_exception(backoff.expo, openai.error.RateLimitError)
+"""Backoff decorator for ``openai.Embedding.create``-based functions."""
 
 
 @_backoff

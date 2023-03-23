@@ -82,7 +82,7 @@ pip install -e .
 You need an [OpenAI API
 key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key).
 If it is in an environment variable named `OPENAI_API_KEY` then it will be used
-automatically. Otherwise you can assign it to `openai.api_key` in your Python
+automatically. Otherwise you can assign it to `embed.api_key` in your Python
 code.
 
 However you handle your key, make sure not to commit it to any repository. See
