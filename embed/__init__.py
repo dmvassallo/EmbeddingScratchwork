@@ -32,10 +32,16 @@ class _RateLimitError(Exception):
     """An HTTP 429 Too Many Requests error occurred."""
 
 
-_backoff_openai = backoff.on_exception(backoff.expo, openai.error.RateLimitError)
+_backoff_openai = backoff.on_exception(
+    backoff.expo,
+    openai.error.RateLimitError,
+)
 """Backoff decorator for ``openai.Embedding.create``-based functions."""
 
-_backoff_requests = backoff.on_exception(backoff.expo, _RateLimitError)
+_backoff_requests = backoff.on_exception(
+    backoff.expo,
+    _RateLimitError,
+)
 """Backoff decorator for requests-based functions."""
 
 
