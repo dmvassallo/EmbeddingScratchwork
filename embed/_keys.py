@@ -8,6 +8,11 @@ about ``openai.api_key``. (Setting ``openai.api_key`` to use ``requests``-based
 functions, which don't use ``openai``, would be especially unintuitive.)
 """
 
+# FIXME: Set embed.api_key eagerly rather than lazily, so its behavior doesn't
+#        needlessly diverge from that of openai.api_key.
+
+__all__ = ['KeyForwardingModule']
+
 import os
 import types
 
