@@ -42,28 +42,27 @@ _backoff_requests = backoff.on_exception(
     backoff.expo,
     _RateLimitError,
 )
-"""Backoff decorator for requests-based functions."""
+"""Backoff decorator for ``requests``-based functions."""
 
 
 @_backoff_openai
 def embed_one(text):
     """Embed a single piece of text."""
-    response = openai.Embedding.create(
+    openai_response = openai.Embedding.create(
         input=text,
         model='text-embedding-ada-002',
     )
-    return np.array(response['data'][0]['embedding'], dtype=np.float32)
+    return np.array(openai_response['data'][0]['embedding'], dtype=np.float32)
 
 
 @_backoff_openai
 def embed_many(texts):
     """Embed multiple pieces of text."""
-    response = openai.Embedding.create(
+    openai_response = openai.Embedding.create(
         input=texts,
         model='text-embedding-ada-002',
     )
-
-    data = sorted(response['data'], key=operator.itemgetter('index'))
+    data = sorted(openai_response['data'], key=operator.itemgetter('index'))
     return np.array([datum['embedding'] for datum in data], dtype=np.float32)
 
 
@@ -87,7 +86,7 @@ def embed_many_eu(texts):
 
 @_backoff_requests
 def embed_one_req(text):
-    """Embed a single piece of text. Use requests."""
+    """Embed a single piece of text. Use ``requests``."""
     payload = {
         'input': text,
         'model': 'text-embedding-ada-002'
@@ -109,7 +108,7 @@ def embed_one_req(text):
 
 @_backoff_requests
 def embed_many_req(texts):
-    """Embed multiple pieces of text. Use requests."""
+    """Embed multiple pieces of text. Use ``requests``."""
     payload = {
         'input': texts,
         'model': 'text-embedding-ada-002'
