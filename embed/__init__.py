@@ -1,7 +1,5 @@
 """Embed functions for OpenAI API experimentation."""
 
-# TODO: Factor out shared logic in functions using requests.
-
 # TODO: Add a public submodule with versions of all 6 functions that cache (and
 #       check for) embeddings on disk, possibly using safetensors.
 
@@ -85,46 +83,35 @@ def embed_many_eu(texts):
 
 
 @_backoff_requests
+def _post_request(text_or_texts):
+    """Use ``requests`` to make a POST request to the API endpoint."""
+    payload = {
+        'input': text_or_texts,
+        'model': 'text-embedding-ada-002'
+    }
+    headers = {
+        'Authorization': f'Bearer {_keys.api_key}',
+        'Content-Type': 'application/json'
+    }
+    response = requests.post(
+        url='https://api.openai.com/v1/embeddings',
+        json=payload,
+        headers=headers,
+    )
+    if response.status_code == 429:
+        raise _RateLimitError
+    response.raise_for_status()
+    return response.json()
+
+
 def embed_one_req(text):
     """Embed a single piece of text. Use ``requests``."""
-    payload = {
-        'input': text,
-        'model': 'text-embedding-ada-002'
-    }
-    headers = {
-        'Authorization': f'Bearer {_keys.api_key}',
-        'Content-Type': 'application/json'
-    }
-    response = requests.post(
-        url='https://api.openai.com/v1/embeddings',
-        json=payload,
-        headers=headers,
-    )
-    if response.status_code == 429:
-        raise _RateLimitError
-    response.raise_for_status()
-    return np.array(response.json()['data'][0]['embedding'], dtype=np.float32)
+    json_response = _post_request(text)
+    return np.array(json_response['data'][0]['embedding'], dtype=np.float32)
 
 
-@_backoff_requests
 def embed_many_req(texts):
     """Embed multiple pieces of text. Use ``requests``."""
-    payload = {
-        'input': texts,
-        'model': 'text-embedding-ada-002'
-    }
-    headers = {
-        'Authorization': f'Bearer {_keys.api_key}',
-        'Content-Type': 'application/json'
-    }
-    response = requests.post(
-        url='https://api.openai.com/v1/embeddings',
-        json=payload,
-        headers=headers,
-    )
-    if response.status_code == 429:
-        raise _RateLimitError
-    response.raise_for_status()
-
-    data = sorted(response.json()['data'], key=operator.itemgetter('index'))
+    json_response = _post_request(texts)
+    data = sorted(json_response['data'], key=operator.itemgetter('index'))
     return np.array([datum['embedding'] for datum in data], dtype=np.float32)
