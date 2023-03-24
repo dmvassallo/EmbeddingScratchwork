@@ -30,36 +30,23 @@ class _RateLimitError(Exception):
     """An HTTP 429 Too Many Requests error occurred."""
 
 
-_backoff_openai = backoff.on_exception(
-    backoff.expo,
-    openai.error.RateLimitError,
-)
-"""Backoff decorator for ``openai.Embedding.create``-based functions."""
-
-_backoff_requests = backoff.on_exception(
-    backoff.expo,
-    _RateLimitError,
-)
-"""Backoff decorator for ``requests``-based functions."""
-
-
-@_backoff_openai
-def embed_one(text):
-    """Embed a single piece of text."""
-    openai_response = openai.Embedding.create(
-        input=text,
+@backoff.on_exception(backoff.expo, openai.error.RateLimitError)
+def _create_embedding(text_or_texts):
+    """Use the OpenAI library to get one or more embeddings, with backoff."""
+    return openai.Embedding.create(
+        input=text_or_texts,
         model='text-embedding-ada-002',
     )
+
+
+def embed_one(text):
+    openai_response = _create_embedding(text)
     return np.array(openai_response['data'][0]['embedding'], dtype=np.float32)
 
 
-@_backoff_openai
 def embed_many(texts):
     """Embed multiple pieces of text."""
-    openai_response = openai.Embedding.create(
-        input=texts,
-        model='text-embedding-ada-002',
-    )
+    openai_response = _create_embedding(texts)
     data = sorted(openai_response['data'], key=operator.itemgetter('index'))
     return np.array([datum['embedding'] for datum in data], dtype=np.float32)
 
@@ -82,9 +69,9 @@ def embed_many_eu(texts):
     return np.array(embeddings, dtype=np.float32)
 
 
-@_backoff_requests
+@backoff.on_exception(backoff.expo, _RateLimitError)
 def _post_request(text_or_texts):
-    """Use ``requests`` to make a POST request to the API endpoint."""
+    """Make a POST request to the API endpoint, with backoff."""
     payload = {
         'input': text_or_texts,
         'model': 'text-embedding-ada-002'
