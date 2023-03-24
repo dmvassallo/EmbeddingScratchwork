@@ -26,10 +26,6 @@ from . import _keys
 _keys.initialize(__name__)
 
 
-class _RateLimitError(Exception):
-    """An HTTP 429 Too Many Requests error occurred."""
-
-
 @backoff.on_exception(backoff.expo, openai.error.RateLimitError)
 def _create_embedding(text_or_texts):
     """Use the OpenAI library to get one or more embeddings, with backoff."""
@@ -67,6 +63,10 @@ def embed_many_eu(texts):
         engine='text-embedding-ada-002',
     )
     return np.array(embeddings, dtype=np.float32)
+
+
+class _RateLimitError(Exception):
+    """An HTTP 429 Too Many Requests error occurred."""
 
 
 @backoff.on_exception(backoff.expo, _RateLimitError)
