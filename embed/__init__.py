@@ -41,14 +41,14 @@ def _create_embedding(text_or_texts):
 
 def embed_one(text):
     openai_response = _create_embedding(text)
-    return np.array(openai_response['data'][0]['embedding'], dtype=np.float32)
+    return np.array(openai_response.data[0].embedding, dtype=np.float32)
 
 
 def embed_many(texts):
     """Embed multiple pieces of text."""
     openai_response = _create_embedding(texts)
-    data = sorted(openai_response['data'], key=operator.itemgetter('index'))
-    return np.array([datum['embedding'] for datum in data], dtype=np.float32)
+    data = sorted(openai_response.data, key=operator.itemgetter('index'))
+    return np.array([datum.embedding for datum in data], dtype=np.float32)
 
 
 def embed_one_eu(text):
