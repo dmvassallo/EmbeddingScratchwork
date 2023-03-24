@@ -32,13 +32,22 @@ class TestApiKey(unittest.TestCase):
         ('str', 'sk-fake-setting-sets'),
         ('none', None),
     ])
-    def test_setting_sets_openai_api_key(self, _name, pretend_key):
+    def test_setting_on_embed_sets_on_openai(self, _name, pretend_key):
         """Setting ``embed.api_key`` sets both it and ``openai.api_key``."""
         embed.api_key = pretend_key
         with self.subTest('embed.api_key'):
             self.assertEqual(embed.api_key, pretend_key)
         with self.subTest('openai.api_key'):
             self.assertEqual(openai.api_key, pretend_key)
+
+    @parameterized.expand([
+        ('str', 'sk-fake-setting-does-not-set'),
+        ('none', None),
+    ])
+    def test_setting_on_openai_does_not_set_on_embed(self, name, pretend_key):
+        """Setting ``open.api_key`` does not change ``embed.api_key``."""
+        openai.api_key = pretend_key
+        self.assertNotEqual(embed.api_key, pretend_key)
 
 
 if __name__ == '__main__':
