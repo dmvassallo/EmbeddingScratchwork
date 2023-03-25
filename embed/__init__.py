@@ -72,18 +72,16 @@ class _RateLimitError(Exception):
 @backoff.on_exception(backoff.expo, _RateLimitError)
 def _post_request(text_or_texts):
     """Make a POST request to the API endpoint, with backoff."""
-    payload = {
-        'input': text_or_texts,
-        'model': 'text-embedding-ada-002'
-    }
-    headers = {
-        'Authorization': f'Bearer {_keys.api_key}',
-        'Content-Type': 'application/json'
-    }
     response = requests.post(
         url='https://api.openai.com/v1/embeddings',
-        json=payload,
-        headers=headers,
+        json={
+            'input': text_or_texts,
+            'model': 'text-embedding-ada-002'
+        },
+        headers={
+            'Authorization': f'Bearer {_keys.api_key}',
+            'Content-Type': 'application/json'
+        },
     )
     if response.status_code == 429:
         raise _RateLimitError
