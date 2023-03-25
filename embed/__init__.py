@@ -12,6 +12,7 @@ __all__ = [
     'embed_many_req',
 ]
 
+import http
 import operator
 
 import backoff
@@ -83,7 +84,7 @@ def _post_request(text_or_texts):
             'model': 'text-embedding-ada-002'
         },
     )
-    if response.status_code == 429:
+    if response.status_code == http.HTTPStatus.TOO_MANY_REQUESTS:
         raise _RateLimitError
     response.raise_for_status()
     return response.json()
