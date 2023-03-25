@@ -115,9 +115,10 @@ class TestBackoff(unittest.TestCase):
     Tests that backoff works in the ``requests`` version.
 
     This is hard to check for if one's OpenAI account is not subject to reduced
-    rate limits, which happens only in the trial period and shortly thereafter.
-    But occasionally it may be valuable to check this explicitly. So this sends
-    a lot of requests to the OpenAI embeddings endpoint in a short time.
+    rate limits. Reduced limits are  only in the trial period and shortly
+    thereafter. But occasionally it may be valuable to test rate limiting
+    explicitly. So this sends a lot of requests to the OpenAI embeddings
+    endpoint in a short time.
     """
 
     def setUp(self):
