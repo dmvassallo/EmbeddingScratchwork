@@ -142,8 +142,11 @@ class TestBackoff(unittest.TestCase):
     def test_embed_one_req_backs_off(self):
         def run(thread_index):
             for loop_index in range(75):
-                text = f'Testing rate limiting. {thread_index=} {loop_index=}'
-                embed_one_req(text)
+                # Note: We support Python 3.7, so can't write {thread_index=}.
+                embed_one_req(
+                    'Testing rate limiting. '
+                    f'thread_index={thread_index} loop_index={loop_index}',
+                )
 
         threads = [
             threading.Thread(target=run, args=(thread_index,))
