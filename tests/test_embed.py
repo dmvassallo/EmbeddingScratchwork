@@ -4,7 +4,9 @@
 
 # pylint: disable=missing-function-docstring
 
+import os
 from typing import Any
+import threading
 import unittest
 
 import numpy as np
@@ -104,6 +106,42 @@ class TestEmbedMany(unittest.TestCase):
     def test_different_meanings_are_dissimilar(self):
         result = np.dot(self._many[0], self._many[1])
         self.assertLess(result, 0.8)
+
+
+# NOTE: This can occasionally be manually enabled, but only briefly.
+@unittest.skip("No need to regularly slam OpenAI's servers.")
+class TestBackoff(unittest.TestCase):
+    """
+    Tests that backoff works in the ``requests`` version.
+
+    This is hard to check for if one's OpenAI account is not subject to reduced
+    rate limits, which happens only in the trial period and shortly thereafter.
+    But occasionally it may be valuable to check this explicitly. So this sends
+    a lot of requests to the OpenAI embeddings endpoint in a short time.
+    """
+
+    def setUp(self):
+        """Reduce the risk of accidentally running this on CI."""
+        if os.getenv('CI') is not None:
+            raise Exception(  # pylint: disable=broad-exception-raised
+                "These tests shouldn't run via continuous integration.")
+
+    def test_embed_one_req_backs_off(self):
+        def run(thread_index):
+            for loop_index in range(100):
+                text = f'Testing rate limiting. {thread_index=} {loop_index=}'
+                embed_one_req(text)
+
+        threads = [
+            threading.Thread(target=run, args=(thread_index,))
+            for thread_index in range(100)
+        ]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        # FIXME: Assert that the expected "INFO" log message(s) were created.
 
 
 if __name__ == '__main__':
