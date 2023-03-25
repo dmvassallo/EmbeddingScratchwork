@@ -74,13 +74,13 @@ def _post_request(text_or_texts):
     """Make a POST request to the API endpoint, with backoff."""
     response = requests.post(
         url='https://api.openai.com/v1/embeddings',
-        json={
-            'input': text_or_texts,
-            'model': 'text-embedding-ada-002'
-        },
         headers={
             'Authorization': f'Bearer {_keys.api_key}',
             'Content-Type': 'application/json'
+        },
+        json={
+            'input': text_or_texts,
+            'model': 'text-embedding-ada-002'
         },
     )
     if response.status_code == 429:
