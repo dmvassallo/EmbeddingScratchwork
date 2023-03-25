@@ -87,8 +87,8 @@ def get_maybe_caching_decorator():
 
     Otherwise, the returned decorator is just an identity function.
     """
-    if re.match(
-        pattern=r'\A\s*(?:yes|true|\+?0*[1-9][0-9]*)\s*\Z',
+    if re.fullmatch(
+        pattern=r'\s*(?:yes|true|\+?0*[1-9][0-9]*)\s*',
         string=os.environ.get('TESTS_CACHE_EMBEDDING_CALLS', default=''),
         flags=re.IGNORECASE,
     ):
