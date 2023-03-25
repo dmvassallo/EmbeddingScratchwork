@@ -108,8 +108,8 @@ class TestEmbedMany(unittest.TestCase):
         self.assertLess(result, 0.8)
 
 
-# NOTE: This can occasionally be manually enabled, but only briefly.
-@unittest.skip("No need to regularly slam OpenAI's servers.")
+# NOTE: Manually enable this briefly if needed, but otherwise keep it skipped.
+@unittest.skip("No need to regularly slam OpenAI's servers. Also: very slow.")
 class TestBackoff(unittest.TestCase):
     """
     Tests that backoff works in the ``requests`` version.
@@ -128,13 +128,13 @@ class TestBackoff(unittest.TestCase):
 
     def test_embed_one_req_backs_off(self):
         def run(thread_index):
-            for loop_index in range(100):
+            for loop_index in range(75):
                 text = f'Testing rate limiting. {thread_index=} {loop_index=}'
                 embed_one_req(text)
 
         threads = [
             threading.Thread(target=run, args=(thread_index,))
-            for thread_index in range(100)
+            for thread_index in range(75)
         ]
         for thread in threads:
             thread.start()
