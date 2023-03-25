@@ -42,6 +42,7 @@ def _create_embedding(text_or_texts):
 
 
 def embed_one(text):
+    """Embed a single piece of text."""
     openai_response = _create_embedding(text)
     return np.array(openai_response.data[0].embedding, dtype=np.float32)
 
