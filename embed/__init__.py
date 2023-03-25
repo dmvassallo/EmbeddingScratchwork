@@ -83,6 +83,7 @@ def _post_request(text_or_texts):
             'input': text_or_texts,
             'model': 'text-embedding-ada-002'
         },
+        timeout=60,
     )
     if response.status_code == http.HTTPStatus.TOO_MANY_REQUESTS:
         raise _RateLimitError
