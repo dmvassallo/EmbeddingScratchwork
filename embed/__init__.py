@@ -92,6 +92,7 @@ def _post_request(text_or_texts):
         timeout=_REQUESTS_TIMEOUT.total_seconds(),
     )
     if response.status_code == http.HTTPStatus.TOO_MANY_REQUESTS:
+        print('Raising _RateLimitError.')  # FIXME: Remove after debugging.
         raise _RateLimitError
     response.raise_for_status()
     return response.json()
