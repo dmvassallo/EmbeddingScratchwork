@@ -12,7 +12,6 @@ __all__ = [
     'embed_many_req',
 ]
 
-
 import datetime
 import http
 import operator

@@ -6,11 +6,20 @@ channels:
 dependencies:
   - python=3.11
   - backoff
-  - flake8
-  - ipykernel
   - numpy
   - openai
+  - requests
+
+  # For development
+  - flake8
   - parameterized
   - pylint
-  - requests
+
+  # Notebooks
+  - ipykernel
   - tabulate
+
+  # PyPI
+  - pip
+  - pip:
+    - blake3
