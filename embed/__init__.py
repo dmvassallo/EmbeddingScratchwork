@@ -12,6 +12,8 @@ __all__ = [
     'embed_many_req',
 ]
 
+
+import datetime
 import http
 import operator
 
@@ -25,6 +27,9 @@ from . import _keys
 
 # Give this module an api_key property to be accessed from the outside.
 _keys.initialize(__name__)
+
+_REQUESTS_TIMEOUT = datetime.timedelta(seconds=60)
+"""Connection timeout for ``embed_one_req`` and ``embed_many_req``."""
 
 
 @backoff.on_exception(backoff.expo, openai.error.RateLimitError)
@@ -83,6 +88,7 @@ def _post_request(text_or_texts):
             'input': text_or_texts,
             'model': 'text-embedding-ada-002'
         },
+        timeout=_REQUESTS_TIMEOUT.total_seconds(),
     )
     if response.status_code == http.HTTPStatus.TOO_MANY_REQUESTS:
         raise _RateLimitError
