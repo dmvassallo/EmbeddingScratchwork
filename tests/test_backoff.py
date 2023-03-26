@@ -44,7 +44,7 @@ class TestBackoff(unittest.TestCase):
 
     def test_embed_one_req_backs_off(self):
         def run(thread_index):
-            for loop_index in range(75):
+            for loop_index in range(100):
                 # Note: We support Python 3.7, so can't write {thread_index=}.
                 embed.embed_one_req(
                     'Testing rate limiting. '
@@ -53,7 +53,7 @@ class TestBackoff(unittest.TestCase):
 
         threads = [
             threading.Thread(target=run, args=(thread_index,))
-            for thread_index in range(75)
+            for thread_index in range(100)
         ]
 
         with self.assertLogs() as log_context:
