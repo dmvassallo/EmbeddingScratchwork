@@ -1,8 +1,24 @@
 #!/usr/bin/env python
 
-"""Specialized backoff testing."""
+"""
+Specialized backoff testing.
 
-# pylint: disable=missing-function-docstring
+This does end-to-end testing of rate limiting to check that backoff appears to
+work as intended. The traffic generated is much greater than from the other
+tests, so these tests are skipped by default and should not be run on CI.
+
+To keep the traffic from being six times greater, only ``embed_one_req`` is
+tested. (This differs from the tests in ``test_embed``, which test all six
+functions, as should usually be done.) It's a reasonable tradeoff because:
+
+1. Only ``embed_one_req`` and ``embed_many_req`` do backoff at all differently
+   from the ways shown in https://platform.openai.com/docs/guides/rate-limits.
+
+2. The way they do it may change, and tests are helpful for that. The way the
+   other ``embed_`` functions in this project do backoff is unlikely to change.
+
+3. They share their backoff logic. So it may be enough to test just one.
+"""
 
 import os
 import re
@@ -16,13 +32,13 @@ import embed
 @unittest.skip("No need to regularly slam OpenAI's servers. Also: very slow.")
 class TestBackoff(unittest.TestCase):
     """
-    Tests that backoff works in the ``requests`` version.
+    Test backoff in one of the functions using ``requests`` (``test_one_req``).
 
-    This is hard to check for, if one's OpenAI account is not subject to
-    reduced rate limits. (Reduced rate limits are only in the trial period and
-    shortly thereafter.) But occasionally it may be valuable to test rate
-    limiting explicitly. So this sends a lot of requests to the OpenAI
-    embeddings endpoint in a short time.
+    This can be hard to check for, if one's OpenAI account is not subject to
+    reduced rate limits. (Rate limits for access to language models are only
+    reduced during the trial period and shortly thereafter.) But occasionally
+    it may be valuable to test rate limiting explicitly. So this sends a lot of
+    requests to the OpenAI embeddings endpoint in a short time. Use sparingly.
     """
 
     _LOG_MESSAGE_PATTERN = re.compile(
@@ -49,6 +65,7 @@ class TestBackoff(unittest.TestCase):
         threading.stack_size(self._old_stack_size)
 
     def test_embed_one_req_backs_off(self):
+        """``embed_one_req`` backs off under high load and logs that it did."""
         def run(thread_index):
             for loop_index in range(7):
                 # Note: We support Python 3.7, so can't write {thread_index=}.
