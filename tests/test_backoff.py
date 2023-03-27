@@ -31,7 +31,7 @@ class TestBackoff(unittest.TestCase):
     )
 
     def setUp(self):
-        """Reduce the risk of accidentally running this on CI."""
+        """Help us avoid running the test on CI, and decrease stack size."""
         if os.getenv('CI') is not None:
             # pylint: disable=broad-exception-raised
             #
@@ -42,9 +42,15 @@ class TestBackoff(unittest.TestCase):
             raise Exception(
                 "These tests shouldn't run via continuous integration.")
 
+        self._old_stack_size = threading.stack_size(65_536)
+
+    def tearDown(self):
+        """Restore the stack size."""
+        threading.stack_size(self._old_stack_size)
+
     def test_embed_one_req_backs_off(self):
         def run(thread_index):
-            for loop_index in range(100):
+            for loop_index in range(25):
                 # Note: We support Python 3.7, so can't write {thread_index=}.
                 embed.embed_one_req(
                     'Testing rate limiting. '
@@ -53,7 +59,7 @@ class TestBackoff(unittest.TestCase):
 
         threads = [
             threading.Thread(target=run, args=(thread_index,))
-            for thread_index in range(100)
+            for thread_index in range(400)
         ]
 
         with self.assertLogs() as log_context:
