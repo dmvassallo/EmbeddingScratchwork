@@ -53,5 +53,9 @@ class _ModuleWithApiKeyProperty(types.ModuleType):
 
     @api_key.setter
     def api_key(self, value):
+        # pylint: disable=global-statement
+        #
+        # We really do want to write this submodule's api_key attribute, and
+        # ways of doing it without global are even worse.
         global api_key
         api_key = openai.api_key = value
