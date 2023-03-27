@@ -56,6 +56,32 @@ def _identity_function(arg):
     return arg
 
 
+_truthy_config = re.compile(r'true|yes|1', re.IGNORECASE).fullmatch
+"""Check if a configuration string should be considered to mean ``True``."""
+
+_falsy_config = re.compile(r'(?:false|no|0)?', re.IGNORECASE).fullmatch
+"""Check if a configuration string should be considered to mean ``False``."""
+
+
+def _getenv_bool(name):  # NOTE: This can be made public, if that is useful.
+    """
+    Read boolean configuration from an environment variable.
+
+    The environment variable's value is read case-insensitively, as:
+
+    - ``True``, if it holds ``true``, ``yes``, or ``1``.
+    - ``False``, if it is absent, empty, or holds ``false``, ``no``, or ``0``.
+    - Otherwise, the value is  ill-formed, and ``RuntimeError`` is raised.
+    """
+    value = os.environ.get(name, default='')
+    if _truthy_config(value):
+        return True
+    if _falsy_config(value):
+        return False
+    raise RuntimeError(
+        f"Can't parse environment variable as boolean: {name}={value!r}")
+
+
 def configure_logging():
     """
     Set logging level from the ``TESTS_LOGGING_LEVEL`` environment variable.
@@ -79,19 +105,14 @@ def get_maybe_caching_decorator():
 
     The decision of whether to cache or not is made eagerly, in this function.
 
-    If the ``TESTS_CACHE_EMBEDDING_CALLS`` environment variable exists and
-    holds ``yes`` or ``true`` (case insensitively) or any positive integer, the
-    returned decorator caches. Pickling is used for cache keys, so non-hashable
+    If the ``TESTS_CACHE_EMBEDDING_CALLS`` environment variable holds a truthy
+    value (``true``, ``yes``, or ``1`, case-insensitively), the returned
+    decorator caches. Pickling is used for cache keys, so non-hashable
     arguments are supported, and arguments of different types are treated as
     different, even if equal.
 
     Otherwise, the returned decorator is just an identity function.
     """
-    if re.fullmatch(
-        pattern=r'\s*(?:yes|true|\+?0*[1-9][0-9]*)\s*',
-        string=os.environ.get('TESTS_CACHE_EMBEDDING_CALLS', default=''),
-        flags=re.IGNORECASE,
-    ):
+    if _getenv_bool('TESTS_CACHE_EMBEDDING_CALLS'):
         return _cache_by(pickle.dumps, stats=_cache_stats)
-
     return _identity_function
