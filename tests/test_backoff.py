@@ -42,7 +42,7 @@ class TestBackoff(unittest.TestCase):
             raise Exception(
                 "These tests shouldn't run via continuous integration.")
 
-        self._old_stack_size = threading.stack_size(65_536)
+        self._old_stack_size = threading.stack_size(32_768)
 
     def tearDown(self):
         """Restore the stack size."""
@@ -50,7 +50,7 @@ class TestBackoff(unittest.TestCase):
 
     def test_embed_one_req_backs_off(self):
         def run(thread_index):
-            for loop_index in range(25):
+            for loop_index in range(7):
                 # Note: We support Python 3.7, so can't write {thread_index=}.
                 embed.embed_one_req(
                     'Testing rate limiting. '
@@ -59,7 +59,7 @@ class TestBackoff(unittest.TestCase):
 
         threads = [
             threading.Thread(target=run, args=(thread_index,))
-            for thread_index in range(400)
+            for thread_index in range(600)
         ]
 
         with self.assertLogs() as log_context:
