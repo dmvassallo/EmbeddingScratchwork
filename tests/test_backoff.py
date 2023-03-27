@@ -26,7 +26,7 @@ class TestBackoff(unittest.TestCase):
     """
 
     _LOG_MESSAGE_PATTERN = re.compile(
-        r'INFO:backoff:Backing off _post_request(\.\.\.) for [0-9.]+s '
+        r'Backing off _post_request(\.\.\.) for [0-9.]+s '
         r'\(embed\._RateLimitError\)',
     )
 
