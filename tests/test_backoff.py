@@ -30,11 +30,11 @@ import embed
 _THREAD_COUNT = 600
 """Number of concurrent threads making requests in the backoff test."""
 
-_ITERATION_COUNT = 7
+_ITERATION_COUNT = 8
 """Number of requests each thread makes sequentially in the backoff test."""
 
 _states_backoff = re.compile(
-    r'Backing off _post_request\(\.\.\.\) for [0-9.]+s '
+    r'INFO:backoff:Backing off _post_request\(\.\.\.\) for [0-9.]+s '
     r'\(embed\._RateLimitError\)',
 ).fullmatch
 """Check if the string is a log message about backoff with expected details."""
