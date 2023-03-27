@@ -27,8 +27,47 @@ import unittest
 
 import embed
 
+_THREAD_COUNT = 600
+"""Number of concurrent threads making requests in the backoff test."""
+
+_ITERATION_COUNT = 7
+"""Number of requests each thread makes sequentially in the backoff test."""
+
+_states_backoff = re.compile(
+    r'Backing off _post_request\(\.\.\.\) for [0-9.]+s '
+    r'\(embed\._RateLimitError\)',
+).fullmatch
+"""Check if the string is a log message about backoff with expected details."""
+
+
+class _RequestThread(threading.Thread):
+    """Thread for testing concurrent requests."""
+
+    @classmethod
+    def create_all(cls):
+        """Create ``_THREAD_COUNT`` threads with distinct thread indices."""
+        return [cls(thread_index) for thread_index in range(_THREAD_COUNT)]
+
+    def __init__(self, thread_index):
+        """Create a thread for testing backoff, with the given thread index."""
+        super().__init__(name=f'Thread with index {thread_index}')
+        self._thread_index = thread_index
+
+    def run(self):
+        """Call ``embed_one_req``, ``_ITERATION_COUNT`` times."""
+        for loop_index in range(_ITERATION_COUNT):
+            # Note: We support Python 3.7, so we can't write {loop_index=}.
+            embed.embed_one_req(
+                'Testing rate limiting. '
+                f'thread_index={self._thread_index} loop_index={loop_index}',
+            )
+
 
 # NOTE: Manually enable this briefly if needed, but otherwise keep it skipped.
+#
+# TODO: After PR #56, run if the TESTS_RUN_BACKOFF_TEST_I_KNOW_WHAT_I_AM_DOING
+#       environment variable is set to a truthy value (but still NEVER on CI).
+#
 @unittest.skip("No need to regularly slam OpenAI's servers. Also: very slow.")
 class TestBackoff(unittest.TestCase):
     """
@@ -41,14 +80,9 @@ class TestBackoff(unittest.TestCase):
     requests to the OpenAI embeddings endpoint in a short time. Use sparingly.
     """
 
-    _LOG_MESSAGE_PATTERN = re.compile(
-        r'Backing off _post_request\(\.\.\.\) for [0-9.]+s '
-        r'\(embed\._RateLimitError\)',
-    )
-
     def setUp(self):
         """Help us avoid running the test on CI, and decrease stack size."""
-        if os.getenv('CI') is not None:
+        if 'CI' in os.environ:
             # pylint: disable=broad-exception-raised
             #
             # To signal a failure keeping the test from running at all, we
@@ -66,18 +100,7 @@ class TestBackoff(unittest.TestCase):
 
     def test_embed_one_req_backs_off(self):
         """``embed_one_req`` backs off under high load and logs that it did."""
-        def run(thread_index):
-            for loop_index in range(7):
-                # Note: We support Python 3.7, so can't write {thread_index=}.
-                embed.embed_one_req(
-                    'Testing rate limiting. '
-                    f'thread_index={thread_index} loop_index={loop_index}',
-                )
-
-        threads = [
-            threading.Thread(target=run, args=(thread_index,))
-            for thread_index in range(600)
-        ]
+        threads = _RequestThread.create_all()
 
         with self.assertLogs() as log_context:
             for thread in threads:
@@ -85,11 +108,9 @@ class TestBackoff(unittest.TestCase):
             for thread in threads:
                 thread.join()
 
-        log_has_backoff_message = any(
-            self._LOG_MESSAGE_PATTERN.fullmatch(record.message)
-            for record in log_context.records
+        self.assertTrue(
+            any(_states_backoff(message) for message in log_context.output),
         )
-        self.assertTrue(log_has_backoff_message)
 
 
 if __name__ == '__main__':
