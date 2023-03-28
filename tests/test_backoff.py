@@ -20,6 +20,7 @@ functions, as should usually be done.) It's a reasonable tradeoff because:
 3. They share their backoff logic. So it may be enough to test just one.
 """
 
+import collections
 import concurrent.futures
 import logging
 import os
@@ -98,13 +99,11 @@ class TestBackoff(unittest.TestCase):
         with concurrent.futures.ThreadPoolExecutor(max_workers=_BATCH_COUNT
                                                    ) as executor:
             with self.assertLogs() as log_context:
-                futures = [
-                    executor.submit(_run_batch, batch_index)
-                    for batch_index in range(_BATCH_COUNT)
-                ]
-                concurrent.futures.wait(futures)
-                for future in futures:
-                    future.result()  # Raise any exceptions on the main thread.
+                # Make many requests. Raise any exceptions on the main thread.
+                collections.deque(
+                    executor.map(_run_batch, range(_BATCH_COUNT)),
+                    maxlen=0,
+                )
 
         got_backoff = any(
             _is_backoff_message(message)
