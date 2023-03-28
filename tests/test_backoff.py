@@ -28,11 +28,11 @@ import unittest
 
 import embed
 
-_THREAD_COUNT = 600
-"""Number of concurrent threads making requests in the backoff test."""
+_BATCH_COUNT = 600
+"""Maximum number of concurrent threads making requests in the backoff test."""
 
-_ITERATION_COUNT = 8
-"""Number of requests each thread makes sequentially in the backoff test."""
+_BATCH_SIZE = 8
+"""Number of requests each batch makes sequentially in the backoff test."""
 
 _is_backoff_message = re.compile(
     r'INFO:backoff:Backing off _post_request\(\.\.\.\) for [0-9.]+s '
@@ -78,20 +78,20 @@ class TestBackoff(unittest.TestCase):
 
     def test_embed_one_req_backs_off(self):
         """``embed_one_req`` backs off under high load and logs that it did."""
-        def run(thread_index):
-            for loop_index in range(_ITERATION_COUNT):
-                # Note: We support Python 3.7, so can't write {thread_index=}.
+        def run_batch(batch_index):
+            for job_index in range(_BATCH_SIZE):
+                # Note: We support Python 3.7, so can't write {batch_index=}.
                 embed.embed_one_req(
                     'Testing rate limiting. '
-                    f'thread_index={thread_index} loop_index={loop_index}',
+                    f'batch_index={batch_index} job_index={job_index}',
                 )
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=_THREAD_COUNT
+        with concurrent.futures.ThreadPoolExecutor(max_workers=_BATCH_COUNT
                                                    ) as executor:
             with self.assertLogs() as log_context:
                 futures = [
-                    executor.submit(run, thread_index)
-                    for thread_index in range(_THREAD_COUNT)
+                    executor.submit(run_batch, thread_index)
+                    for thread_index in range(_BATCH_COUNT)
                 ]
                 concurrent.futures.wait(futures)
 
