@@ -20,6 +20,7 @@ functions, as should usually be done.) It's a reasonable tradeoff because:
 3. They share their backoff logic. So it may be enough to test just one.
 """
 
+import concurrent.futures
 import os
 import re
 import threading
@@ -30,37 +31,14 @@ import embed
 _THREAD_COUNT = 600
 """Number of concurrent threads making requests in the backoff test."""
 
-_ITERATION_COUNT = 8
-"""Number of requests each thread makes sequentially in the backoff test."""
+_REQUEST_COUNT = 4200
+"""Number of total requests to make across all threads in the backoff test."""
 
 _is_backoff_message = re.compile(
     r'INFO:backoff:Backing off _post_request\(\.\.\.\) for [0-9.]+s '
     r'\(embed\._RateLimitError\)',
 ).fullmatch
 """Check if the string is a log message about backoff with expected details."""
-
-
-class _RequestThread(threading.Thread):
-    """Thread for testing concurrent requests."""
-
-    @classmethod
-    def create_all(cls):
-        """Create ``_THREAD_COUNT`` threads with distinct thread indices."""
-        return [cls(thread_index) for thread_index in range(_THREAD_COUNT)]
-
-    def __init__(self, thread_index):
-        """Create a thread for testing backoff, with the given thread index."""
-        super().__init__(name=f'Thread with index {thread_index}')
-        self._thread_index = thread_index
-
-    def run(self):
-        """Call ``embed_one_req``, ``_ITERATION_COUNT`` times."""
-        for loop_index in range(_ITERATION_COUNT):
-            # Note: We support Python 3.7, so we can't write {loop_index=}.
-            embed.embed_one_req(
-                'Testing rate limiting. '
-                f'thread_index={self._thread_index} loop_index={loop_index}',
-            )
 
 
 # NOTE: Manually enable this briefly if needed, but otherwise keep it skipped.
@@ -100,13 +78,19 @@ class TestBackoff(unittest.TestCase):
 
     def test_embed_one_req_backs_off(self):
         """``embed_one_req`` backs off under high load and logs that it did."""
-        threads = _RequestThread.create_all()
+        texts = (
+            f'Testing rate limiting (request index {request_index}).'
+            for request_index in range(_REQUEST_COUNT)
+        )
 
-        with self.assertLogs() as log_context:
-            for thread in threads:
-                thread.start()
-            for thread in threads:
-                thread.join()
+        with concurrent.futures.ThreadPoolExecutor(max_workers=_THREAD_COUNT
+                                                   ) as executor:
+            with self.assertLogs() as log_context:
+                futures = [
+                    executor.submit(embed.embed_many_req, text)
+                    for text in texts
+                ]
+                concurrent.futures.wait(futures)
 
         got_backoff = any(
             _is_backoff_message(message)
