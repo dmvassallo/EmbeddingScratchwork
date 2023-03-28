@@ -42,6 +42,16 @@ _is_backoff_message = re.compile(
 """Check if the string is a log message about backoff with expected details."""
 
 
+def _run_batch(batch_index):
+    """Run a batch of ``_BATCH_SIZE`` sequential jobs in the backoff test."""
+    for job_index in range(_BATCH_SIZE):
+        # Note: We support Python 3.7, so we can't write {batch_index=}.
+        embed.embed_one_req(
+            'Testing rate limiting. '
+            f'batch_index={batch_index} job_index={job_index}',
+        )
+
+
 # NOTE: Manually enable this briefly if needed, but otherwise keep it skipped.
 #
 # TODO: After PR #56, run if the TESTS_RUN_BACKOFF_TEST_I_KNOW_WHAT_I_AM_DOING
@@ -82,19 +92,11 @@ class TestBackoff(unittest.TestCase):
 
     def test_embed_one_req_backs_off(self):
         """``embed_one_req`` backs off under high load and logs that it did."""
-        def run_batch(batch_index):
-            for job_index in range(_BATCH_SIZE):
-                # Note: We support Python 3.7, so can't write {batch_index=}.
-                embed.embed_one_req(
-                    'Testing rate limiting. '
-                    f'batch_index={batch_index} job_index={job_index}',
-                )
-
         with concurrent.futures.ThreadPoolExecutor(max_workers=_BATCH_COUNT
                                                    ) as executor:
             with self.assertLogs() as log_context:
                 futures = [
-                    executor.submit(run_batch, thread_index)
+                    executor.submit(_run_batch, thread_index)
                     for thread_index in range(_BATCH_COUNT)
                 ]
                 concurrent.futures.wait(futures)
