@@ -78,17 +78,16 @@ class TestBackoff(unittest.TestCase):
 
     def test_embed_one_req_backs_off(self):
         """``embed_one_req`` backs off under high load and logs that it did."""
-        texts = (
-            f'Testing rate limiting (request index {request_index}).'
-            for request_index in range(_REQUEST_COUNT)
-        )
+        def run_request(request_index):
+            text = f'Testing rate limiting (request index {request_index}).'
+            embed.embed_many_req(text)  # Discard embedding to save memory.
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=_THREAD_COUNT
                                                    ) as executor:
             with self.assertLogs() as log_context:
                 futures = [
-                    executor.submit(embed.embed_many_req, text)
-                    for text in texts
+                    executor.submit(run_request, request_index)
+                    for request_index in range(_REQUEST_COUNT)
                 ]
                 concurrent.futures.wait(futures)
 
