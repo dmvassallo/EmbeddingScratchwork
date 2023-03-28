@@ -96,8 +96,8 @@ class TestBackoff(unittest.TestCase):
                                                    ) as executor:
             with self.assertLogs() as log_context:
                 futures = [
-                    executor.submit(_run_batch, thread_index)
-                    for thread_index in range(_BATCH_COUNT)
+                    executor.submit(_run_batch, batch_index)
+                    for batch_index in range(_BATCH_COUNT)
                 ]
                 concurrent.futures.wait(futures)
 
