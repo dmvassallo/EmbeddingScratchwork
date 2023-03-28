@@ -103,6 +103,8 @@ class TestBackoff(unittest.TestCase):
                     for batch_index in range(_BATCH_COUNT)
                 ]
                 concurrent.futures.wait(futures)
+                for future in futures:
+                    future.result()  # Raise any exceptions on the main thread.
 
         got_backoff = any(
             _is_backoff_message(message)
