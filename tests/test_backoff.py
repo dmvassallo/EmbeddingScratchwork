@@ -20,7 +20,6 @@ functions, as should usually be done.) It's a reasonable tradeoff because:
 3. They share their backoff logic. So it may be enough to test just one.
 """
 
-import collections
 import concurrent.futures
 import os
 import re
@@ -32,8 +31,8 @@ import embed
 _THREAD_COUNT = 600
 """Number of concurrent threads making requests in the backoff test."""
 
-_REQUEST_COUNT = 4200
-"""Number of total requests to make across all threads in the backoff test."""
+_ITERATION_COUNT = 8
+"""Number of requests each thread makes sequentially in the backoff test."""
 
 _is_backoff_message = re.compile(
     r'INFO:backoff:Backing off _post_request\(\.\.\.\) for [0-9.]+s '
@@ -79,19 +78,22 @@ class TestBackoff(unittest.TestCase):
 
     def test_embed_one_req_backs_off(self):
         """``embed_one_req`` backs off under high load and logs that it did."""
-        def run_request(request_index):
-            text = f'Testing rate limiting (request index {request_index}).'
-            embed.embed_many_req(text)  # Discard embedding to save memory.
+        def run(thread_index):
+            for loop_index in range(_ITERATION_COUNT):
+                # Note: We support Python 3.7, so can't write {thread_index=}.
+                embed.embed_one_req(
+                    'Testing rate limiting. '
+                    f'thread_index={thread_index} loop_index={loop_index}',
+                )
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=_THREAD_COUNT
                                                    ) as executor:
             with self.assertLogs() as log_context:
-                out = executor.map(
-                    run_request,
-                    range(_REQUEST_COUNT),
-                    chunksize=(_REQUEST_COUNT // _THREAD_COUNT)
-                )
-                collections.deque(out, maxlen=0)
+                futures = [
+                    executor.submit(run, thread_index)
+                    for thread_index in range(_THREAD_COUNT)
+                ]
+                concurrent.futures.wait(futures)
 
         got_backoff = any(
             _is_backoff_message(message)
