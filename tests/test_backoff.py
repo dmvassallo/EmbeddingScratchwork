@@ -21,6 +21,7 @@ functions, as should usually be done.) It's a reasonable tradeoff because:
 """
 
 import concurrent.futures
+import logging
 import os
 import re
 import threading
@@ -71,6 +72,9 @@ class TestBackoff(unittest.TestCase):
                 "This test shouldn't run via continuous integration.")
 
         self._old_stack_size = threading.stack_size(32_768)
+
+        logging.warning(
+            "Running full backoff test, which shouldn't usually be done.")
 
     def tearDown(self):
         """Restore the stack size."""
