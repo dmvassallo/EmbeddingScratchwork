@@ -5,7 +5,7 @@ Specialized backoff testing.
 
 This does end-to-end testing of rate limiting to check that backoff appears to
 work as intended. The traffic generated is much greater than from the other
-tests, so these tests are skipped by default and should not be run on CI.
+tests, so the test here is skipped by default and should not be run on CI.
 
 To keep the traffic from being six times greater, only ``embed_one_req`` is
 tested. (This differs from the tests in ``test_embed``, which test all six
@@ -33,7 +33,7 @@ _THREAD_COUNT = 600
 _ITERATION_COUNT = 8
 """Number of requests each thread makes sequentially in the backoff test."""
 
-_states_backoff = re.compile(
+_is_backoff_message = re.compile(
     r'INFO:backoff:Backing off _post_request\(\.\.\.\) for [0-9.]+s '
     r'\(embed\._RateLimitError\)',
 ).fullmatch
@@ -90,7 +90,7 @@ class TestBackoff(unittest.TestCase):
             # never raise. (A more specific type would risk being misunderstood
             # as a specific error related to the code under test.)
             raise Exception(
-                "These tests shouldn't run via continuous integration.")
+                "This test shouldn't run via continuous integration.")
 
         self._old_stack_size = threading.stack_size(32_768)
 
@@ -108,9 +108,11 @@ class TestBackoff(unittest.TestCase):
             for thread in threads:
                 thread.join()
 
-        self.assertTrue(
-            any(_states_backoff(message) for message in log_context.output),
+        got_backoff = any(
+            _is_backoff_message(message)
+            for message in log_context.output
         )
+        self.assertTrue(got_backoff)
 
 
 if __name__ == '__main__':
