@@ -20,6 +20,7 @@ functions, as should usually be done.) It's a reasonable tradeoff because:
 3. They share their backoff logic. So it may be enough to test just one.
 """
 
+import collections
 import concurrent.futures
 import os
 import re
@@ -85,11 +86,12 @@ class TestBackoff(unittest.TestCase):
         with concurrent.futures.ThreadPoolExecutor(max_workers=_THREAD_COUNT
                                                    ) as executor:
             with self.assertLogs() as log_context:
-                futures = [
-                    executor.submit(run_request, request_index)
-                    for request_index in range(_REQUEST_COUNT)
-                ]
-                concurrent.futures.wait(futures)
+                out = executor.map(
+                    run_request,
+                    range(_REQUEST_COUNT),
+                    chunksize=(_REQUEST_COUNT // _THREAD_COUNT)
+                )
+                collections.deque(out, maxlen=0)
 
         got_backoff = any(
             _is_backoff_message(message)
