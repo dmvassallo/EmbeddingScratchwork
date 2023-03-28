@@ -29,6 +29,9 @@ import unittest
 
 import embed
 
+_STACK_SIZE = 32_768
+"""Stack size in bytes for newly created worker threads. Do not change this."""
+
 _BATCH_COUNT = 600
 """Maximum number of concurrent threads making requests in the backoff test."""
 
@@ -81,7 +84,7 @@ class TestBackoff(unittest.TestCase):
             raise Exception(
                 "This test shouldn't run via continuous integration.")
 
-        self._old_stack_size = threading.stack_size(32_768)
+        self._old_stack_size = threading.stack_size(_STACK_SIZE)
 
         logging.warning(
             "Running full backoff test, which shouldn't usually be done.")
