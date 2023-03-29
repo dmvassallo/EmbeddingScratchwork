@@ -1,5 +1,14 @@
 """Versions of embedding functions that cache to disk."""
 
+__all__ = [
+    'embed_one',
+    'embed_many',
+    'embed_one_eu',
+    'embed_many_eu',
+    'embed_one_req',
+    'embed_many_req',
+]
+
 import functools
 import json
 import pathlib
@@ -7,11 +16,13 @@ import pathlib
 import blake3
 import numpy as np
 
+import embed
+
 _DATA_DIR = pathlib.Path('data')
 """Directory to cache embeddings."""
 
 
-def disk_cache(func):
+def _disk_cache(func):
     """Decorator to add disk caching to an embedding function."""
     @functools.wraps(func)
     def wrapper(text_or_texts):
@@ -34,3 +45,43 @@ def disk_cache(func):
         return embeddings
 
     return wrapper
+
+
+@_disk_cache
+def embed_one(text):
+    """Embed a single piece of text. Caches to disk."""
+    return embed.embed_one(text)
+
+
+@_disk_cache
+def embed_many(texts):
+    """Embed multiple pieces of text. Caches to disk."""
+    return embed.embed_many(texts)
+
+
+@_disk_cache
+def embed_one_eu(text):
+    """
+    Embed a single piece of text. Uses ``embeddings_utils``. Caches to disk.
+    """
+    return embed.embed_one_eu(text)
+
+
+@_disk_cache
+def embed_many_eu(texts):
+    """
+    Embed multiple pieces of text. Uses ``embeddings_utils``. Caches to disk.
+    """
+    return embed.embed_many_eu(texts)
+
+
+@_disk_cache
+def embed_one_req(text):
+    """Embed a single piece of text. Uses ``requests``. Caches to disk."""
+    return embed.embed_one_req(text)
+
+
+@_disk_cache
+def embed_many_req(texts):
+    """Embed multiple pieces of text. Uses ``requests``. Caches to disk."""
+    return embed.embed_many_req(texts)
