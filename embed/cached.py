@@ -1,6 +1,7 @@
 """Versions of embedding functions that cache to disk."""
 
 __all__ = [
+    'DEFAULT_DATA_DIR',
     'embed_one',
     'embed_many',
     'embed_one_eu',
@@ -18,15 +19,25 @@ import numpy as np
 
 import embed
 
+DEFAULT_DATA_DIR = pathlib.Path('data')
+"""Default directory to cache embeddings."""
+
+
+def _build_path(text_or_texts, data_dir):
+    """Build a path for ``_disk_cache``'s wrapper to save/load embeddings."""
+    if data_dir is None:
+        data_dir = DEFAULT_DATA_DIR
+
+    serialized = json.dumps(text_or_texts).encode()
+    basename = blake3.blake3(serialized).hexdigest()
+    return pathlib.Path(data_dir, f'{basename}.json')  # data_dir may be a str.
+
 
 def _disk_cache(func):
     """Decorator to add disk caching to an embedding function."""
     @functools.wraps(func)
-    def wrapper(text_or_texts, *, data_dir='data'):
-        serialized = json.dumps(text_or_texts).encode()
-        basename = blake3.blake3(serialized).hexdigest()
-        path = pathlib.Path(data_dir, f'{basename}.json')
-
+    def wrapper(text_or_texts, *, data_dir=None):
+        path = _build_path(text_or_texts, data_dir)
         try:
             with open(path, mode='r', encoding='utf-8') as file:
                 parsed = json.load(file)
