@@ -38,7 +38,8 @@ def _disk_cache(func):
 
             embeddings_list = embeddings.tolist()
             with open(path, mode='x', encoding='utf-8') as file:
-                json.dump(obj=embeddings_list, fp=file)
+                json.dump(obj=embeddings_list, fp=file, indent=4)
+                file.write('\n')
         else:
             embeddings = np.array(parsed, dtype=np.float32)
 
