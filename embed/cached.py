@@ -18,17 +18,14 @@ import numpy as np
 
 import embed
 
-_DATA_DIR = pathlib.Path('data')
-"""Directory to cache embeddings."""
-
 
 def _disk_cache(func):
     """Decorator to add disk caching to an embedding function."""
     @functools.wraps(func)
-    def wrapper(text_or_texts):
+    def wrapper(text_or_texts, *, data_dir='data'):
         serialized = json.dumps(text_or_texts).encode()
         basename = blake3.blake3(serialized).hexdigest()
-        path = _DATA_DIR / f'{basename}.json'
+        path = pathlib.Path(data_dir, f'{basename}.json')
 
         try:
             with open(path, mode='r', encoding='utf-8') as file:
