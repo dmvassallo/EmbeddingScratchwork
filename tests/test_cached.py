@@ -4,6 +4,7 @@
 
 # pylint: disable=missing-function-docstring
 
+import pathlib
 import tempfile
 import unittest
 
@@ -22,11 +23,12 @@ class TestCached(unittest.TestCase):
 
     def setUp(self):
         """Create a temporary directory."""
-        self._dir = tempfile.TemporaryDirectory()
+        self._temporary_directory = tempfile.TemporaryDirectory()
+        self._dir_path = pathlib.Path(self._temporary_directory.name)
 
     def tearDown(self):
         """Delete the temporary directory."""
-        self._dir.cleanup()
+        self._temporary_directory.cleanup()
 
     # Test saving new files
     def test_saving_new_file_embed_one(self):
@@ -34,10 +36,12 @@ class TestCached(unittest.TestCase):
         basename = (
             'b58e4a60c963f8b3c43d83cc9245020ce71d8311fa2f48cfd36deed6f472a71b'
         )
-        message = f'{prefix} {self._dirname}/{basename}.json'
+        expected_message = f'{prefix} {self._dir_path / basename}.json'
+
         with self.assertLogs() as cm:
-            embed_one('hola', data_dir=self._dirname)
-        self.assertEqual(cm.output, [message])
+            embed_one('hola', data_dir=self._dir_path)
+
+        self.assertEqual(cm.output, [expected_message])
 
     # Test loading existing files
 
@@ -46,10 +50,6 @@ class TestCached(unittest.TestCase):
     # Test log corresponds to what occurred
 
     # Test even when data_dir is not passed
-
-    @property
-    def _dirname(self):
-        return self._dir.name
 
 
 if __name__ == '__main__':
