@@ -17,8 +17,6 @@ from embed.cached import (
 )
 
 
-tempfile.TemporaryDirectory
-
 class TestCached(unittest.TestCase):
     """Tests for disk cached versions of the embedding functions."""
 
@@ -30,11 +28,16 @@ class TestCached(unittest.TestCase):
         """Delete the temporary directory."""
         self._dir.cleanup()
 
-    @property
-    def _dirname(self):
-        return self._dir.name
-
     # Test saving new files
+    def test_saving_new_file_embed_one(self):
+        prefix = 'INFO:root:embed_one: saved:'
+        basename = (
+            'b58e4a60c963f8b3c43d83cc9245020ce71d8311fa2f48cfd36deed6f472a71b'
+        )
+        message = f'{prefix} {self._dirname}/{basename}.json'
+        with self.assertLogs() as cm:
+            embed_one('hola', data_dir=self._dirname)
+        self.assertEqual(cm.output, [message])
 
     # Test loading existing files
 
@@ -43,6 +46,11 @@ class TestCached(unittest.TestCase):
     # Test log corresponds to what occurred
 
     # Test even when data_dir is not passed
+
+    @property
+    def _dirname(self):
+        return self._dir.name
+
 
 if __name__ == '__main__':
     unittest.main()
