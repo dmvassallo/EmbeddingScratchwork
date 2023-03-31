@@ -14,6 +14,7 @@ __all__ = [
 
 import functools
 import json
+import logging
 import pathlib
 
 import blake3
@@ -50,8 +51,10 @@ def _disk_cache(func):
             with open(path, mode='x', encoding='utf-8') as file:
                 json.dump(obj=embeddings_list, fp=file, indent=4)
                 file.write('\n')
+            logging.info('%s: saved: %s', wrapper.__name__, path)
         else:
             embeddings = np.array(parsed, dtype=np.float32)
+            logging.info('%s: loaded: %s', wrapper.__name__, path)
 
         return embeddings
 
