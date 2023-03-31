@@ -1,6 +1,6 @@
 """Helper functions for testing."""
 
-__all__ = ['configure_logging', 'get_maybe_caching_decorator']
+__all__ = ['getenv_bool', 'configure_logging', 'get_maybe_caching_decorator']
 
 import atexit
 import collections
@@ -63,7 +63,7 @@ _falsy_config = re.compile(r'(?:false|no|0)?', re.IGNORECASE).fullmatch
 """Check if a configuration string should be considered to mean ``False``."""
 
 
-def _getenv_bool(name):  # NOTE: This can be made public, if that is useful.
+def getenv_bool(name):
     """
     Read boolean configuration from an environment variable.
 
@@ -113,6 +113,6 @@ def get_maybe_caching_decorator():
 
     Otherwise, the returned decorator is just an identity function.
     """
-    if _getenv_bool('TESTS_CACHE_EMBEDDING_CALLS'):
+    if getenv_bool('TESTS_CACHE_EMBEDDING_CALLS'):
         return _cache_by(pickle.dumps, stats=_cache_stats)
     return _identity_function
