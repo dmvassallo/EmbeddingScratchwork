@@ -44,7 +44,7 @@ class TestApiKey(unittest.TestCase):
         ('str', 'sk-fake-setting-does-not-set'),
         ('none', None),
     ])
-    def test_setting_on_openai_does_not_set_on_embed(self, name, pretend_key):
+    def test_setting_on_openai_does_not_set_on_embed(self, _name, pretend_key):
         """Setting ``open.api_key`` does not change ``embed.api_key``."""
         openai.api_key = pretend_key
         self.assertNotEqual(embed.api_key, pretend_key)

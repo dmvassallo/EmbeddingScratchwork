@@ -5,6 +5,7 @@
             "extensions": [
                 "bierner.markdown-preview-github-styles",
                 "eamodio.gitlens",
+                "GitHub.vscode-github-actions",
                 "mhutchie.git-graph",
                 "ms-python.python",
                 "MS-vsliveshare.vsliveshare",

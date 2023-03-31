@@ -1,6 +1,6 @@
-"""Helper decorators for testing. This supports test_embed.py."""
+"""Helper functions for testing."""
 
-__all__ = ['configure_logging', 'get_maybe_caching_decorator']
+__all__ = ['getenv_bool', 'configure_logging', 'get_maybe_caching_decorator']
 
 import atexit
 import collections
@@ -11,7 +11,7 @@ import pickle
 import re
 
 _cache_stats = collections.Counter()
-"""Mapping that tracks global cache miss and cache hit counts."""
+"""Mapping that tracks global cache hit and miss counts. Not thread safe."""
 
 
 @atexit.register
@@ -23,9 +23,10 @@ def _report_nontrivial_cache_statistics():
 
 def _cache_by(key, *, stats):
     """
-    Like ``functools.cache``, but uses an arbitrary key selector.
+    Similar to ``functools.cache``, but uses an arbitrary key selector.
 
-    This also logs and counts cache hits and misses.
+    This logs, and counts cache hits and misses globally in ``_cache_stats``.
+    It is only suitable for use in tests, and it is not thread-safe.
     """
     def decorator(func):
         cache = {}
@@ -56,6 +57,32 @@ def _identity_function(arg):
     return arg
 
 
+_truthy_config = re.compile(r'true|yes|1', re.IGNORECASE).fullmatch
+"""Check if a configuration string should be considered to mean ``True``."""
+
+_falsy_config = re.compile(r'(?:false|no|0)?', re.IGNORECASE).fullmatch
+"""Check if a configuration string should be considered to mean ``False``."""
+
+
+def getenv_bool(name):
+    """
+    Read boolean configuration from an environment variable.
+
+    The environment variable's value is read case-insensitively, as:
+
+    - ``True``, if it holds ``true``, ``yes``, or ``1``.
+    - ``False``, if it is absent, empty, or holds ``false``, ``no``, or ``0``.
+    - Otherwise, the value is  ill-formed, and ``RuntimeError`` is raised.
+    """
+    value = os.environ.get(name, default='')
+    if _truthy_config(value):
+        return True
+    if _falsy_config(value):
+        return False
+    raise RuntimeError(
+        f"Can't parse environment variable as boolean: {name}={value!r}")
+
+
 def configure_logging():
     """
     Set logging level from the ``TESTS_LOGGING_LEVEL`` environment variable.
@@ -79,19 +106,15 @@ def get_maybe_caching_decorator():
 
     The decision of whether to cache or not is made eagerly, in this function.
 
-    If the ``TESTS_CACHE_EMBEDDING_CALLS`` environment variable exists and
-    holds ``yes`` or ``true`` (case insensitively) or any positive integer, the
-    returned decorator caches. Pickling is used for cache keys, so non-hashable
+    If the ``TESTS_CACHE_EMBEDDING_CALLS`` environment variable holds a truthy
+    value (``true``, ``yes``, or ``1`, case-insensitively), the returned
+    decorator caches. Pickling is used for cache keys, so non-hashable
     arguments are supported, and arguments of different types are treated as
-    different, even if equal.
+    different, even if equal. The cache is only suitable for use in tests (so
+    they make fewer API calls on CI). In particular, it isn't thread-safe.
 
     Otherwise, the returned decorator is just an identity function.
     """
-    if re.fullmatch(
-        pattern=r'\s*(?:yes|true|\+?0*[1-9][0-9]*)\s*',
-        string=os.environ.get('TESTS_CACHE_EMBEDDING_CALLS', default=''),
-        flags=re.IGNORECASE,
-    ):
+    if getenv_bool('TESTS_CACHE_EMBEDDING_CALLS'):
         return _cache_by(pickle.dumps, stats=_cache_stats)
-
     return _identity_function
