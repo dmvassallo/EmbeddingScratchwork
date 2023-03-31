@@ -28,7 +28,7 @@ import re
 import threading
 import unittest
 
-from . import _helpers
+from tests import _helpers
 import embed
 
 _STACK_SIZE = 32_768
