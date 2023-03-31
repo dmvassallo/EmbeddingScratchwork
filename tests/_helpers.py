@@ -23,9 +23,9 @@ def _report_nontrivial_cache_statistics():
 
 def _cache_by(key, *, stats):
     """
-    Like ``functools.cache``, but uses an arbitrary key selector.
+    Similar to ``functools.cache``, but uses an arbitrary key selector.
 
-    This also logs and counts cache hits and misses.
+    This logs, and counts cache hits and misses globally in ``_cache_stats``.
     """
     def decorator(func):
         cache = {}
