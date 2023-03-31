@@ -12,7 +12,6 @@ __all__ = [
     'embed_many_req',
 ]
 
-
 import datetime
 import http
 import operator
@@ -83,11 +82,11 @@ def _post_request(text_or_texts):
         url='https://api.openai.com/v1/embeddings',
         headers={
             'Authorization': f'Bearer {_keys.api_key}',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
         json={
             'input': text_or_texts,
-            'model': 'text-embedding-ada-002'
+            'model': 'text-embedding-ada-002',
         },
         timeout=_REQUESTS_TIMEOUT.total_seconds(),
     )
