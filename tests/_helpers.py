@@ -11,7 +11,7 @@ import pickle
 import re
 
 _cache_stats = collections.Counter()
-"""Mapping that tracks global cache miss and cache hit counts."""
+"""Mapping that tracks global cache hit and miss counts. Not thread safe."""
 
 
 @atexit.register
@@ -26,6 +26,7 @@ def _cache_by(key, *, stats):
     Similar to ``functools.cache``, but uses an arbitrary key selector.
 
     This logs, and counts cache hits and misses globally in ``_cache_stats``.
+    It is only suitable for use in tests, and it is not thread-safe.
     """
     def decorator(func):
         cache = {}
@@ -109,7 +110,8 @@ def get_maybe_caching_decorator():
     value (``true``, ``yes``, or ``1`, case-insensitively), the returned
     decorator caches. Pickling is used for cache keys, so non-hashable
     arguments are supported, and arguments of different types are treated as
-    different, even if equal.
+    different, even if equal. The cache is only suitable for use in tests (so
+    they make fewer API calls on CI). In particular, it isn't thread-safe.
 
     Otherwise, the returned decorator is just an identity function.
     """
