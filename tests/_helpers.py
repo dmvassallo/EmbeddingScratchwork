@@ -1,4 +1,4 @@
-"""Helper decorators for testing. This supports test_embed.py."""
+"""Helper functions for testing."""
 
 __all__ = ['configure_logging', 'get_maybe_caching_decorator']
 
