@@ -71,14 +71,15 @@ def embed_many_eu(texts):
     return np.array(embeddings, dtype=np.float32)
 
 
-class _RateLimitError(Exception):
-    """An HTTP 429 Too Many Requests error occurred."""
+def _needs_backoff(response):
+    """Check if a response has given an HTTP 429 Too Many Requests error."""
+    return response.status_code == http.HTTPStatus.TOO_MANY_REQUESTS
 
 
-@backoff.on_exception(backoff.expo, _RateLimitError)
+@backoff.on_predicate(backoff.expo, _needs_backoff)
 def _post_request(text_or_texts):
     """Make a POST request to the API endpoint, with backoff."""
-    response = requests.post(
+    return requests.post(
         url='https://api.openai.com/v1/embeddings',
         headers={
             'Authorization': f'Bearer {_keys.api_key}',
@@ -90,20 +91,18 @@ def _post_request(text_or_texts):
         },
         timeout=_REQUESTS_TIMEOUT.total_seconds(),
     )
-    if response.status_code == http.HTTPStatus.TOO_MANY_REQUESTS:
-        raise _RateLimitError
-    response.raise_for_status()
-    return response.json()
 
 
 def embed_one_req(text):
     """Embed a single piece of text. Use ``requests``."""
-    json_response = _post_request(text)
-    return np.array(json_response['data'][0]['embedding'], dtype=np.float32)
+    response = _post_request(text)
+    response.raise_for_status()
+    return np.array(response.json()['data'][0]['embedding'], dtype=np.float32)
 
 
 def embed_many_req(texts):
     """Embed multiple pieces of text. Use ``requests``."""
-    json_response = _post_request(texts)
-    data = sorted(json_response['data'], key=operator.itemgetter('index'))
+    response = _post_request(texts)
+    response.raise_for_status()
+    data = sorted(response.json()['data'], key=operator.itemgetter('index'))
     return np.array([datum['embedding'] for datum in data], dtype=np.float32)

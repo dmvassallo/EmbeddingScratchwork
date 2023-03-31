@@ -41,7 +41,7 @@ _BATCH_SIZE = 8
 
 _is_backoff_message = re.compile(
     r'INFO:backoff:Backing off _post_request\(\.\.\.\) for [0-9.]+s '
-    r'\(embed\._RateLimitError\)',
+    r'\(<Response \[429\]>\)',
 ).fullmatch
 """Check if the string is a log message about backoff with expected details."""
 
