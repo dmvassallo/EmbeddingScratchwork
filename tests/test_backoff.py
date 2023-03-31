@@ -28,6 +28,7 @@ import re
 import threading
 import unittest
 
+from . import _helpers
 import embed
 
 _STACK_SIZE = 32_768
@@ -56,12 +57,10 @@ def _run_batch(batch_index):
         )
 
 
-# NOTE: Manually enable this briefly if needed, but otherwise keep it skipped.
-#
-# TODO: After PR #56, run if the TESTS_RUN_BACKOFF_TEST_I_KNOW_WHAT_I_AM_DOING
-#       environment variable is set to a truthy value (but still NEVER on CI).
-#
-@unittest.skip("No need to regularly slam OpenAI's servers. Also: very slow.")
+@unittest.skipUnless(
+    _helpers.getenv_bool('TESTS_RUN_BACKOFF_TEST_I_KNOW_WHAT_I_AM_DOING'),
+    "No need to regularly slam OpenAI's servers. Also: very slow.",
+)
 class TestBackoff(unittest.TestCase):
     """
     Test backoff in one of the functions using ``requests`` (``test_one_req``).
