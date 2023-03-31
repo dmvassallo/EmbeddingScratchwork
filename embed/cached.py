@@ -1,5 +1,7 @@
 """Versions of embedding functions that cache to disk."""
 
+# TODO: Maybe add a safetensors version.
+
 __all__ = [
     'DEFAULT_DATA_DIR',
     'embed_one',
