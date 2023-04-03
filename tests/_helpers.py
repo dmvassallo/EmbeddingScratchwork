@@ -1,6 +1,10 @@
 """Helper functions for testing."""
 
-__all__ = ['getenv_bool', 'configure_logging', 'get_maybe_caching_decorator']
+__all__ = [
+    'getenv_bool',
+    'configure_logging',
+    'get_maybe_cache_in_memory_decorator',
+]
 
 import atexit
 import collections
@@ -10,23 +14,22 @@ import os
 import pickle
 import re
 
-_cache_stats = collections.Counter()
+_in_memory_cache_stats = collections.Counter()
 """Mapping that tracks global cache hit and miss counts. Not thread safe."""
 
 
 @atexit.register
 def _report_nontrivial_cache_statistics():
     """Log global cache statistics, IF any caching has been performed."""
-    if _cache_stats:
-        logging.info('Cache stats: %r', _cache_stats)
+    if _in_memory_cache_stats:
+        logging.info('In-memory cache stats: %r', _in_memory_cache_stats)
 
 
-def _cache_by(key, *, stats):
+def _cache_in_memory_by(key, *, stats):
     """
     Similar to ``functools.cache``, but uses an arbitrary key selector.
 
-    This logs, and counts cache hits and misses globally in ``_cache_stats``.
-    It is only suitable for use in tests, and it is not thread-safe.
+    This logs, is only suitable for use in tests, and is not thread-safe.
     """
     def decorator(func):
         cache = {}
@@ -38,12 +41,12 @@ def _cache_by(key, *, stats):
                 value = cache[cache_key]
             except KeyError:
                 stats['misses'] += 1
-                logging.debug('Cache MISS #%d: %s',
+                logging.debug('In-memory cache MISS #%d: %s',
                               stats['misses'], wrapper.__name__)
                 value = cache[cache_key] = func(*args, **kwargs)
             else:
                 stats['hits'] += 1
-                logging.debug('Cache HIT #%d: %s',
+                logging.debug('In-memory cache HIT #%d: %s',
                               stats['hits'], wrapper.__name__)
             return value
 
@@ -100,21 +103,23 @@ def configure_logging():
     logging.basicConfig(level=getattr(logging, level))
 
 
-def get_maybe_caching_decorator():
+# FIXME: Somehow rename TESTS_CACHE_EMBEDDING_CALLS (everywhere) to something
+#        that clarifies it is not specifically related to embed.cached caching.
+def get_maybe_cache_in_memory_decorator():
     """
-    Get a decorator to use on unary functions that may or may not add caching.
+    Get a decorator to use on unary functions that might add in-memory caching.
 
     The decision of whether to cache or not is made eagerly, in this function.
 
     If the ``TESTS_CACHE_EMBEDDING_CALLS`` environment variable holds a truthy
     value (``true``, ``yes``, or ``1`, case-insensitively), the returned
-    decorator caches. Pickling is used for cache keys, so non-hashable
-    arguments are supported, and arguments of different types are treated as
-    different, even if equal. The cache is only suitable for use in tests (so
+    decorator caches in memory. Pickling is used for cache keys, to support
+    non-hashable arguments and treat arguments of different types as different
+    even if equal. The in-memory cache is only suitable for use in tests (so
     they make fewer API calls on CI). In particular, it isn't thread-safe.
 
     Otherwise, the returned decorator is just an identity function.
     """
     if getenv_bool('TESTS_CACHE_EMBEDDING_CALLS'):
-        return _cache_by(pickle.dumps, stats=_cache_stats)
+        return _cache_in_memory_by(pickle.dumps, stats=_in_memory_cache_stats)
     return _identity_function

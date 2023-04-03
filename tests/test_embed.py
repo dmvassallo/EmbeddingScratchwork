@@ -22,13 +22,16 @@ from embed import (
 from tests import _helpers
 
 _helpers.configure_logging()
-_maybe_cache = _helpers.get_maybe_caching_decorator()
+_maybe_cache_in_memory = _helpers.get_maybe_cache_in_memory_decorator()
 
 
 @parameterized_class(('name', 'func'), [
-    (embed_one.__name__, staticmethod(_maybe_cache(embed_one))),
-    (embed_one_eu.__name__, staticmethod(_maybe_cache(embed_one_eu))),
-    (embed_one_req.__name__, staticmethod(_maybe_cache(embed_one_req))),
+    (embed_one.__name__,
+        staticmethod(_maybe_cache_in_memory(embed_one))),
+    (embed_one_eu.__name__,
+        staticmethod(_maybe_cache_in_memory(embed_one_eu))),
+    (embed_one_req.__name__,
+        staticmethod(_maybe_cache_in_memory(embed_one_req))),
 ])
 class TestEmbedOne(unittest.TestCase):
     """Tests for ``embed_one`` and ``embed_one_eu``."""
@@ -66,10 +69,12 @@ class TestEmbedOne(unittest.TestCase):
 
 
 @parameterized_class(('name', 'func'), [
-    (embed_many.__name__, staticmethod(_maybe_cache(embed_many))),
-    (embed_many_eu.__name__, staticmethod(_maybe_cache(embed_many_eu))),
-    (embed_many_req.__name__, staticmethod(_maybe_cache(embed_many_req))),
-
+    (embed_many.__name__,
+        staticmethod(_maybe_cache_in_memory(embed_many))),
+    (embed_many_eu.__name__,
+        staticmethod(_maybe_cache_in_memory(embed_many_eu))),
+    (embed_many_req.__name__,
+        staticmethod(_maybe_cache_in_memory(embed_many_req))),
 ])
 class TestEmbedMany(unittest.TestCase):
     """Tests for ``embed_many`` and ``embed_many_eu``."""
