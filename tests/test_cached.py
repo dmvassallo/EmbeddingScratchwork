@@ -74,16 +74,25 @@ class TestCached(unittest.TestCase):
         self.assertEqual(cm.output, [expected_message])
 
     # Test different functions access existing files
-    def test_embed_one_loads_file_if_cached_from_different_function(self):
+    @parameterized.expand([
+        (embed_one.__name__, embed_one),
+        (embed_one_eu.__name__, embed_one_eu),
+        (embed_one_req.__name__, embed_one_req),
+    ])
+    def test_loads_from_any_implementation(self, _save_func_name, save_func):
         path = self._dir_path / _HOLA_FILENAME
-        expected_message = f'INFO:root:embed_one: loaded: {path}'
+        save_func('hola', data_dir=self._dir_path)
 
-        embed_one_eu('hola', data_dir=self._dir_path)
+        for load_func in (embed_one, embed_one_eu, embed_one_req):
+            with self.subTest(load_func=load_func):
+                expected_message = (
+                    f'INFO:root:{load_func.__name__}: loaded: {path}'
+                )
 
-        with self.assertLogs() as cm:
-            embed_one('hola', data_dir=self._dir_path)
+                with self.assertLogs() as cm:
+                    load_func('hola', data_dir=self._dir_path)
 
-        self.assertEqual(cm.output, [expected_message])
+                self.assertEqual(cm.output, [expected_message])
 
     # Test log corresponds to what occurred
 
