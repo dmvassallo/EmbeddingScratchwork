@@ -9,6 +9,8 @@ import pathlib
 import tempfile
 import unittest
 
+from parameterized import parameterized
+
 from embed.cached import (
     embed_one,
     embed_many,
@@ -38,26 +40,36 @@ class TestCached(unittest.TestCase):
     # Test returned embeddings could plausibly be correct
 
     # Test saving new files
-    def test_embed_one_saves_file_if_not_cached(self):
+    @parameterized.expand([
+        (embed_one.__name__, embed_one),
+        (embed_one_eu.__name__, embed_one_eu),
+        (embed_one_req.__name__, embed_one_req),
+    ])
+    def test_saves_file_if_not_cached(self, name, func):
         path = self._dir_path / _HOLA_FILENAME
-        expected_message = f'INFO:root:embed_one: saved: {path}'
+        expected_message = f'INFO:root:{name}: saved: {path}'
 
         with self.assertLogs() as cm:
-            embed_one('hola', data_dir=self._dir_path)
+            func('hola', data_dir=self._dir_path)
 
         self.assertEqual(cm.output, [expected_message])
 
     # Test loading existing files
-    def test_embed_one_loads_file_if_cached(self):
+    @parameterized.expand([
+        (embed_one.__name__, embed_one),
+        (embed_one_eu.__name__, embed_one_eu),
+        (embed_one_req.__name__, embed_one_req),
+    ])
+    def test_loads_file_if_cached(self, name, func):
         path = self._dir_path / _HOLA_FILENAME
-        expected_message = f'INFO:root:embed_one: loaded: {path}'
+        expected_message = f'INFO:root:{name}: loaded: {path}'
 
         data = [0.0] * 1536
         with open(file=path, mode='w', encoding='utf-8') as file:
             json.dump(obj=data, fp=file)
 
         with self.assertLogs() as cm:
-            embed_one('hola', data_dir=self._dir_path)
+            func('hola', data_dir=self._dir_path)
 
         self.assertEqual(cm.output, [expected_message])
 
