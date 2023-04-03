@@ -39,8 +39,8 @@ class TestCached(unittest.TestCase):
 
     # Test saving new files
     def test_saving_new_file_embed_one(self):
-        prefix = 'INFO:root:embed_one: saved:'
-        expected_message = f'{prefix} {self._dir_path / _HOLA_FILENAME}'
+        path = self._dir_path / _HOLA_FILENAME
+        expected_message = f'INFO:root:embed_one: saved: {path}'
 
         with self.assertLogs() as cm:
             embed_one('hola', data_dir=self._dir_path)
@@ -49,9 +49,9 @@ class TestCached(unittest.TestCase):
 
     # Test loading existing files
     def test_loads_existing_file_embed_one(self):
-        prefix = 'INFO:root:embed_one: loaded:'
         path = self._dir_path / _HOLA_FILENAME
-        expected_message = f'{prefix} {path}'
+        expected_message = f'INFO:root:embed_one: loaded: {path}'
+
         data = [0.0] * 1536
         with open(file=path, mode='w', encoding='utf-8') as file:
             json.dump(obj=data, fp=file)
