@@ -23,6 +23,14 @@ from embed.cached import (
 _HOLA_FILENAME = (
     'b58e4a60c963f8b3c43d83cc9245020ce71d8311fa2f48cfd36deed6f472a71b.json'
 )
+"""Filename that would be generated from the input ``'hola'``."""
+
+_parameterize_embed_one = parameterized.expand([
+    (embed_one.__name__, embed_one),
+    (embed_one_eu.__name__, embed_one_eu),
+    (embed_one_req.__name__, embed_one_req),
+])
+"""Decorator to parameterize by ``embed_one*`` functions for testing."""
 
 
 class TestCached(unittest.TestCase):
@@ -40,11 +48,7 @@ class TestCached(unittest.TestCase):
     # Test returned embeddings could plausibly be correct
 
     # Test saving new files
-    @parameterized.expand([
-        (embed_one.__name__, embed_one),
-        (embed_one_eu.__name__, embed_one_eu),
-        (embed_one_req.__name__, embed_one_req),
-    ])
+    @_parameterize_embed_one
     def test_saves_file_if_not_cached(self, name, func):
         path = self._dir_path / _HOLA_FILENAME
         expected_message = f'INFO:root:{name}: saved: {path}'
@@ -55,11 +59,7 @@ class TestCached(unittest.TestCase):
         self.assertEqual(cm.output, [expected_message])
 
     # Test loading existing files
-    @parameterized.expand([
-        (embed_one.__name__, embed_one),
-        (embed_one_eu.__name__, embed_one_eu),
-        (embed_one_req.__name__, embed_one_req),
-    ])
+    @_parameterize_embed_one
     def test_loads_file_if_cached(self, name, func):
         path = self._dir_path / _HOLA_FILENAME
         expected_message = f'INFO:root:{name}: loaded: {path}'
@@ -74,11 +74,7 @@ class TestCached(unittest.TestCase):
         self.assertEqual(cm.output, [expected_message])
 
     # Test different functions access existing files
-    @parameterized.expand([
-        (embed_one.__name__, embed_one),
-        (embed_one_eu.__name__, embed_one_eu),
-        (embed_one_req.__name__, embed_one_req),
-    ])
+    @_parameterize_embed_one
     def test_loads_from_any_implementation(self, _save_func_name, save_func):
         path = self._dir_path / _HOLA_FILENAME
         save_func('hola', data_dir=self._dir_path)
