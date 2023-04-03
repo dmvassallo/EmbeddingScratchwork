@@ -3,6 +3,7 @@
 """Tests for the embedding functions in the ``embed`` module."""
 
 # pylint: disable=missing-function-docstring
+# All test methods have self-documenting names.
 
 from typing import Any
 import unittest

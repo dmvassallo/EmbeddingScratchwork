@@ -75,12 +75,7 @@ class TestBackoff(unittest.TestCase):
     def setUp(self):
         """Help us avoid running the test on CI, and decrease stack size."""
         if 'CI' in os.environ:
-            # pylint: disable=broad-exception-raised
-            #
-            # To signal a failure keeping the test from running at all, we
-            # raise a direct Exception instance, which code under test should
-            # never raise. (A more specific type would risk being misunderstood
-            # as a specific error related to the code under test.)
+            # pylint: disable=broad-exception-raised  # Error that blocks test.
             raise Exception(
                 "This test shouldn't run via continuous integration.")
 

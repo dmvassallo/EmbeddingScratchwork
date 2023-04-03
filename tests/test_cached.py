@@ -3,6 +3,7 @@
 """Tests for the caching versions in the embed.cached submodule."""
 
 # pylint: disable=missing-function-docstring
+# All test methods have self-documenting names.
 
 import json
 import pathlib
@@ -38,6 +39,7 @@ class TestCached(unittest.TestCase):
 
     def setUp(self):
         """Create a temporary directory."""
+        # pylint: disable=consider-using-with  # tearDown cleans this up.
         self._temporary_directory = tempfile.TemporaryDirectory()
         self._dir_path = pathlib.Path(self._temporary_directory.name)
 
