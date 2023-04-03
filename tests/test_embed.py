@@ -18,7 +18,7 @@ from embed import (
     embed_one_req,
     embed_many_req,
 )
-from . import _helpers
+from tests import _helpers
 
 _helpers.configure_logging()
 _maybe_cache = _helpers.get_maybe_caching_decorator()
