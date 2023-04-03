@@ -38,7 +38,7 @@ class TestCached(unittest.TestCase):
     # Test returned embeddings could plausibly be correct
 
     # Test saving new files
-    def test_saving_new_file_embed_one(self):
+    def test_embed_one_saves_file_if_not_cached(self):
         path = self._dir_path / _HOLA_FILENAME
         expected_message = f'INFO:root:embed_one: saved: {path}'
 
@@ -48,7 +48,7 @@ class TestCached(unittest.TestCase):
         self.assertEqual(cm.output, [expected_message])
 
     # Test loading existing files
-    def test_loads_existing_file_embed_one(self):
+    def test_embed_one_loads_file_if_cached(self):
         path = self._dir_path / _HOLA_FILENAME
         expected_message = f'INFO:root:embed_one: loaded: {path}'
 
