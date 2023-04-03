@@ -44,6 +44,19 @@ class TestCached(unittest.TestCase):
         self.assertEqual(cm.output, [expected_message])
 
     # Test loading existing files
+    def test_loads_existing_file_embed_one(self):
+        prefix = 'INFO:root:embed_one: loaded:'
+        basename = (
+            'b58e4a60c963f8b3c43d83cc9245020ce71d8311fa2f48cfd36deed6f472a71b'
+        )
+        expected_message = f'{prefix} {self._dir_path / basename}.json'
+        embed_one('hola', data_dir=self._dir_path)
+
+        with self.assertLogs() as cm:
+            embed_one('hola', data_dir=self._dir_path)
+
+        self.assertEqual(cm.output, [expected_message])
+
 
     # Test different functions access existing files
 
