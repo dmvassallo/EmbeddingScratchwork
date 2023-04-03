@@ -4,6 +4,7 @@
 
 # pylint: disable=missing-function-docstring
 
+import json
 import pathlib
 import tempfile
 import unittest
@@ -49,8 +50,11 @@ class TestCached(unittest.TestCase):
     # Test loading existing files
     def test_loads_existing_file_embed_one(self):
         prefix = 'INFO:root:embed_one: loaded:'
-        expected_message = f'{prefix} {self._dir_path / _HOLA_FILENAME}'
-        embed_one('hola', data_dir=self._dir_path)
+        path = self._dir_path / _HOLA_FILENAME
+        expected_message = f'{prefix} {path}'
+        data = [0.0] * 1536
+        with open(file=path, mode='w', encoding='utf-8') as file:
+            json.dump(obj=data, fp=file)
 
         with self.assertLogs() as cm:
             embed_one('hola', data_dir=self._dir_path)
