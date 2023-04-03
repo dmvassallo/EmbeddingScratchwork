@@ -55,10 +55,10 @@ class TestCached(unittest.TestCase):
         path = self._dir_path / _HOLA_FILENAME
         expected_message = f'INFO:root:{name}: saved: {path}'
 
-        with self.assertLogs() as cm:
+        with self.assertLogs() as log_context:
             func('hola', data_dir=self._dir_path)
 
-        self.assertEqual(cm.output, [expected_message])
+        self.assertEqual(log_context.output, [expected_message])
 
     # Test loading existing files
     @_parameterize_embed_one
@@ -70,10 +70,10 @@ class TestCached(unittest.TestCase):
         with open(file=path, mode='w', encoding='utf-8') as file:
             json.dump(obj=data, fp=file)
 
-        with self.assertLogs() as cm:
+        with self.assertLogs() as log_context:
             func('hola', data_dir=self._dir_path)
 
-        self.assertEqual(cm.output, [expected_message])
+        self.assertEqual(log_context.output, [expected_message])
 
     # Test different functions access existing files
     @_parameterize_embed_one
@@ -87,10 +87,10 @@ class TestCached(unittest.TestCase):
                     f'INFO:root:{load_func.__name__}: loaded: {path}'
                 )
 
-                with self.assertLogs() as cm:
+                with self.assertLogs() as log_context:
                     load_func('hola', data_dir=self._dir_path)
 
-                self.assertEqual(cm.output, [expected_message])
+                self.assertEqual(log_context.output, [expected_message])
 
     # Test log corresponds to what occurred
 
