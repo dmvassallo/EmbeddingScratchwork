@@ -1,0 +1,36 @@
+In [12]: def announce(func):
+    ...:     @functools.wraps(func)
+    ...:     def wrapper(*args, **kwargs):
+    ...:         print(f'Calling {func!r}')
+    ...:         return func(*args, **kwargs)
+    ...:
+    ...:     return wrapper
+    ...:
+
+In [13]: @announce
+    ...: def square(x):
+    ...:     return x**2
+    ...:
+
+In [14]: square(3)
+Calling <function square at 0x7f1f560fa7a0>
+Out[14]: 9
+
+In [15]: @unittest.mock.patch.multiple(
+    ...:     embed,
+    ...:     embed_one=announce(embed.embed_one),
+    ...:     embed_one_eu=announce(embed.embed_one_eu),
+    ...:     embed_one_req=announce(embed.embed_one_req),
+    ...: )
+    ...: def f(text):
+    ...:     return (
+    ...:         embed.embed_one(text),
+    ...:         embed.embed_one_eu(text),
+    ...:         embed.embed_one_req(text),
+    ...:     )
+    ...:
+
+In [16]: a, b, c = f('Hello, world!')
+Calling <function embed_one at 0x7f1f368f9800>
+Calling <function embed_one_eu at 0x7f1f368fa520>
+Calling <function embed_one_req at 0x7f1f368fa700>

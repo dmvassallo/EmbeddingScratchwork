@@ -4,6 +4,7 @@ __all__ = [
     'getenv_bool',
     'configure_logging',
     'get_maybe_cache_in_memory_decorator',
+    'IndirectCaller',
 ]
 
 import atexit
@@ -123,3 +124,37 @@ def get_maybe_cache_in_memory_decorator():
     if getenv_bool('TESTS_CACHE_EMBEDDING_CALLS'):
         return _cache_in_memory_by(pickle.dumps, stats=_in_memory_cache_stats)
     return _identity_function
+
+
+# FIXME: Document the purpose of this class in greater detail.
+class IndirectCaller:
+    """
+    Callable object that indirectly wraps and calls a function.
+
+    The indirection allows eager parameterization to work with monkey-patching.
+
+    ``__call__``, ``__name__``, and ``__str__`` delegate to the function.
+    """
+
+    __slots__ = ('_supplier',)
+
+    def __init__(self, func_supplier):
+        """Make a caller from a function supplier. Pass ``lambda: func``."""
+        self._supplier = func_supplier
+
+    def __repr__(self):
+        """Vaguely code-like representation for debugging."""
+        return f'{type(self).__name__}(lambda: {self._supplier()!r})'
+
+    def __str__(self):
+        """Fetch the function from the supplier and convert it to a string."""
+        return str(self._supplier())
+
+    def __call__(self, *args, **kwargs):
+        """Fetch the function from the supplier and call it."""
+        return self._supplier()(*args, **kwargs)
+
+    @property
+    def __name__(self):
+        """The name of the function returned by the supplier."""
+        return self._supplier().__name__
