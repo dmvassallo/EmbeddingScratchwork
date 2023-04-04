@@ -15,15 +15,22 @@ import os
 import pickle
 import re
 
-_in_memory_cache_stats = collections.Counter()
-"""Mapping that tracks global cache hit and miss counts. Not thread safe."""
+# FIXME: Use this or remove it.
+try:
+    _cache_in_memory = functools.cache
+except AttributeError:  # No functools.cache before Python 3.9.
+    _cache_in_memory = functools.lru_cache(maxsize=None)
+
+_in_memory_embedding_cache_stats = collections.Counter()
+"""Hits and misses of in-memory embeddings caches in tests. Not thread safe."""
 
 
 @atexit.register
 def _report_nontrivial_cache_statistics():
     """Log global cache statistics, IF any caching has been performed."""
-    if _in_memory_cache_stats:
-        logging.info('In-memory cache stats: %r', _in_memory_cache_stats)
+    if _in_memory_embedding_cache_stats:
+        logging.info('In-memory cache stats: %r',
+                     _in_memory_embedding_cache_stats)
 
 
 def _cache_in_memory_by(key, *, stats):
@@ -122,7 +129,10 @@ def get_maybe_cache_in_memory_decorator():
     Otherwise, the returned decorator is just an identity function.
     """
     if getenv_bool('TESTS_CACHE_EMBEDDING_CALLS'):
-        return _cache_in_memory_by(pickle.dumps, stats=_in_memory_cache_stats)
+        return _cache_in_memory_by(
+            key=pickle.dumps,
+            stats=_in_memory_embedding_cache_stats,
+        )
     return _identity_function
 
 
