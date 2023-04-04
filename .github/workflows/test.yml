@@ -72,5 +72,5 @@ jobs:
         run: python -m unittest -v
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TESTS_CACHE_EMBEDDING_CALLS: 'yes'
+          TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY: 'yes'
           TESTS_LOGGING_LEVEL: 'INFO'

@@ -1,0 +1,160 @@
+test_different_meanings_are_dissimilar (__main__.TestEmbedMany_0_embed_many.test_different_meanings_are_dissimilar) ... DEBUG:root:In-memory cache MISS #1: embed_many
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+DEBUG:openai:api_version=None data='{"input": ["Your text string goes here", "The cat runs.", "El gato corre.", "The dog walks.", "El perro camina."], "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.util.retry:Converted retries value: 2 -> Retry(total=2, connect=None, read=None, redirect=None, status=None)
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.openai.com:443
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=30 request_id=6e1bc592335cd877a044fdfca771c47c response_code=200
+ok
+test_en_and_es_sentences_are_very_similar (__main__.TestEmbedMany_0_embed_many.test_en_and_es_sentences_are_very_similar) ... DEBUG:root:In-memory cache HIT #1: embed_many
+ok
+test_returns_numpy_array (__main__.TestEmbedMany_0_embed_many.test_returns_numpy_array) ... DEBUG:root:In-memory cache HIT #2: embed_many
+ok
+test_shape_is_model_dimension (__main__.TestEmbedMany_0_embed_many.test_shape_is_model_dimension) ... DEBUG:root:In-memory cache HIT #3: embed_many
+ok
+test_different_meanings_are_dissimilar (__main__.TestEmbedMany_1_embed_many_eu.test_different_meanings_are_dissimilar) ... DEBUG:root:In-memory cache MISS #2: embed_many_eu
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings
+DEBUG:openai:api_version=None data='{"input": ["Your text string goes here", "The cat runs.", "El gato corre.", "The dog walks.", "El perro camina."], "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/engines/text-embedding-ada-002/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings processing_ms=43 request_id=327c16436697407906ef20f1b31cb7ef response_code=200
+ok
+test_en_and_es_sentences_are_very_similar (__main__.TestEmbedMany_1_embed_many_eu.test_en_and_es_sentences_are_very_similar) ... DEBUG:root:In-memory cache HIT #4: embed_many_eu
+ok
+test_returns_numpy_array (__main__.TestEmbedMany_1_embed_many_eu.test_returns_numpy_array) ... DEBUG:root:In-memory cache HIT #5: embed_many_eu
+ok
+test_shape_is_model_dimension (__main__.TestEmbedMany_1_embed_many_eu.test_shape_is_model_dimension) ... DEBUG:root:In-memory cache HIT #6: embed_many_eu
+ok
+test_different_meanings_are_dissimilar (__main__.TestEmbedMany_2_embed_many_req.test_different_meanings_are_dissimilar) ... DEBUG:root:In-memory cache MISS #3: embed_many_req
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.openai.com:443
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+ok
+test_en_and_es_sentences_are_very_similar (__main__.TestEmbedMany_2_embed_many_req.test_en_and_es_sentences_are_very_similar) ... DEBUG:root:In-memory cache HIT #7: embed_many_req
+ok
+test_returns_numpy_array (__main__.TestEmbedMany_2_embed_many_req.test_returns_numpy_array) ... DEBUG:root:In-memory cache HIT #8: embed_many_req
+ok
+test_shape_is_model_dimension (__main__.TestEmbedMany_2_embed_many_req.test_shape_is_model_dimension) ... DEBUG:root:In-memory cache HIT #9: embed_many_req
+ok
+test_different_meanings_are_dissimilar (__main__.TestEmbedOne_0_embed_one.test_different_meanings_are_dissimilar) ... DEBUG:root:In-memory cache MISS #4: embed_one
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+DEBUG:openai:api_version=None data='{"input": "Your text string goes here", "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=16 request_id=adf0c412a6fb3a8d20c2ebbb7775fd86 response_code=200
+DEBUG:root:In-memory cache MISS #5: embed_one
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+DEBUG:openai:api_version=None data='{"input": "The cat runs.", "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=24 request_id=a8737c5c8511290abae2a5a61887ca41 response_code=200
+ok
+test_en_and_es_sentence_are_very_similar_0_catrun (__main__.TestEmbedOne_0_embed_one.test_en_and_es_sentence_are_very_similar_0_catrun) ... DEBUG:root:In-memory cache HIT #10: embed_one
+DEBUG:root:In-memory cache MISS #6: embed_one
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+DEBUG:openai:api_version=None data='{"input": "El gato corre.", "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=14 request_id=b6e07b175cd4c1e52f795e30ac774575 response_code=200
+ok
+test_en_and_es_sentence_are_very_similar_1_dogwalk (__main__.TestEmbedOne_0_embed_one.test_en_and_es_sentence_are_very_similar_1_dogwalk) ... DEBUG:root:In-memory cache MISS #7: embed_one
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+DEBUG:openai:api_version=None data='{"input": "The dog walks.", "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=17 request_id=bc358730bba9290be43ca2927e3d0302 response_code=200
+DEBUG:root:In-memory cache MISS #8: embed_one
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+DEBUG:openai:api_version=None data='{"input": "El perro camina.", "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=40 request_id=9c089142724fd93023231c3d503d4b49 response_code=200
+ok
+test_en_and_es_sentence_are_very_similar_2_lionsleep (__main__.TestEmbedOne_0_embed_one.test_en_and_es_sentence_are_very_similar_2_lionsleep) ... DEBUG:root:In-memory cache MISS #9: embed_one
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+DEBUG:openai:api_version=None data='{"input": "The lion sleeps.", "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=31 request_id=8e12d415bcabbf1f260948e6df98f38c response_code=200
+DEBUG:root:In-memory cache MISS #10: embed_one
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+DEBUG:openai:api_version=None data='{"input": "El le\\u00f3n duerme.", "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=16 request_id=5ab38b8b0f15736e5878647a920161ea response_code=200
+ok
+test_returns_numpy_array (__main__.TestEmbedOne_0_embed_one.test_returns_numpy_array) ... DEBUG:root:In-memory cache HIT #11: embed_one
+ok
+test_shape_is_model_dimension (__main__.TestEmbedOne_0_embed_one.test_shape_is_model_dimension) ... DEBUG:root:In-memory cache HIT #12: embed_one
+ok
+test_different_meanings_are_dissimilar (__main__.TestEmbedOne_1_embed_one_eu.test_different_meanings_are_dissimilar) ... DEBUG:root:In-memory cache MISS #11: embed_one_eu
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings
+DEBUG:openai:api_version=None data='{"input": ["Your text string goes here"], "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/engines/text-embedding-ada-002/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings processing_ms=17 request_id=a1bdde44a532f7b752a004d3503994a5 response_code=200
+DEBUG:root:In-memory cache MISS #12: embed_one_eu
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings
+DEBUG:openai:api_version=None data='{"input": ["The cat runs."], "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/engines/text-embedding-ada-002/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings processing_ms=210 request_id=b01d53e3c1e68cf54f1a67cb3f0d6010 response_code=200
+ok
+test_en_and_es_sentence_are_very_similar_0_catrun (__main__.TestEmbedOne_1_embed_one_eu.test_en_and_es_sentence_are_very_similar_0_catrun) ... DEBUG:root:In-memory cache HIT #13: embed_one_eu
+DEBUG:root:In-memory cache MISS #13: embed_one_eu
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings
+DEBUG:openai:api_version=None data='{"input": ["El gato corre."], "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/engines/text-embedding-ada-002/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings processing_ms=13 request_id=214f71cd80d50c85c0ccca70a673f686 response_code=200
+ok
+test_en_and_es_sentence_are_very_similar_1_dogwalk (__main__.TestEmbedOne_1_embed_one_eu.test_en_and_es_sentence_are_very_similar_1_dogwalk) ... DEBUG:root:In-memory cache MISS #14: embed_one_eu
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings
+DEBUG:openai:api_version=None data='{"input": ["The dog walks."], "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/engines/text-embedding-ada-002/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings processing_ms=15 request_id=ff26c83c0a30b481f0a91782eab1fe0c response_code=200
+DEBUG:root:In-memory cache MISS #15: embed_one_eu
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings
+DEBUG:openai:api_version=None data='{"input": ["El perro camina."], "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/engines/text-embedding-ada-002/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings processing_ms=108 request_id=6e4c0f5281d265617edfba8b0016d7cf response_code=200
+ok
+test_en_and_es_sentence_are_very_similar_2_lionsleep (__main__.TestEmbedOne_1_embed_one_eu.test_en_and_es_sentence_are_very_similar_2_lionsleep) ... DEBUG:root:In-memory cache MISS #16: embed_one_eu
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings
+DEBUG:openai:api_version=None data='{"input": ["The lion sleeps."], "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/engines/text-embedding-ada-002/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings processing_ms=17 request_id=fee5a41af6f96d2070c46c00bf051ace response_code=200
+DEBUG:root:In-memory cache MISS #17: embed_one_eu
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings
+DEBUG:openai:api_version=None data='{"input": ["El le\\u00f3n duerme."], "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/engines/text-embedding-ada-002/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/engines/text-embedding-ada-002/embeddings processing_ms=270 request_id=10c45b2bc7daf338d3e5904d66f7bc4b response_code=200
+ok
+test_returns_numpy_array (__main__.TestEmbedOne_1_embed_one_eu.test_returns_numpy_array) ... DEBUG:root:In-memory cache HIT #14: embed_one_eu
+ok
+test_shape_is_model_dimension (__main__.TestEmbedOne_1_embed_one_eu.test_shape_is_model_dimension) ... DEBUG:root:In-memory cache HIT #15: embed_one_eu
+ok
+test_different_meanings_are_dissimilar (__main__.TestEmbedOne_2_embed_one_req.test_different_meanings_are_dissimilar) ... DEBUG:root:In-memory cache MISS #18: embed_one_req
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.openai.com:443
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+DEBUG:root:In-memory cache MISS #19: embed_one_req
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.openai.com:443
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+ok
+test_en_and_es_sentence_are_very_similar_0_catrun (__main__.TestEmbedOne_2_embed_one_req.test_en_and_es_sentence_are_very_similar_0_catrun) ... DEBUG:root:In-memory cache HIT #16: embed_one_req
+DEBUG:root:In-memory cache MISS #20: embed_one_req
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.openai.com:443
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+ok
+test_en_and_es_sentence_are_very_similar_1_dogwalk (__main__.TestEmbedOne_2_embed_one_req.test_en_and_es_sentence_are_very_similar_1_dogwalk) ... DEBUG:root:In-memory cache MISS #21: embed_one_req
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.openai.com:443
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+DEBUG:root:In-memory cache MISS #22: embed_one_req
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.openai.com:443
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+ok
+test_en_and_es_sentence_are_very_similar_2_lionsleep (__main__.TestEmbedOne_2_embed_one_req.test_en_and_es_sentence_are_very_similar_2_lionsleep) ... DEBUG:root:In-memory cache MISS #23: embed_one_req
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.openai.com:443
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+DEBUG:root:In-memory cache MISS #24: embed_one_req
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.openai.com:443
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+ok
+test_returns_numpy_array (__main__.TestEmbedOne_2_embed_one_req.test_returns_numpy_array) ... DEBUG:root:In-memory cache HIT #17: embed_one_req
+ok
+test_shape_is_model_dimension (__main__.TestEmbedOne_2_embed_one_req.test_shape_is_model_dimension) ... DEBUG:root:In-memory cache HIT #18: embed_one_req
+ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 3.828s
+
+OK
+INFO:root:In-memory cache stats: namespace(misses=24, hits=18)

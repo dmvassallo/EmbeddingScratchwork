@@ -3,7 +3,7 @@
 __all__ = [
     'getenv_bool',
     'configure_logging',
-    'get_maybe_cache_in_memory_decorator',
+    'maybe_cache_embeddings_in_memory',
     'IndirectCaller',
 ]
 
@@ -14,12 +14,9 @@ import os
 import pickle
 import re
 import types
+import unittest.mock
 
-# FIXME: Use this or remove it.
-try:
-    _cache_in_memory = functools.cache
-except AttributeError:  # No functools.cache before Python 3.9.
-    _cache_in_memory = functools.lru_cache(maxsize=None)
+import embed
 
 _in_memory_embedding_cache_stats = types.SimpleNamespace(misses=0, hits=0)
 """Hits and misses of in-memory embeddings caches in tests. Not thread safe."""
@@ -37,7 +34,7 @@ def _cache_in_memory_by(key, *, stats):
     """
     Similar to ``functools.cache``, but uses an arbitrary key selector.
 
-    This logs, is only suitable for use in tests, and is not thread-safe.
+    Also, this logs, is only suitable for use in tests, and is not thread-safe.
     """
     def decorator(func):
         cache = {}
@@ -61,6 +58,15 @@ def _cache_in_memory_by(key, *, stats):
         return wrapper
 
     return decorator
+
+
+def _cache_in_memory_for_testing(func):
+    """Wrap an embedding function and cache, so tests make fewer API calls."""
+    independent_cache = _cache_in_memory_by(
+        key=pickle.dumps,
+        stats=_in_memory_embedding_cache_stats,
+    )
+    return independent_cache(func)
 
 
 def _identity_function(arg):
@@ -111,39 +117,64 @@ def configure_logging():
     logging.basicConfig(level=getattr(logging, level))
 
 
-# FIXME: Somehow rename TESTS_CACHE_EMBEDDING_CALLS (everywhere) to something
-#        that clarifies it is not specifically related to embed.cached caching.
-def get_maybe_cache_in_memory_decorator():
+def _get_maybe_cache_embeddings_in_memory():
     """
-    Get a decorator to use on unary functions that might add in-memory caching.
+    Get a decorator that may make test cases monkey-patch in in-memory caching.
 
-    The decision of whether to cache or not is made eagerly, in this function.
+    This function returns a function, which is a test fixture in decorator
+    form. If tests were not configured to use in-memory caching, then
+    decorating a test case with the fixture has no effect. If they were so
+    configured, then decorating a test case with the fixture augments it with
+    arrangement logic to monkey-patch each ``embed.embed_*`` function to equip
+    it with in-memory caching, and cleanup logic to unpatch them. Although
+    patching and unpatching happen on each test run, the caches live as long as
+    the test runner process; the same caches, without flushing, are reused.
 
-    If the ``TESTS_CACHE_EMBEDDING_CALLS`` environment variable holds a truthy
-    value (``true``, ``yes``, or ``1`, case-insensitively), the returned
-    decorator caches in memory. Pickling is used for cache keys, to support
-    non-hashable arguments and treat arguments of different types as different
-    even if equal. The in-memory cache is only suitable for use in tests (so
-    they make fewer API calls on CI). In particular, it isn't thread-safe.
+    In-memory caching of embeddings is not done by default. This setting is
+    controlled by the ``TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY`` environment
+    variable, parsed at process startup by ``getenv_bool``. When in-memory
+    caching of embeddings is enabled, each embedding function uses a separate
+    in-memory cache, so bugs in one are less likely to hide bugs in others.
 
-    Otherwise, the returned decorator is just an identity function.
+    The fixture this function returns can be applied to a test function/method
+    or to a test class. If it is applied to a class, then the class must be a
+    subclass of ``unittest.TestCase``, and the effect is the same as applying
+    it to every ``test_*`` method in the class. (See ``unittest.mock.patch``.)
     """
-    if getenv_bool('TESTS_CACHE_EMBEDDING_CALLS'):
-        return _cache_in_memory_by(
-            key=pickle.dumps,
-            stats=_in_memory_embedding_cache_stats,
+    # TODO: We have no stable interface, so drop this check after a short time.
+    if 'TESTS_CACHE_EMBEDDING_CALLS' in os.environ:
+        raise RuntimeError(
+            'The TESTS_CACHE_EMBEDDING_CALLS environment variable is no longer'
+            ' supported. Use TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY instead.',
         )
-    return _identity_function
+
+    if not getenv_bool('TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY'):
+        return _identity_function
+
+    patches = {
+        name: _cache_in_memory_for_testing(getattr(embed, name))
+        for name in embed.__all__
+        if name.startswith('embed_')
+    }
+    return unittest.mock.patch.multiple(embed, **patches)
 
 
-# FIXME: Document the purpose of this class in greater detail.
+# FIXME: Probably move most info from the _get_maybe_cache_embeddings_in_memory
+#        docstring to this docstring. (That's just a helper for defining this.)
+maybe_cache_embeddings_in_memory = _get_maybe_cache_embeddings_in_memory()
+"""Decorator that makes test case patch in in-memory caching, if enabled."""
+
+
 class IndirectCaller:
     """
     Callable object that indirectly wraps and calls a function.
 
-    The indirection allows eager parameterization to work with monkey-patching.
+    ``__call__``, ``__name__``, and ``__str__`` call the supplier each time and
+    delegate to the function it returns. This extra indirection allows eager
+    parameterization to work with monkey-patching.
 
-    ``__call__``, ``__name__``, and ``__str__`` delegate to the function.
+    This facilitates using ``@parameterized.expand``/``@parameterized_class``
+    together with ``@maybe_cache_embeddings_in_memory``.
     """
 
     __slots__ = ('_supplier',)

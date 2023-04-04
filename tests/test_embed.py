@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
-"""Tests for the embedding functions in the ``embed`` module."""
+"""
+Tests for embedding functions residing directly in the ``embed`` module.
+
+Those embedding functions are the ones that do not cache to disk.
+"""
 
 # pylint: disable=missing-function-docstring
 # All test methods have self-documenting names.
@@ -11,30 +15,23 @@ import unittest
 import numpy as np
 from parameterized import parameterized, parameterized_class
 
-from embed import (
-    embed_one,
-    embed_many,
-    embed_one_eu,
-    embed_many_eu,
-    embed_one_req,
-    embed_many_req,
-)
+import embed
 from tests import _helpers
 
 _helpers.configure_logging()
-_maybe_cache_in_memory = _helpers.get_maybe_cache_in_memory_decorator()
 
 
 @parameterized_class(('name', 'func'), [
-    (embed_one.__name__,
-        staticmethod(_maybe_cache_in_memory(embed_one))),
-    (embed_one_eu.__name__,
-        staticmethod(_maybe_cache_in_memory(embed_one_eu))),
-    (embed_one_req.__name__,
-        staticmethod(_maybe_cache_in_memory(embed_one_req))),
+    (embed.embed_one.__name__,
+        _helpers.IndirectCaller(lambda: embed.embed_one)),
+    (embed.embed_one_eu.__name__,
+        _helpers.IndirectCaller(lambda: embed.embed_one_eu)),
+    (embed.embed_one_req.__name__,
+        _helpers.IndirectCaller(lambda: embed.embed_one_req)),
 ])
+@_helpers.maybe_cache_embeddings_in_memory
 class TestEmbedOne(unittest.TestCase):
-    """Tests for ``embed_one`` and ``embed_one_eu``."""
+    """Tests for ``embed_one``, ``embed_one_eu``, and ``embed_one_req``."""
 
     func: Any
 
@@ -69,15 +66,16 @@ class TestEmbedOne(unittest.TestCase):
 
 
 @parameterized_class(('name', 'func'), [
-    (embed_many.__name__,
-        staticmethod(_maybe_cache_in_memory(embed_many))),
-    (embed_many_eu.__name__,
-        staticmethod(_maybe_cache_in_memory(embed_many_eu))),
-    (embed_many_req.__name__,
-        staticmethod(_maybe_cache_in_memory(embed_many_req))),
+    (embed.embed_many.__name__,
+        _helpers.IndirectCaller(lambda: embed.embed_many)),
+    (embed.embed_many_eu.__name__,
+        _helpers.IndirectCaller(lambda: embed.embed_many_eu)),
+    (embed.embed_many_req.__name__,
+        _helpers.IndirectCaller(lambda: embed.embed_many_req)),
 ])
+@_helpers.maybe_cache_embeddings_in_memory
 class TestEmbedMany(unittest.TestCase):
-    """Tests for ``embed_many`` and ``embed_many_eu``."""
+    """Tests for ``embed_many``, ``embed_many_eu``, and ``embed_many_req``."""
 
     func: Any
 

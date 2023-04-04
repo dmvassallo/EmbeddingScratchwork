@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 
-"""Tests for the caching versions in the embed.cached submodule."""
+"""
+Tests for embedding functions in the ``embed.cached`` submodule.
+
+Those embedding functions are the versions that cache to disk. They are
+otherwise like the same-named functions residing directly in ``embed``.
+"""
 
 # pylint: disable=missing-function-docstring
 # All test methods have self-documenting names.
