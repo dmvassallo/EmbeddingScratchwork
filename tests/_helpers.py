@@ -8,12 +8,12 @@ __all__ = [
 ]
 
 import atexit
-import collections
 import functools
 import logging
 import os
 import pickle
 import re
+import types
 
 # FIXME: Use this or remove it.
 try:
@@ -21,7 +21,7 @@ try:
 except AttributeError:  # No functools.cache before Python 3.9.
     _cache_in_memory = functools.lru_cache(maxsize=None)
 
-_in_memory_embedding_cache_stats = collections.Counter()
+_in_memory_embedding_cache_stats = types.SimpleNamespace(misses=0, hits=0)
 """Hits and misses of in-memory embeddings caches in tests. Not thread safe."""
 
 
@@ -48,14 +48,14 @@ def _cache_in_memory_by(key, *, stats):
             try:
                 value = cache[cache_key]
             except KeyError:
-                stats['misses'] += 1
+                stats.misses += 1
                 logging.debug('In-memory cache MISS #%d: %s',
-                              stats['misses'], wrapper.__name__)
+                              stats.misses, wrapper.__name__)
                 value = cache[cache_key] = func(*args, **kwargs)
             else:
-                stats['hits'] += 1
+                stats.hits += 1
                 logging.debug('In-memory cache HIT #%d: %s',
-                              stats['hits'], wrapper.__name__)
+                              stats.hits, wrapper.__name__)
             return value
 
         return wrapper
