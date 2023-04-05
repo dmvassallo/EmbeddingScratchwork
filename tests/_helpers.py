@@ -199,14 +199,14 @@ class Caller:
         self._name = func.__name__
 
         with contextlib.suppress(AttributeError):
-            if func is self._resolve():
+            if self._resolve() is func:
                 return
 
-        raise RuntimeError(f'{func!r} is not {self!r}')
+        raise RuntimeError(f'{self._repr_arg} is not {func!r}')
 
     def __repr__(self):
         """Code-like representation for debugging. Possibly ``exec``-able."""
-        return f'{type(self).__name__}({self._module}.{self._name})'
+        return f'{type(self).__name__}({self._repr_arg})'
 
     def __str__(self):
         """The ``str`` of the wrapped function (as it currently resolves)."""
@@ -220,6 +220,11 @@ class Caller:
     def __name__(self):
         """The name of the (original) wrapped function from its metadata."""
         return self._name
+
+    @property
+    def _repr_arg(self):
+        """The module.function style string."""
+        return f'{self._module.__name__}.{self._name}'
 
     def _resolve(self):
         """Look up the function. If it's monkey-patched, this reflects that."""
