@@ -28,7 +28,7 @@ DEFAULT_DATA_DIR = pathlib.Path('data')
 
 def _compute_blake3_hash(serialized_data):
     """Compute a blake3 hash of binary data."""
-    # pylint: disable=not-callable  # Callable native code without type hints.
+    # pylint: disable=not-callable  # Callable native code without type stubs.
     return blake3.blake3(serialized_data)
 
 
