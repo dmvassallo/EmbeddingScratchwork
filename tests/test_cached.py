@@ -13,11 +13,12 @@ otherwise like the same-named functions residing directly in ``embed``.
 import json
 import pathlib
 import tempfile
+from typing import Any
 import unittest
 
-from parameterized import parameterized
+from parameterized import parameterized_class
 
-import embed.cached
+from embed import cached
 from tests import _helpers
 
 _helpers.configure_logging()
@@ -27,17 +28,18 @@ _HOLA_FILENAME = (
 )
 """Filename that would be generated from the input ``'hola'``."""
 
-_parameterize_embed_one = parameterized.expand([
-    (embed.cached.embed_one.__name__, embed.cached.embed_one),
-    (embed.cached.embed_one_eu.__name__, embed.cached.embed_one_eu),
-    (embed.cached.embed_one_req.__name__, embed.cached.embed_one_req),
+
+@parameterized_class(('name', 'func'), [
+    (cached.embed_one.__name__, staticmethod(cached.embed_one)),
+    (cached.embed_one_eu.__name__, staticmethod(cached.embed_one_eu)),
+    (cached.embed_one_req.__name__, staticmethod(cached.embed_one_req)),
 ])
-"""Decorator to parameterize by ``embed_one*`` functions for testing."""
-
-
 @_helpers.maybe_cache_embeddings_in_memory
-class TestCached(unittest.TestCase):
-    """Tests for disk cached versions of the embedding functions."""
+class TestDiskCachedEmbedOne(unittest.TestCase):
+    """Tests of ``embed.cached.embed_one*`` functions, which cache to disk."""
+
+    name: Any
+    func: Any
 
     def setUp(self):
         """Create a temporary directory."""
@@ -52,40 +54,37 @@ class TestCached(unittest.TestCase):
     # Test returned embeddings could plausibly be correct
 
     # Test saving new files
-    @_parameterize_embed_one
-    def test_saves_file_if_not_cached(self, name, func):
+    def test_saves_file_if_not_cached(self):
         path = self._dir_path / _HOLA_FILENAME
-        expected_message = f'INFO:root:{name}: saved: {path}'
+        expected_message = f'INFO:root:{self.name}: saved: {path}'
 
         with self.assertLogs() as log_context:
-            func('hola', data_dir=self._dir_path)
+            self.func('hola', data_dir=self._dir_path)
 
         self.assertEqual(log_context.output, [expected_message])
 
     # Test loading existing files
-    @_parameterize_embed_one
-    def test_loads_file_if_cached(self, name, func):
+    def test_loads_file_if_cached(self):
         path = self._dir_path / _HOLA_FILENAME
-        expected_message = f'INFO:root:{name}: loaded: {path}'
+        expected_message = f'INFO:root:{self.name}: loaded: {path}'
 
         data = [0.0] * 1536
         with open(file=path, mode='w', encoding='utf-8') as file:
             json.dump(obj=data, fp=file)
 
         with self.assertLogs() as log_context:
-            func('hola', data_dir=self._dir_path)
+            self.func('hola', data_dir=self._dir_path)
 
         self.assertEqual(log_context.output, [expected_message])
 
     # Test different functions access existing files
-    @_parameterize_embed_one
-    def test_loads_from_any_implementation(self, _save_func_name, save_func):
+    def test_saved_file_can_load_with_any_implementation(self):
         path = self._dir_path / _HOLA_FILENAME
-        save_func('hola', data_dir=self._dir_path)
+        self.func('hola', data_dir=self._dir_path)
 
-        for load_func in (embed.cached.embed_one,
-                          embed.cached.embed_one_eu,
-                          embed.cached.embed_one_req):
+        for load_func in (cached.embed_one,
+                          cached.embed_one_eu,
+                          cached.embed_one_req):
             with self.subTest(load_func=load_func):
                 expected_message = (
                     f'INFO:root:{load_func.__name__}: loaded: {path}'
@@ -99,6 +98,9 @@ class TestCached(unittest.TestCase):
     # Test log corresponds to what occurred
 
     # Test even when data_dir is not passed
+
+
+# FIXME: Test the embed.cached.embed_many* functions.
 
 
 if __name__ == '__main__':
