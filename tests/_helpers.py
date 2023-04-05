@@ -4,17 +4,20 @@ __all__ = [
     'getenv_bool',
     'configure_logging',
     'maybe_cache_embeddings_in_memory',
-    'IndirectCaller',
+    'parameterize_from_suppliers',
 ]
 
 import atexit
 import functools
+import inspect
 import logging
 import os
 import pickle
 import re
 import types
 import unittest.mock
+
+from parameterized import parameterized, parameterized_class
 
 import embed
 
@@ -165,7 +168,7 @@ maybe_cache_embeddings_in_memory = _get_maybe_cache_embeddings_in_memory()
 """Decorator that makes test case patch in in-memory caching, if enabled."""
 
 
-class IndirectCaller:
+class _IndirectCaller:
     """
     Callable object that indirectly wraps and calls a function.
 
@@ -199,3 +202,27 @@ class IndirectCaller:
     def __name__(self):
         """The name of the function returned by the supplier."""
         return self._supplier().__name__
+
+
+def parameterize_from_suppliers(*func_suppliers):
+    """
+    Parameterize a test function or class with ``name`` and ``func``.
+
+    With functions ``f``, ``g``, and ``h`` in modules ``a``, ``b``, and ``c``,
+    use ``@parameterize_from_supplier(lambda: a.f, lambda: b.g, lambda: c.h)``.
+    """
+    input_values = [
+        (supplier().__name__, _IndirectCaller(supplier))
+        for supplier in func_suppliers
+    ]
+    function_decorator = parameterized.expand(input_values)
+    class_decorator = parameterized_class(('name', 'func'), input_values)
+
+    def decorator(func_or_cls):
+        if inspect.isroutine(func_or_cls):
+            return function_decorator(func_or_cls)
+        if inspect.isclass(func_or_cls):
+            return class_decorator(func_or_cls)
+        raise TypeError(f"func_or_cls can't be {type(func_or_cls).__name__!r}")
+
+    return decorator

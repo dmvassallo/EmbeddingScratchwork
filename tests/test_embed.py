@@ -13,7 +13,7 @@ from typing import Any
 import unittest
 
 import numpy as np
-from parameterized import parameterized, parameterized_class
+from parameterized import parameterized
 
 import embed
 from tests import _helpers
@@ -21,14 +21,11 @@ from tests import _helpers
 _helpers.configure_logging()
 
 
-@parameterized_class(('name', 'func'), [
-    (embed.embed_one.__name__,
-        _helpers.IndirectCaller(lambda: embed.embed_one)),
-    (embed.embed_one_eu.__name__,
-        _helpers.IndirectCaller(lambda: embed.embed_one_eu)),
-    (embed.embed_one_req.__name__,
-        _helpers.IndirectCaller(lambda: embed.embed_one_req)),
-])
+@_helpers.parameterize_from_suppliers(
+    lambda: embed.embed_one,
+    lambda: embed.embed_one_eu,
+    lambda: embed.embed_one_req,
+)
 @_helpers.maybe_cache_embeddings_in_memory
 class TestEmbedOne(unittest.TestCase):
     """Tests for ``embed_one``, ``embed_one_eu``, and ``embed_one_req``."""
@@ -65,14 +62,11 @@ class TestEmbedOne(unittest.TestCase):
         self.assertLess(result, 0.8)
 
 
-@parameterized_class(('name', 'func'), [
-    (embed.embed_many.__name__,
-        _helpers.IndirectCaller(lambda: embed.embed_many)),
-    (embed.embed_many_eu.__name__,
-        _helpers.IndirectCaller(lambda: embed.embed_many_eu)),
-    (embed.embed_many_req.__name__,
-        _helpers.IndirectCaller(lambda: embed.embed_many_req)),
-])
+@_helpers.parameterize_from_suppliers(
+    lambda: embed.embed_many,
+    lambda: embed.embed_many_eu,
+    lambda: embed.embed_many_req,
+)
 class TestEmbedMany(unittest.TestCase):
     """Tests for ``embed_many``, ``embed_many_eu``, and ``embed_many_req``."""
 
