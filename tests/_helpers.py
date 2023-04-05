@@ -4,20 +4,19 @@ __all__ = [
     'getenv_bool',
     'configure_logging',
     'maybe_cache_embeddings_in_memory',
-    'parameterize_from_suppliers',
+    'Caller',
 ]
 
 import atexit
+import contextlib
 import functools
-import inspect
 import logging
 import os
 import pickle
 import re
+import sys
 import types
 import unittest.mock
-
-from parameterized import parameterized, parameterized_class
 
 import embed
 
@@ -168,61 +167,34 @@ maybe_cache_embeddings_in_memory = _get_maybe_cache_embeddings_in_memory()
 """Decorator that makes test case patch in in-memory caching, if enabled."""
 
 
-class _IndirectCaller:
-    """
-    Callable object that indirectly wraps and calls a function.
+# FIXME: Add method docstrings.
+class Caller:
+    """Function proxy that supports monkey-patching."""
 
-    ``__call__``, ``__name__``, and ``__str__`` call the supplier each time and
-    delegate to the function it returns. This extra indirection allows eager
-    parameterization to work with monkey-patching.
+    __slots__ = ('_module', '_name')
 
-    This facilitates using ``@parameterized.expand``/``@parameterized_class``
-    together with ``@maybe_cache_embeddings_in_memory``.
-    """
+    def __init__(self, func):
+        self._module = sys.modules[func.__module__]
+        self._name = func.__name__
 
-    __slots__ = ('_supplier',)
+        with contextlib.suppress(AttributeError):
+            if func is self._resolve():
+                return
 
-    def __init__(self, func_supplier):
-        """Make a caller from a function supplier. Pass ``lambda: func``."""
-        self._supplier = func_supplier
+        raise RuntimeError(f'{func!r} is not {self!r}')
 
     def __repr__(self):
-        """Vaguely code-like representation for debugging."""
-        return f'{type(self).__name__}(lambda: {self._supplier()!r})'
+        return f'{type(self).__name__}({self._module}.{self._name})'
 
     def __str__(self):
-        """Fetch the function from the supplier and convert it to a string."""
-        return str(self._supplier())
+        return str(self._resolve())
 
     def __call__(self, *args, **kwargs):
-        """Fetch the function from the supplier and call it."""
-        return self._supplier()(*args, **kwargs)
+        return self._resolve()(*args, **kwargs)
 
     @property
     def __name__(self):
-        """The name of the function returned by the supplier."""
-        return self._supplier().__name__
+        return self._name
 
-
-def parameterize_from_suppliers(*func_suppliers):
-    """
-    Parameterize a test function or class with ``name`` and ``func``.
-
-    With functions ``f``, ``g``, and ``h`` in modules ``a``, ``b``, and ``c``,
-    use ``@parameterize_from_supplier(lambda: a.f, lambda: b.g, lambda: c.h)``.
-    """
-    input_values = [
-        (supplier().__name__, _IndirectCaller(supplier))
-        for supplier in func_suppliers
-    ]
-    function_decorator = parameterized.expand(input_values)
-    class_decorator = parameterized_class(('name', 'func'), input_values)
-
-    def decorator(func_or_cls):
-        if inspect.isroutine(func_or_cls):
-            return function_decorator(func_or_cls)
-        if inspect.isclass(func_or_cls):
-            return class_decorator(func_or_cls)
-        raise TypeError(f"func_or_cls can't be {type(func_or_cls).__name__!r}")
-
-    return decorator
+    def _resolve(self):
+        return getattr(self._module, self._name)
