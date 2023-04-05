@@ -136,8 +136,8 @@ def _get_maybe_cache_embeddings_in_memory():
     caching of embeddings is enabled, each embedding function uses a separate
     in-memory cache, so bugs in one are less likely to hide bugs in others.
 
-    The fixture this function returns can be applied to a test function/method
-    or to a test class. If it is applied to a class, then the class must be a
+    The fixture this function returns can be applied to a function/method or to
+    a whole test class. If it is applied to a class, then the class must be a
     subclass of ``unittest.TestCase``, and the effect is the same as applying
     it to every ``test_*`` method in the class. (See ``unittest.mock.patch``.)
     """

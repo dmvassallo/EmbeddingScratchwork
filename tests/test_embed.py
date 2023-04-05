@@ -73,12 +73,12 @@ class TestEmbedOne(unittest.TestCase):
     (embed.embed_many_req.__name__,
         _helpers.IndirectCaller(lambda: embed.embed_many_req)),
 ])
-@_helpers.maybe_cache_embeddings_in_memory
 class TestEmbedMany(unittest.TestCase):
     """Tests for ``embed_many``, ``embed_many_eu``, and ``embed_many_req``."""
 
     func: Any
 
+    @_helpers.maybe_cache_embeddings_in_memory
     def setUp(self):
         self._many = self.func([
             'Your text string goes here',
