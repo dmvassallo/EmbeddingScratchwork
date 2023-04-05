@@ -8,6 +8,9 @@ import openai
 from parameterized import parameterized
 
 import embed
+from tests import _helpers
+
+_helpers.configure_logging()
 
 
 class TestApiKey(unittest.TestCase):

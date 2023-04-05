@@ -20,6 +20,11 @@ import unittest.mock
 
 import embed
 
+try:
+    _cache_in_memory = functools.cache
+except AttributeError:  # No functools.cache before Python 3.9.
+    _cache_in_memory = functools.lru_cache(maxsize=None)
+
 _in_memory_embedding_cache_stats = types.SimpleNamespace(misses=0, hits=0)
 """Hits and misses of in-memory embeddings caches in tests. Not thread safe."""
 
@@ -32,7 +37,7 @@ def _report_nontrivial_cache_statistics():
                      _in_memory_embedding_cache_stats)
 
 
-def _cache_in_memory_by(key, *, stats):
+def _logged_cache_in_memory_by(key, *, stats):
     """
     Similar to ``functools.cache``, but uses an arbitrary key selector.
 
@@ -62,9 +67,9 @@ def _cache_in_memory_by(key, *, stats):
     return decorator
 
 
-def _cache_in_memory_for_testing(func):
+def _logged_cache_in_memory_for_testing(func):
     """Wrap an embedding function and cache, so tests make fewer API calls."""
-    independent_cache = _cache_in_memory_by(
+    independent_cache = _logged_cache_in_memory_by(
         key=pickle.dumps,
         stats=_in_memory_embedding_cache_stats,
     )
@@ -102,6 +107,7 @@ def getenv_bool(name):
         f"Can't parse environment variable as boolean: {name}={value!r}")
 
 
+@_cache_in_memory
 def configure_logging():
     """
     Set logging level from the ``TESTS_LOGGING_LEVEL`` environment variable.
@@ -110,6 +116,8 @@ def configure_logging():
     Otherwise, the variable is treated as a string that names the logging
     level. It is case-insensitive. For example, ``DEBUG`` may be written as
     ``Debug``. Numeric and custom-defined logging levels are not supported.
+
+    Subsequent calls to this function have no effect.
     """
     level = os.environ.get('TESTS_LOGGING_LEVEL', default='').strip().upper()
     if not level:
@@ -154,7 +162,7 @@ def _get_maybe_cache_embeddings_in_memory():
         return _identity_function
 
     patches = {
-        name: _cache_in_memory_for_testing(getattr(embed, name))
+        name: _logged_cache_in_memory_for_testing(getattr(embed, name))
         for name in embed.__all__
         if name.startswith('embed_')
     }

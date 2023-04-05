@@ -31,6 +31,8 @@ import unittest
 from tests import _helpers
 import embed
 
+_helpers.configure_logging()
+
 _STACK_SIZE = 32_768
 """Stack size in bytes for newly created worker threads. Do not change this."""
 
