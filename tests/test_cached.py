@@ -17,14 +17,7 @@ import unittest
 
 from parameterized import parameterized
 
-from embed.cached import (
-    embed_one,
-    embed_many,
-    embed_one_eu,
-    embed_many_eu,
-    embed_one_req,
-    embed_many_req,
-)
+import embed.cached
 
 _HOLA_FILENAME = (
     'b58e4a60c963f8b3c43d83cc9245020ce71d8311fa2f48cfd36deed6f472a71b.json'
@@ -32,9 +25,9 @@ _HOLA_FILENAME = (
 """Filename that would be generated from the input ``'hola'``."""
 
 _parameterize_embed_one = parameterized.expand([
-    (embed_one.__name__, embed_one),
-    (embed_one_eu.__name__, embed_one_eu),
-    (embed_one_req.__name__, embed_one_req),
+    (embed.cached.embed_one.__name__, embed.cached.embed_one),
+    (embed.cached.embed_one_eu.__name__, embed.cached.embed_one_eu),
+    (embed.cached.embed_one_req.__name__, embed.cached.embed_one_req),
 ])
 """Decorator to parameterize by ``embed_one*`` functions for testing."""
 
@@ -86,7 +79,9 @@ class TestCached(unittest.TestCase):
         path = self._dir_path / _HOLA_FILENAME
         save_func('hola', data_dir=self._dir_path)
 
-        for load_func in (embed_one, embed_one_eu, embed_one_req):
+        for load_func in (embed.cached.embed_one,
+                          embed.cached.embed_one_eu,
+                          embed.cached.embed_one_req):
             with self.subTest(load_func=load_func):
                 expected_message = (
                     f'INFO:root:{load_func.__name__}: loaded: {path}'
