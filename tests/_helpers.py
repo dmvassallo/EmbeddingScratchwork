@@ -149,27 +149,9 @@ def _logged_cache_in_memory_for_testing(func):
 
 def _get_maybe_cache_embeddings_in_memory():
     """
-    Get a decorator that may make test cases monkey-patch in in-memory caching.
+    Create a decorator that may monkey-patch in-memory caching for test cases.
 
-    This function returns a function, which is a test fixture in decorator
-    form. If tests were not configured to use in-memory caching, then
-    decorating a test case with the fixture has no effect. If they were so
-    configured, then decorating a test case with the fixture augments it with
-    arrangement logic to monkey-patch each ``embed.embed_*`` function to equip
-    it with in-memory caching, and cleanup logic to unpatch them. Although
-    patching and unpatching happen on each test run, the caches live as long as
-    the test runner process; the same caches, without flushing, are reused.
-
-    In-memory caching of embeddings is not done by default. This setting is
-    controlled by the ``TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY`` environment
-    variable, parsed at process startup by ``getenv_bool``. When in-memory
-    caching of embeddings is enabled, each embedding function uses a separate
-    in-memory cache, so bugs in one are less likely to hide bugs in others.
-
-    The fixture this function returns can be applied to a function/method or to
-    a whole test class. If it is applied to a class, then the class must be a
-    subclass of ``unittest.TestCase``, and the effect is the same as applying
-    it to every ``test_*`` method in the class. (See ``unittest.mock.patch``.)
+    See ``maybe_cache_embeddings_in_memory`` for details.
     """
     if not getenv_bool('TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY'):
         return _identity_function
@@ -182,10 +164,28 @@ def _get_maybe_cache_embeddings_in_memory():
     return unittest.mock.patch.multiple(embed, **patches)
 
 
-# FIXME: Probably move most info from the _get_maybe_cache_embeddings_in_memory
-#        docstring to this docstring. (That's just a helper for defining this.)
 maybe_cache_embeddings_in_memory = _get_maybe_cache_embeddings_in_memory()
-"""Decorator that makes test case patch in in-memory caching, if enabled."""
+"""
+Decorator that may monkey-patch in-memory caching for test cases.
+
+This is a text fixture in decorator form. If tests were not configured to use
+in-memory caching, it has no effect. If they were, the decorated test case
+gains and arrange step that monkey-patches ``embed.embed_*`` functions to equip
+them with in-memory caching, and a cleanup step that unpatches them. Although
+patching and unpatching happen on each test run, the caches live as long as the
+test runner process. Cached embeddings are thus reused across tests.
+
+This can be applied to a function/method or a whole test class. If applied to a
+class, the class must be a subclass of ``unittest.TestCase``, and the effect is
+the same as applying it to every ``test_*`` method in the class. Occasionally
+it may make sense to decorate a function that is not conceptually a test case.
+(See ``unittest.mock.patch`` for more information on these patching semantics.)
+
+In-memory caching is not done by default. It is controlled by the
+``TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY`` environment variable, parsed at
+process startup by ``getenv_bool``. If it is enabled, each embedding function
+has its own in-memory cache, so bugs in some don't hide bugs in others.
+"""
 
 
 class Caller:
