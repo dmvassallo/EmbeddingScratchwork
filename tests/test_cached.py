@@ -18,6 +18,7 @@ import unittest
 from parameterized import parameterized
 
 import embed.cached
+from tests import _helpers
 
 _HOLA_FILENAME = (
     'b58e4a60c963f8b3c43d83cc9245020ce71d8311fa2f48cfd36deed6f472a71b.json'
@@ -32,6 +33,7 @@ _parameterize_embed_one = parameterized.expand([
 """Decorator to parameterize by ``embed_one*`` functions for testing."""
 
 
+@_helpers.maybe_cache_embeddings_in_memory
 class TestCached(unittest.TestCase):
     """Tests for disk cached versions of the embedding functions."""
 
