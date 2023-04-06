@@ -15,7 +15,9 @@ import pathlib
 import tempfile
 from typing import Any
 import unittest
+import unittest.mock
 
+import numpy as np
 from parameterized import parameterized_class
 
 from embed import cached
@@ -53,6 +55,16 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
     # Test returned embeddings could plausibly be correct
 
+    # Test delegation to the non-caching version
+    def test_calls_same_name_non_caching_version_if_not_cached(self):
+        fake_data = np.zeros(1536, dtype=np.float32)
+
+        with unittest.mock.patch(f'embed.{self.name}', return_value=fake_data,
+                                 ) as mock:
+            self.func('hola', data_dir=self._dir_path)
+
+        mock.assert_called_once_with('hola')
+
     # Test saving new files
     def test_saves_file_if_not_cached(self):
         path = self._dir_path / _HOLA_FILENAME
@@ -67,10 +79,10 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     def test_loads_file_if_cached(self):
         path = self._dir_path / _HOLA_FILENAME
         expected_message = f'INFO:root:{self.name}: loaded: {path}'
+        fake_data = [0.0] * 1536
 
-        data = [0.0] * 1536
         with open(file=path, mode='w', encoding='utf-8') as file:
-            json.dump(obj=data, fp=file)
+            json.dump(obj=fake_data, fp=file)
 
         with self.assertLogs() as log_context:
             self.func('hola', data_dir=self._dir_path)
