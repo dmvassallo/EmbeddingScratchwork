@@ -93,7 +93,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
         self.assertEqual(log_context.output, [expected_message])
 
     # Test different functions access existing files
-    def test_saved_file_can_load_with_any_implementation(self):
+    def test_saves_file_that_any_implementation_can_load(self):
         path = self._dir_path / _HOLA_FILENAME
         self.func('hola', data_dir=self._dir_path)
 
