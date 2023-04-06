@@ -170,16 +170,16 @@ Decorator that may monkey-patch in-memory caching for test cases.
 
 This is a text fixture in decorator form. If tests were not configured to use
 in-memory caching, it has no effect. If they were, the decorated test case
-gains and arrange step that monkey-patches ``embed.embed_*`` functions to equip
+gains an arrange step that monkey-patches ``embed.embed_*`` functions to equip
 them with in-memory caching, and a cleanup step that unpatches them. Although
 patching and unpatching happen on each test run, the caches live as long as the
 test runner process. Cached embeddings are thus reused across tests.
 
 This can be applied to a function/method or a whole test class. If applied to a
 class, the class must be a subclass of ``unittest.TestCase``, and the effect is
-the same as applying it to every ``test_*`` method in the class. Occasionally
-it may make sense to decorate a function that is not conceptually a test case.
-(See ``unittest.mock.patch`` for more information on these patching semantics.)
+the same as applying it to every ``test_*`` method in the class. (Occasionally
+it may make sense to decorate a function that doesn't represent a test case.)
+See ``unittest.mock.patch`` for more information on these patching semantics.
 
 In-memory caching is not done by default. It is controlled by the
 ``TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY`` environment variable, parsed at
