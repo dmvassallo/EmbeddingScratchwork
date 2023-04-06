@@ -115,7 +115,45 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     # Test even when data_dir is not passed
 
 
-# FIXME: Test the embed.cached.embed_many* functions.
+# FIXME: Finish writing most or all of this module's tests. Roughly speaking:
+#
+#   (1) For each remaining "# Test ..." comment in the above class, either
+#       write a test, or convert it to a fixme if deferring it for later.
+#
+#       "Test returned embeddings could plausibly be correct" may make sense to
+#       defer, since reorganizing the test suite (with or without inheritance)
+#       could allow the logic in test_embed to be reused to do this robustly.
+#
+#   (2) Either make a second class here or modify and further parameterize the
+#       above class, so that the embed.cached.embed_many* functions are tested.
+#
+#   (3) Remove the "# Test ..." comments (or convert them to docstrings).
+
+# FIXME: Consider ways to reorganize the whole test suite (not just this file).
+#
+#   Reorganization may include how the suite is broken up into modules, but
+#   also whether inheritance would better express the code reuse and fixture
+#   logic currently done with @parameterized_class and helpers. In particular:
+#
+#   (a) Overriding an abstract func property would automatically play well with
+#       monkey-patching, because expressions in property getters are evaluated
+#       when properties are accessed: during the tests, while any patching is
+#       active. This would eliminate the need for _helpers.Caller.
+#
+#   (b) Inheritance could reuse test logic from classes in test_embed for the
+#       disk-caching versions in this module, to test behaviors expected both
+#       of them and the non-caching versions. Both hit and miss scenarios
+#       (which are alike in all the guaranteed behaviors they also share with
+#       non-caching versions) could be covered, by using different fixures.
+#
+#       We could instead do this by expanding the existing @parameterized_class
+#       decoration. But the resulting test classes would be in test_embed, and
+#       the supporting fixture logic might be tricky to read and understand.
+#
+#   (c) One or more base classes could handle all the fixture logic currently
+#       expressed with helper functions including our custom decorators. Most
+#       significantly, this could handle conditionally patching embed.embed_*
+#       to do in-memory caching, replacing @maybe_cache_embeddings_in_memory.
 
 
 if __name__ == '__main__':
