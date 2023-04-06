@@ -41,7 +41,7 @@ def getenv_bool(name):
 
     - ``True``, if it holds ``true``, ``yes``, or ``1``.
     - ``False``, if it is absent, empty, or holds ``false``, ``no``, or ``0``.
-    - Otherwise, the value is  ill-formed, and ``RuntimeError`` is raised.
+    - Otherwise, the value is ill-formed, and ``RuntimeError`` is raised.
     """
     value = os.environ.get(name, default='')
     if _truthy_config(value):
@@ -85,7 +85,7 @@ class _CacheStats:
     """Number of times the cache was checked and an item was NOT found."""
 
     hits = attrs.field(default=0)
-    """Number times the cache was checked and an an item was found."""
+    """Number times the cache was checked and an an item WAS found."""
 
     def __bool__(self):
         """Whether any cache accesses (hits or misses) have occurred."""
@@ -127,7 +127,7 @@ def _logged_cache_in_memory_by(key, *, stats):
 
 
 _in_memory_embedding_cache_stats = _CacheStats()
-"""Hits and misses of in-memory embeddings caches in tests. Not thread safe."""
+"""Hits and misses of in-memory caches used in tests. Not thread safe."""
 
 
 @atexit.register
@@ -168,7 +168,7 @@ maybe_cache_embeddings_in_memory = _get_maybe_cache_embeddings_in_memory()
 """
 Decorator that may monkey-patch in-memory caching for test cases.
 
-This is a text fixture in decorator form. If tests were not configured to use
+This is a test fixture in decorator form. If tests were not configured to use
 in-memory caching, it has no effect. If they were, the decorated test case
 gains an arrange step that monkey-patches ``embed.embed_*`` functions to equip
 them with in-memory caching, and a cleanup step that unpatches them. Although
@@ -178,8 +178,9 @@ test runner process. Cached embeddings are thus reused across tests.
 This can be applied to a function/method or a whole test class. If applied to a
 class, the class must be a subclass of ``unittest.TestCase``, and the effect is
 the same as applying it to every ``test_*`` method in the class. (Occasionally
-it may make sense to decorate a function that doesn't represent a test case.)
-See ``unittest.mock.patch`` for more information on these patching semantics.
+it may make sense to apply this to a function that doesn't represent a test
+case, but decorating a class only modifies test case methods.) See
+``unittest.mock.patch`` for more information on these patching semantics.
 
 In-memory caching is not done by default. It is controlled by the
 ``TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY`` environment variable, parsed at
