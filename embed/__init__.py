@@ -2,6 +2,7 @@
 
 __all__ = [
     'cached',
+    'DIMENSION',
     'embed_one',
     'embed_many',
     'embed_one_eu',
@@ -24,6 +25,9 @@ from . import _keys, cached
 
 # Give this module an api_key property to be accessed from the outside.
 _keys.initialize(__name__)
+
+DIMENSION = 1536
+"""Dimension of the vector space text-embedding-ada-002 embeds texts in."""
 
 _REQUESTS_TIMEOUT = datetime.timedelta(seconds=60)
 """Connection timeout for ``embed_one_req`` and ``embed_many_req``."""

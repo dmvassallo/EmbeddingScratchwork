@@ -61,7 +61,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     # Test delegation to the non-caching version
     def test_calls_same_name_non_caching_version_if_not_cached(self):
         target = f'{embed.__name__}.{self.name}'
-        fake_data = np.zeros(1536, dtype=np.float32)
+        fake_data = np.zeros(embed.DIMENSION, dtype=np.float32)
 
         with unittest.mock.patch(target, return_value=fake_data) as mock:
             self.func('hola', data_dir=self._dir_path)
@@ -82,7 +82,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     def test_loads_file_if_cached(self):
         path = self._dir_path / _HOLA_FILENAME
         expected_message = f'INFO:root:{self.name}: loaded: {path}'
-        fake_data = [0.0] * 1536
+        fake_data = [0.0] * embed.DIMENSION
 
         with open(file=path, mode='w', encoding='utf-8') as file:
             json.dump(obj=fake_data, fp=file)

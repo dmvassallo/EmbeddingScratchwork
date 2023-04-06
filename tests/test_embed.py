@@ -21,6 +21,13 @@ from tests import _helpers
 _helpers.configure_logging()
 
 
+class TestConstants(unittest.TestCase):
+    """Tests for public constants in ``embed``."""
+
+    def test_model_dimension_is_1536(self):
+        self.assertEqual(embed.DIMENSION, 1536)
+
+
 @parameterized_class(('name', 'func'), [
     (embed.embed_one.__name__, _helpers.Caller(embed.embed_one)),
     (embed.embed_one_eu.__name__, _helpers.Caller(embed.embed_one_eu)),
@@ -41,7 +48,7 @@ class TestEmbedOne(unittest.TestCase):
 
     def test_shape_is_model_dimension(self):
         result = self.func('Your text string goes here')
-        self.assertEqual(result.shape, (1536,))
+        self.assertEqual(result.shape, (embed.DIMENSION,))
 
     @parameterized.expand([
         ('catrun', 'The cat runs.', 'El gato corre.'),
@@ -88,8 +95,8 @@ class TestEmbedMany(unittest.TestCase):
         with self.subTest('float32'):
             self.assertIsInstance(self._many[0][0], np.float32)
 
-    def test_shape_is_model_dimension(self):
-        self.assertEqual(self._many.shape, (5, 1536))
+    def test_shape_has_model_dimension(self):
+        self.assertEqual(self._many.shape, (5, embed.DIMENSION))
 
     def test_en_and_es_sentences_are_very_similar(self):
         with self.subTest('catrun'):
