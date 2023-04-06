@@ -17,7 +17,6 @@ from typing import Any
 import unittest
 import unittest.mock
 
-import numpy as np
 from parameterized import parameterized_class
 
 import embed
@@ -60,10 +59,10 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
     # Test delegation to the non-caching version
     def test_calls_same_name_non_caching_version_if_not_cached(self):
-        target = f'{embed.__name__}.{self.name}'
-        fake_data = np.zeros(embed.DIMENSION, dtype=np.float32)
-
-        with unittest.mock.patch(target, return_value=fake_data) as mock:
+        # FIXME: Simplify this code if possible.
+        with unittest.mock.patch(target=f'{embed.__name__}.{self.name}',
+                                 wraps=getattr(embed, self.name),
+                                 ) as mock:
             self.func('hola', data_dir=self._dir_path)
 
         mock.assert_called_once_with('hola')
@@ -82,7 +81,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     def test_loads_file_if_cached(self):
         path = self._dir_path / _HOLA_FILENAME
         expected_message = f'INFO:root:{self.name}: loaded: {path}'
-        fake_data = [0.0] * embed.DIMENSION
+        fake_data = [1.0] + [0.0] * (embed.DIMENSION - 1)  # Normalized vector.
 
         with open(file=path, mode='w', encoding='utf-8') as file:
             json.dump(obj=fake_data, fp=file)
