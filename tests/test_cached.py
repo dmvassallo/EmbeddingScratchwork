@@ -20,6 +20,7 @@ import unittest.mock
 from parameterized import parameterized_class
 
 import embed
+from embed import cached
 from tests import _helpers
 
 _helpers.configure_logging()
@@ -31,12 +32,9 @@ _HOLA_FILENAME = (
 
 
 @parameterized_class(('name', 'func'), [
-    (embed.cached.embed_one.__name__,
-        staticmethod(embed.cached.embed_one)),
-    (embed.cached.embed_one_eu.__name__,
-        staticmethod(embed.cached.embed_one_eu)),
-    (embed.cached.embed_one_req.__name__,
-        staticmethod(embed.cached.embed_one_req)),
+    (cached.embed_one.__name__, staticmethod(cached.embed_one)),
+    (cached.embed_one_eu.__name__, staticmethod(cached.embed_one_eu)),
+    (cached.embed_one_req.__name__, staticmethod(cached.embed_one_req)),
 ])
 @_helpers.maybe_cache_embeddings_in_memory
 class TestDiskCachedEmbedOne(unittest.TestCase):
@@ -96,9 +94,9 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
         path = self._dir_path / _HOLA_FILENAME
         self.func('hola', data_dir=self._dir_path)
 
-        for load_func in (embed.cached.embed_one,
-                          embed.cached.embed_one_eu,
-                          embed.cached.embed_one_req):
+        for load_func in (cached.embed_one,
+                          cached.embed_one_eu,
+                          cached.embed_one_req):
             with self.subTest(load_func=load_func):
                 expected_message = (
                     f'INFO:root:{load_func.__name__}: loaded: {path}'
@@ -127,6 +125,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 #       above class, so that the embed.cached.embed_many* functions are tested.
 #
 #   (3) Remove the "# Test ..." comments (or convert them to docstrings).
+
 
 # FIXME: Consider ways to reorganize the whole test suite (not just this file).
 #
