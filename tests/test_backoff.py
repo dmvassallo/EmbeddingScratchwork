@@ -28,10 +28,10 @@ import re
 import threading
 import unittest
 
+import backoff
+
 from tests import _helpers
 import embed
-
-_helpers.configure_logging()
 
 _STACK_SIZE = 32_768
 """Stack size in bytes for newly created worker threads. Do not change this."""
@@ -41,6 +41,11 @@ _BATCH_COUNT = 600
 
 _BATCH_SIZE = 8
 """Number of requests each batch makes sequentially in the backoff test."""
+
+_helpers.configure_logging()
+
+_logger = logging.getLogger(__name__)
+"""Logger for messages from this test module."""
 
 _is_backoff_message = re.compile(
     r'INFO:backoff:Backing off _post_request\(\.\.\.\) for [0-9.]+s '
@@ -83,7 +88,7 @@ class TestBackoff(unittest.TestCase):
 
         self._old_stack_size = threading.stack_size(_STACK_SIZE)
 
-        logging.warning(
+        _logger.warning(
             "Running full backoff test, which shouldn't usually be done.")
 
     def tearDown(self):
@@ -94,7 +99,7 @@ class TestBackoff(unittest.TestCase):
         """``embed_one_req`` backs off under high load and logs that it did."""
         with concurrent.futures.ThreadPoolExecutor(max_workers=_BATCH_COUNT
                                                    ) as executor:
-            with self.assertLogs() as log_context:
+            with self.assertLogs(logger=backoff.__name__) as log_context:
                 # Make many requests. Raise any exceptions on the main thread.
                 collections.deque(
                     executor.map(_run_batch, range(_BATCH_COUNT)),

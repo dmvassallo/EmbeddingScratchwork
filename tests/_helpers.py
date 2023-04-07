@@ -26,6 +26,9 @@ try:
 except AttributeError:  # No functools.cache before Python 3.9.
     _cache_in_memory = functools.lru_cache(maxsize=None)
 
+_logger = logging.getLogger(__name__)
+"""Logger for messages from this test helper module."""
+
 _truthy_config = re.compile(r'true|yes|1', re.IGNORECASE).fullmatch
 """Check if a configuration string should be considered to mean ``True``."""
 
@@ -112,12 +115,12 @@ def _logged_cache_in_memory_by(key, *, stats):
                 value = cache[cache_key]
             except KeyError:
                 stats.misses += 1
-                logging.debug('In-memory cache MISS #%d: %s',
+                _logger.debug('In-memory cache MISS #%d: %s',
                               stats.misses, wrapper.__name__)
                 value = cache[cache_key] = func(*args, **kwargs)
             else:
                 stats.hits += 1
-                logging.debug('In-memory cache HIT #%d: %s',
+                _logger.debug('In-memory cache HIT #%d: %s',
                               stats.hits, wrapper.__name__)
             return value
 
@@ -134,7 +137,7 @@ _in_memory_embedding_cache_stats = _CacheStats()
 def _report_nontrivial_cache_statistics():
     """Log global cache statistics, IF any caching has been performed."""
     if _in_memory_embedding_cache_stats:
-        logging.info('In-memory cache stats: %s',
+        _logger.info('In-memory cache stats: %s',
                      _in_memory_embedding_cache_stats)
 
 
