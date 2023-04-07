@@ -25,6 +25,9 @@ import embed
 DEFAULT_DATA_DIR = pathlib.Path('data')
 """Default directory to cache embeddings."""
 
+_logger = logging.getLogger(__name__)
+"""Logger for messages from this submodule."""
+
 
 def _compute_blake3_hash(serialized_data):
     """Compute a blake3 hash of binary data."""
@@ -65,10 +68,10 @@ def _cache_on_disk(func):
         except OSError:
             embeddings = func(text_or_texts)
             _save_json(path=path, obj=embeddings.tolist())
-            logging.info('%s: saved: %s', wrapper.__name__, path)
+            _logger.info('%s: saved: %s', wrapper.__name__, path)
         else:
             embeddings = np.array(parsed, dtype=np.float32)
-            logging.info('%s: loaded: %s', wrapper.__name__, path)
+            _logger.info('%s: loaded: %s', wrapper.__name__, path)
 
         return embeddings
 

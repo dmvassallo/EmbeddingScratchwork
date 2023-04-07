@@ -68,9 +68,9 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     # Test saving new files
     def test_saves_file_if_not_cached(self):
         path = self._dir_path / _HOLA_FILENAME
-        expected_message = f'INFO:root:{self.name}: saved: {path}'
+        expected_message = f'INFO:embed.cached:{self.name}: saved: {path}'
 
-        with self.assertLogs() as log_context:
+        with self.assertLogs(logger=cached.__name__) as log_context:
             self.func('hola', data_dir=self._dir_path)
 
         self.assertEqual(log_context.output, [expected_message])
@@ -78,13 +78,13 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     # Test loading existing files
     def test_loads_file_if_cached(self):
         path = self._dir_path / _HOLA_FILENAME
-        expected_message = f'INFO:root:{self.name}: loaded: {path}'
+        expected_message = f'INFO:embed.cached:{self.name}: loaded: {path}'
         fake_data = [1.0] + [0.0] * (embed.DIMENSION - 1)  # Normalized vector.
 
         with open(file=path, mode='w', encoding='utf-8') as file:
             json.dump(obj=fake_data, fp=file)
 
-        with self.assertLogs() as log_context:
+        with self.assertLogs(logger=cached.__name__) as log_context:
             self.func('hola', data_dir=self._dir_path)
 
         self.assertEqual(log_context.output, [expected_message])
@@ -99,10 +99,10 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
                           cached.embed_one_req):
             with self.subTest(load_func=load_func):
                 expected_message = (
-                    f'INFO:root:{load_func.__name__}: loaded: {path}'
+                    f'INFO:embed.cached:{load_func.__name__}: loaded: {path}'
                 )
 
-                with self.assertLogs() as log_context:
+                with self.assertLogs(logger=cached.__name__) as log_context:
                     load_func('hola', data_dir=self._dir_path)
 
                 self.assertEqual(log_context.output, [expected_message])
