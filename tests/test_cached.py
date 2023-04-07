@@ -57,10 +57,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
     # Test delegation to the non-caching version
     def test_calls_same_name_non_caching_version_if_not_cached(self):
-        # FIXME: Simplify this code if possible.
-        with unittest.mock.patch(target=f'{embed.__name__}.{self.name}',
-                                 wraps=getattr(embed, self.name),
-                                 ) as mock:
+        with self._patch_underlying_embedder() as mock:
             self.func('hola', data_dir=self._dir_path)
 
         mock.assert_called_once_with('hola')
@@ -110,6 +107,13 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     # Test log corresponds to what occurred
 
     # Test even when data_dir is not passed
+
+    def _patch_underlying_embedder(self):
+        """Patch the same-named function in ``embed``, to examine its calls."""
+        return unittest.mock.patch(
+            target=f'{embed.__name__}.{self.name}',
+            wraps=getattr(embed, self.name),
+        )
 
 
 # FIXME: Finish writing most or all of this module's tests. Roughly speaking:
