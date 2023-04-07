@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # This runs test modules as scripts, mainly for CI. Run it from the repo root.
 
 set -eux
