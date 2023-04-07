@@ -17,6 +17,7 @@ from parameterized import parameterized, parameterized_class
 
 import embed
 from tests import _helpers
+from tests._helpers import Caller
 
 _helpers.configure_logging()
 
@@ -29,9 +30,9 @@ class TestConstants(unittest.TestCase):
 
 
 @parameterized_class(('name', 'func'), [
-    (embed.embed_one.__name__, _helpers.Caller(embed.embed_one)),
-    (embed.embed_one_eu.__name__, _helpers.Caller(embed.embed_one_eu)),
-    (embed.embed_one_req.__name__, _helpers.Caller(embed.embed_one_req)),
+    (embed.embed_one.__name__, Caller(lambda: embed.embed_one)),
+    (embed.embed_one_eu.__name__, Caller(lambda: embed.embed_one_eu)),
+    (embed.embed_one_req.__name__, Caller(lambda: embed.embed_one_req)),
 ])
 @_helpers.maybe_cache_embeddings_in_memory
 class TestEmbedOne(unittest.TestCase):
@@ -70,9 +71,9 @@ class TestEmbedOne(unittest.TestCase):
 
 
 @parameterized_class(('name', 'func'), [
-    (embed.embed_many.__name__, _helpers.Caller(embed.embed_many)),
-    (embed.embed_many_eu.__name__, _helpers.Caller(embed.embed_many_eu)),
-    (embed.embed_many_req.__name__, _helpers.Caller(embed.embed_many_req)),
+    (embed.embed_many.__name__, Caller(lambda: embed.embed_many)),
+    (embed.embed_many_eu.__name__, Caller(lambda: embed.embed_many_eu)),
+    (embed.embed_many_req.__name__, Caller(lambda: embed.embed_many_req)),
 ])
 class TestEmbedMany(unittest.TestCase):
     """Tests for ``embed_many``, ``embed_many_eu``, and ``embed_many_req``."""

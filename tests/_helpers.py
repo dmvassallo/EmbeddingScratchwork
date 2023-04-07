@@ -8,13 +8,11 @@ __all__ = [
 ]
 
 import atexit
-import contextlib
 import functools
 import logging
 import os
 import pickle
 import re
-import sys
 import unittest.mock
 
 import attrs
@@ -197,43 +195,27 @@ has its own in-memory cache, so bugs in some don't hide bugs in others.
 
 
 class Caller:
-    """Function proxy that supports monkey-patching module-level functions."""
+    """Proxy to call a function via a supplier, to support monkey-patching."""
 
-    __slots__ = ('_module', '_name')
+    __slots__ = ('_func_supplier',)
 
-    def __init__(self, func):
-        """Make a ``Caller`` for some top-level function ``func``."""
-        self._module = sys.modules[func.__module__]
-        self._name = func.__name__
-
-        with contextlib.suppress(AttributeError):
-            if self._resolve() is func:
-                return  # The module attribute exists and refers to func.
-
-        raise RuntimeError(f'{self._repr_arg} is not {func!r}')
+    def __init__(self, func_supplier):
+        """Make a ``Caller`` proxy that stores the given function supplier."""
+        self._func_supplier = func_supplier
 
     def __repr__(self):
-        """Code-like representation for debugging. Possibly ``exec``-able."""
-        return f'{type(self).__name__}({self._repr_arg})'
+        """Code-like (but non-``exec``able) representation for debugging."""
+        return f'{type(self).__name__}(lambda: {self._func_supplier()!r})'
 
     def __str__(self):
-        """The ``str`` of the wrapped function (as it currently resolves)."""
-        return str(self._resolve())
+        """The ``str`` of the function resolved through the stored supplier."""
+        return str(self._func_supplier())
 
     def __call__(self, *args, **kwargs):
-        """Call the wrapped function (as it currently resolves)."""
-        return self._resolve()(*args, **kwargs)
+        """Resolve the function through the stored supplier and call it."""
+        return self._func_supplier()(*args, **kwargs)
 
     @property
     def __name__(self):
-        """The name of the (original) wrapped function from its metadata."""
-        return self._name
-
-    @property
-    def _repr_arg(self):
-        """The module.function style string."""
-        return f'{self._module.__name__}.{self._name}'
-
-    def _resolve(self):
-        """Look up the function. If it's monkey-patched, this reflects that."""
-        return getattr(self._module, self._name)
+        """The name of the function resolved through the stored supplier."""
+        return self._func_supplier().__name__
