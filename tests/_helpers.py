@@ -208,7 +208,7 @@ class Caller:
 
         with contextlib.suppress(AttributeError):
             if self._resolve() is func:
-                return
+                return  # The module attribute exists and refers to func.
 
         raise RuntimeError(f'{self._repr_arg} is not {func!r}')
 
