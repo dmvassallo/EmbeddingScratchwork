@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# This runs test modules as scripts, mainly for CI. Run it from the repo root.
+
+set -eux
+
+status=0
+
+for file in tests/test_*.py; do
+    "$file" -v || status=1
+done
+
+exit "$status"
