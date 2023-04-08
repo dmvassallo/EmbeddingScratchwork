@@ -19,6 +19,7 @@
         "dtype",
         "eamodio",
         "Eliah",
+        "embedder",
         "fernandrone",
         "floatfmt",
         "gaurav",
@@ -47,6 +48,8 @@
         "tablefmt",
         "tamasfe",
         "unpatch",
+        "unpatches",
+        "unpatching",
         "Vassallo"
     ],
     "cSpell.ignoreWords": [
