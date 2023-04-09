@@ -104,7 +104,13 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
                 self.assertEqual(log_context.output, [expected_message])
 
-    # Test log corresponds to what occurred
+    # Test file is accessed when should load
+
+    # Test file is created when should save
+    def test_saved_embedding_exists(self):
+        path = self._dir_path / _HOLA_FILENAME
+        self.func('hola', data_dir=self._dir_path)
+        self.assertTrue(path.is_file())
 
     # Test even when data_dir is not passed
 
