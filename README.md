@@ -75,22 +75,38 @@ generates some test data used in `test_cached_embeddings`.
 
 ### Way 1: Local
 
-#### Obtaining and installing
+Clone the project, then install it with either
+[`poetry`](https://python-poetry.org/) or
+[`conda`](https://en.wikipedia.org/wiki/Conda_(package_manager)).
 
-Clone the repository and create its
-[`conda`](https://en.wikipedia.org/wiki/Conda_(package_manager)) environment:
+#### Cloning the project
+
+Wherever you want the project directory to be created, run:
 
 ```sh
 git clone https://github.com/dmvassallo/EmbeddingScratchwork.git
 cd EmbeddingScratchwork
+```
+
+If you forked the project (and want to use your fork), replace the URL with
+that of your fork.
+
+#### Installing with `poetry`
+
+```sh
+poetry install
+```
+
+#### Installing with `conda`
+
+```sh
 conda env create
 conda activate EmbeddingScratchwork
 pip install -e .
 ```
 
-- If you fork the project, remember to replace the URL with that of your fork.
-- [`mamba`](https://mamba.readthedocs.io/en/latest/installation.html) may be
-  used in place of `conda` if it is installed.
+[`mamba`](https://mamba.readthedocs.io/en/latest/installation.html) may be used
+in place of `conda` if it is installed.
 
 #### Your OpenAI API key
 
@@ -109,6 +125,10 @@ Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-s
 The configuration in [`.devcontainer/`](.devcontainer/) will be used
 automatically when you create a
 [codespace](https://github.com/features/codespaces) on GitHub.
+
+The dev container has both the `poetry`-managed Python virtual environment and
+the `conda` environment set up. So you can [activate and
+use](#activating-the-environment) whichever you like.
 
 #### Creating the codespace
 
@@ -152,7 +172,16 @@ Safety](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-s
 ### 3. Local dev container
 
 Dev containers are often used in codespaces but you can also run them locally
-with VS Code and Docker. [Here are some general
+with VS Code and Docker. The dev container has the same functionality in the
+container as when run in a codespace. So, as in a codespace, the project is set
+up in the container both with `poetry` and `conda` and you can use either kind
+of environment.
+
+Since a local dev container does not run in a codespace, a GitHub Codespaces
+repository secret has no effect on a locally run dev container, and you’ll have
+to manage your API key in some other way.
+
+[Here are some general
 instructions](https://code.visualstudio.com/docs/devcontainers/tutorial) for
 running dev containers on your own machine.
 
@@ -160,16 +189,31 @@ running dev containers on your own machine.
 
 ## Usage
 
-### Activating the conda environment
+### Activating the environment
 
-To activate the conda environment in your shell:
+#### With `poetry`
+
+If you [installed with `poetry`](#installing-with-poetry), run this to start a
+shell with the `poetry`-managed Python virtual environment activated:
+
+```sh
+poetry shell
+```
+
+#### With `conda`
+
+If you [installed with `conda`](#installing-with-conda), run this to activate
+the `conda` environment in your shell:
 
 ```sh
 conda activate EmbeddingScratchwork
 ```
 
-Or activate the environment in an editor/IDE, such as VS Code, by selecting the
-environment (or the `python` interpreter in it) in the editor/IDE’s interface.
+#### With your editor/IDE
+
+Whether your installed with `poetry` or `conda`, you can activate the
+environment in an editor or IDE, such as VS Code, by selecting the environment
+or its Python interpreter in the editor/IDE’s interface.
 
 For specific information about how to do this with VS Code, see [Using Python
 environments in VS
