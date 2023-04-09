@@ -21,4 +21,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pylint.main]
-disable = ["too-few-public-methods"]
+disable = [
+    "consider-using-f-string",
+    "too-few-public-methods",
+]
