@@ -36,16 +36,21 @@ jobs:
       - name: Install pylint-sarif (unofficial fork)
         run: pipx install pylint-sarif-unofficial
 
+      - name: Install pylint-exit
+        run: pipx install pylint-exit
+
       - name: Install Conda environment from environment.yml
         uses: mamba-org/provision-with-micromamba@v15
 
       - name: Make editable install
         run: pip install -e .
 
-      - name: Run pylint
+      - name: Run pylint, output annotations
         run: |
-          shopt -s globstar
-          pylint2sarif -- **/*.py
+          (shopt -s globstar; pylint -f actions -- **/*.py || pylint-exit "$?")
+
+      - name: Run pylint, output SARIF
+        run: (shopt -s globstar; pylint2sarif -- **/*.py)
 
       - name: Upload SARIF to GitHub Security Center
         uses: github/codeql-action/upload-sarif@v2

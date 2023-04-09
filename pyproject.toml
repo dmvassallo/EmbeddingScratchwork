@@ -21,4 +21,5 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pylint.main]
+load-plugins = ["pylint_actions"]
 disable = ["too-few-public-methods"]
