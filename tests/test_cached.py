@@ -65,8 +65,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
     # Test saving new files
     def test_saves_file_if_not_cached(self):
-        path = self._dir_path / _HOLA_FILENAME
-        expected_message = f'INFO:embed.cached:{self.name}: saved: {path}'
+        expected_message = f'INFO:embed.cached:{self.name}: saved: {self._path}'
 
         with self.assertLogs(logger=cached.__name__) as log_context:
             self.func('hola', data_dir=self._dir_path)
@@ -75,12 +74,8 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
     # Test loading existing files
     def test_loads_file_if_cached(self):
-        path = self._dir_path / _HOLA_FILENAME
-        expected_message = f'INFO:embed.cached:{self.name}: loaded: {path}'
-        fake_data = [1.0] + [0.0] * (embed.DIMENSION - 1)  # Normalized vector.
-
-        with open(file=path, mode='w', encoding='utf-8') as file:
-            json.dump(obj=fake_data, fp=file)
+        self._write_fake_data_file()
+        expected_message = f'INFO:embed.cached:{self.name}: loaded: {self._path}'
 
         with self.assertLogs(logger=cached.__name__) as log_context:
             self.func('hola', data_dir=self._dir_path)
@@ -89,7 +84,6 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
     # Test different functions access existing files
     def test_saves_file_that_any_implementation_can_load(self):
-        path = self._dir_path / _HOLA_FILENAME
         self.func('hola', data_dir=self._dir_path)
 
         for load_func in (cached.embed_one,
@@ -97,7 +91,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
                           cached.embed_one_req):
             with self.subTest(load_func=load_func):
                 expected_message = (
-                    f'INFO:embed.cached:{load_func.__name__}: loaded: {path}'
+                    f'INFO:embed.cached:{load_func.__name__}: loaded: {self._path}'
                 )
 
                 with self.assertLogs(logger=cached.__name__) as log_context:
@@ -107,19 +101,14 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
     # Test for load auditing event
     def test_for_load_audit_event(self):
-        path = self._dir_path / _HOLA_FILENAME
-        fake_data = [1.0] + [0.0] * (embed.DIMENSION - 1)  # Normalized vector.
-        with open(file=path, mode='w', encoding='utf-8') as file:
-            json.dump(obj=fake_data, fp=file)
-
-        events = []
-
-        expected = (str(path), 'r')
+        self._write_fake_data_file()
+        expected_event_args = (str(self._path), 'r')
+        open_events = []
 
         def hook_open(event, args):
             if event == 'open' and record_open:
                 path, mode, _ = args
-                events.append((path, mode))
+                open_events.append((path, mode))
 
         record_open = True
         sys.addaudithook(hook_open)
@@ -128,17 +117,27 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
         finally:
             record_open = False
 
-        self.assertIn(expected, events)
+        self.assertIn(expected_event_args, open_events)
 
     # Test for save auditing event
 
     # Test file is created when should save
     def test_saved_embedding_exists(self):
-        path = self._dir_path / _HOLA_FILENAME
         self.func('hola', data_dir=self._dir_path)
-        self.assertTrue(path.is_file())
+        self.assertTrue(self._path.is_file())
 
     # Test even when data_dir is not passed
+
+    @property
+    def _path(self):
+        """Path of temporary test file."""
+        return self._dir_path / _HOLA_FILENAME
+
+    def _write_fake_data_file(self):
+        """Create a file containing a fake embedding."""
+        fake_data = [1.0] + [0.0] * (embed.DIMENSION - 1)  # Normalized vector.
+        with open(file=self._path, mode='w', encoding='utf-8') as file:
+            json.dump(obj=fake_data, fp=file)
 
     def _patch_underlying_embedder(self):
         """Patch the same-named function in ``embed``, to examine its calls."""
