@@ -100,6 +100,10 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
                 self.assertEqual(log_context.output, [expected_message])
 
     # Test for load auditing event
+    @unittest.skipIf(
+        sys.version_info < (3, 8),
+        'sys.addaudithook introduced in Python 3.8',
+    )
     def test_for_load_audit_event(self):
         self._write_fake_data_file()
         expected_event_args = (str(self._path), 'r')
