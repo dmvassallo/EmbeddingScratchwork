@@ -12,6 +12,7 @@ otherwise like the same-named functions residing directly in ``embed``.
 
 import json
 import pathlib
+import sys
 import tempfile
 from typing import Any
 import unittest
@@ -105,6 +106,29 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
                 self.assertEqual(log_context.output, [expected_message])
 
     # Test for load auditing event
+    def test_for_load_audit_event(self):
+        path = self._dir_path / _HOLA_FILENAME
+        fake_data = [1.0] + [0.0] * (embed.DIMENSION - 1)  # Normalized vector.
+        with open(file=path, mode='w', encoding='utf-8') as file:
+            json.dump(obj=fake_data, fp=file)
+
+        events = []
+
+        expected = (str(path), 'r')
+
+        def hook_open(event, args):
+            if event == 'open' and record_open:
+                path, mode, _ = args
+                events.append((path, mode))
+
+        record_open = True
+        sys.addaudithook(hook_open)
+        try:
+            self.func('hola', data_dir=self._dir_path)
+        finally:
+            record_open = False
+
+        self.assertIn(expected, events)
 
     # Test for save auditing event
 
