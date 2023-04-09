@@ -104,7 +104,9 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
                 self.assertEqual(log_context.output, [expected_message])
 
-    # Test file is accessed when should load
+    # Test for load auditing event
+
+    # Test for save auditing event
 
     # Test file is created when should save
     def test_saved_embedding_exists(self):
