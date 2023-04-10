@@ -12,7 +12,6 @@ otherwise like the same-named functions residing directly in ``embed``.
 
 import json
 import pathlib
-import sys
 import tempfile
 from typing import Any
 import unittest
@@ -22,7 +21,7 @@ from parameterized import parameterized_class
 
 import embed
 from embed import cached
-from tests import _helpers
+from tests import _audit, _helpers
 
 _helpers.configure_logging()
 
@@ -100,26 +99,17 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
                 self.assertEqual(log_context.output, [expected_message])
 
     # Test for load auditing event
-    @unittest.skipIf(
-        sys.version_info < (3, 8),
-        'sys.addaudithook introduced in Python 3.8',
-    )
+    @_audit.skip_if_unavailable
     def test_for_load_audit_event(self):
         self._write_fake_data_file()
         expected_event_args = (str(self._path), 'r')
         open_events = []
 
-        def hook_open(event, args):
-            if event == 'open' and record_open:
-                path, mode, _ = args
-                open_events.append((path, mode))
+        def record_open(path, mode, _):
+            open_events.append((path, mode))
 
-        record_open = True
-        sys.addaudithook(hook_open)
-        try:
+        with _audit.scoped_listener('open', record_open):
             self.func('hola', data_dir=self._dir_path)
-        finally:
-            record_open = False
 
         self.assertIn(expected_event_args, open_events)
 
@@ -149,6 +139,8 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
             target=f'{embed.__name__}.{self.name}',
             wraps=getattr(embed, self.name),
         )
+
+    # FIXME: Add _record_open_events @contextlib.contextmanager helper method.
 
 
 # FIXME: Finish writing most or all of this module's tests. Roughly speaking:

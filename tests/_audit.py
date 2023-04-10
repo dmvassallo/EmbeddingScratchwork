@@ -1,10 +1,11 @@
 """Capturing audit events for tests. This uses at most one hook."""
 
-__all__ = ['scoped_listener']
+__all__ = ['scoped_listener', 'skip_if_unavailable']
 
 import contextlib
 import sys
 import threading
+import unittest
 
 
 _lock = threading.Lock()
@@ -37,7 +38,7 @@ def _subscribe(event, listener):
         if _table is None:
             _table = {}
             sys.addaudithook(_hook)
-        old_listeners = _table.get(event, default=())
+        old_listeners = _table.get(event, ())
         _table[event] = (*old_listeners, listener)
 
 
@@ -78,3 +79,10 @@ def scoped_listener(event, listener):
         yield
     finally:
         _unsubscribe(event, listener)
+
+
+skip_if_unavailable = unittest.skipIf(
+    sys.version_info < (3, 8),
+    'sys.addaudithook introduced in Python 3.8',
+)
+"""Skip a ``unittest`` test if audit event functionality is unavailable."""
