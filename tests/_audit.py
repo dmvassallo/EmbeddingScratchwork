@@ -1,6 +1,6 @@
 """Capturing audit events for tests. This uses at most one hook."""
 
-__all__ = ['scoped_listener', 'skip_if_unavailable']
+__all__ = ['extract', 'skip_if_unavailable']
 
 import contextlib
 import sys
@@ -72,13 +72,21 @@ def _unsubscribe(event, listener):
 
 
 @contextlib.contextmanager
-def scoped_listener(event, listener):
+def _listen(event, listener):
     """Context manager that subscribes and unsubscribes an event listener."""
     _subscribe(event, listener)
     try:
         yield
     finally:
         _unsubscribe(event, listener)
+
+
+@contextlib.contextmanager
+def extract(event, extractor):
+    """Context manager that provides a list of custom-extracted even data."""
+    extracts = []
+    with _listen(event, lambda *args: extracts.append(extractor(*args))):
+        yield extracts
 
 
 skip_if_unavailable = unittest.skipIf(

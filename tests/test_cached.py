@@ -17,6 +17,7 @@ from typing import Any
 import unittest
 import unittest.mock
 
+import attrs
 from parameterized import parameterized_class
 
 import embed
@@ -29,6 +30,22 @@ _HOLA_FILENAME = (
     'b58e4a60c963f8b3c43d83cc9245020ce71d8311fa2f48cfd36deed6f472a71b.json'
 )
 """Filename that would be generated from the input ``'hola'``."""
+
+
+@attrs.frozen
+class _OpenEvent:
+    """The information from an ``open`` event that we make assertions about."""
+
+    path = attrs.field()
+    """The ``path`` argument in an ``open`` audit event."""
+
+    mode = attrs.field()
+    """The ``mode`` argument in an ``open`` audit event."""
+
+    @classmethod
+    def from_args(cls, path, mode, _):
+        """Create from the actual audit event arguments. Discards ``flags``."""
+        return cls(path, mode)
 
 
 @parameterized_class(('name', 'func'), [
@@ -102,16 +119,12 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     @_audit.skip_if_unavailable
     def test_for_load_audit_event(self):
         self._write_fake_data_file()
-        expected_event_args = (str(self._path), 'r')
-        open_events = []
+        expected_open_event = _OpenEvent(str(self._path), 'r')
 
-        def record_open(path, mode, _):
-            open_events.append((path, mode))
-
-        with _audit.scoped_listener('open', record_open):
+        with _audit.extract('open', _OpenEvent.from_args) as open_events:
             self.func('hola', data_dir=self._dir_path)
 
-        self.assertIn(expected_event_args, open_events)
+        self.assertIn(expected_open_event, open_events)
 
     # Test for save auditing event
 
