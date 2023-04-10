@@ -45,6 +45,22 @@ jobs:
       - name: Make editable install
         run: pip install -e .
 
+      - name: Install pylint-actions plugin
+        run: pip install pylint-actions
+
+      - name: Check for unexpected pylint plugins
+        run: |
+          printf 'Verify pyproject.toml clearly loads no pylint plugins.\n'
+          printf "Otherwise, the next step's way of editing may not be safe.\n"
+          ! grep -q load-plugins pyproject.toml
+
+      - name: Configure pylint-actions plugin
+        run: |
+          perl -i -spwe 's/\Q$section\E$(?)\K/\n$item/' -- \
+              -section='[tool.pylint.main]' \
+              -item='load-plugins = "pylint_actions"' \
+              pyproject.toml
+
       - name: Run pylint, output annotations
         run: |
           (shopt -s globstar; pylint -f actions -- **/*.py || pylint-exit "$?")
