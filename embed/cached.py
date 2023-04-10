@@ -47,13 +47,13 @@ def _build_path(text_or_texts, data_dir):
 
 def _load_json(path):
     """Load JSON from a file."""
-    with open(path, mode='r+', encoding='utf-8') as file:
+    with open(path, mode='r', encoding='utf-8') as file:
         return json.load(file)
 
 
 def _save_json(path, obj):
     """Save JSON to a file."""
-    with open(path, mode='w', encoding='utf-8') as file:
+    with open(path, mode='x', encoding='utf-8') as file:
         json.dump(obj=obj, fp=file, indent=4)
         file.write('\n')
 
