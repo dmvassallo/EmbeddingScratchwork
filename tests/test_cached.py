@@ -117,7 +117,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
     # Test for load auditing event
     @_audit.skip_if_unavailable
-    def test_for_load_audit_event(self):
+    def test_load_confirmed_by_audit_event(self):
         self._write_fake_data_file()
         expected_open_event = _OpenEvent(str(self._path), 'r')
 
@@ -127,6 +127,15 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
         self.assertIn(expected_open_event, open_events)
 
     # Test for save auditing event
+    @_audit.skip_if_unavailable
+    def test_save_confirmed_by_audit_event(self):
+        # TODO: Decide whether to keep allowing just 'x', or if 'w' is OK too.
+        expected_open_event = _OpenEvent(str(self._path), 'x')
+
+        with _audit.extract('open', _OpenEvent.from_args) as open_events:
+            self.func('hola', data_dir=self._dir_path)
+
+        self.assertIn(expected_open_event, open_events)
 
     # Test file is created when should save
     def test_saved_embedding_exists(self):
