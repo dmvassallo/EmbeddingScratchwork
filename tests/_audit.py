@@ -16,7 +16,16 @@ _table = None
 
 def _hook(event, args):
     """Single audit hook used for all events and handlers."""
-    for listener in _table.get(event, default=()):
+    try:
+        # For performance, don't lock. Subscripting a dict with str keys should
+        # be sufficiently protected by the GIL in CPython. This doesn't protect
+        # the table rows. But those are tuples that we always replace, rather
+        # than lists that we mutate, so we should observe consistent state.
+        listeners = _table[event]
+    except KeyError:
+        return
+
+    for listener in listeners:
         listener(*args)
 
 
