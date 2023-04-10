@@ -32,7 +32,7 @@ def _subscribe(event, listener):
         _table[event] = (*old_listeners, listener)
 
 
-def _unsubscribe_raise(event, listener):
+def _fail_unsubscribe(event, listener):
     """Raise an exception for an unsuccessful attempt to detach a listener."""
     raise ValueError(f'{event!r} listener {listener!r} never subscribed')
 
@@ -40,15 +40,20 @@ def _unsubscribe_raise(event, listener):
 def _unsubscribe(event, listener):
     """Detach a listener that was attached to an event."""
     with _lock:
-        if _table is None or (listeners := _table.get(event)) is None:
-            _unsubscribe_raise(event, listener)
+        if _table is None:
+            _fail_unsubscribe(event, listener)
+
+        try:
+            listeners = _table[event]
+        except KeyError:
+            _fail_unsubscribe(event, listener)
 
         # Work with the sequence in reverse to remove the most recent listener.
         listeners_reversed = list(reversed(listeners))
         try:
             listeners_reversed.remove(listener)
         except ValueError:
-            _unsubscribe_raise(event, listener)
+            _fail_unsubscribe(event, listener)
 
         if listeners_reversed:
             _table[event] = tuple(reversed(listeners_reversed))
