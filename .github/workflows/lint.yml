@@ -33,11 +33,11 @@ jobs:
       - name: Check out source repository
         uses: actions/checkout@v3
 
-      - name: Install pylint-sarif (unofficial fork)
-        run: pipx install pylint-sarif-unofficial
-
       - name: Install pylint-exit
         run: pipx install pylint-exit
+
+      - name: Install pylint-sarif (unofficial fork)
+        run: pipx install pylint-sarif-unofficial
 
       - name: Install Conda environment from environment.yml
         uses: mamba-org/provision-with-micromamba@v15
