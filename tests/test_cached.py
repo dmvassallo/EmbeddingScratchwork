@@ -162,8 +162,6 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
             wraps=getattr(embed, self.name),
         )
 
-    # FIXME: Add _record_open_events @contextlib.contextmanager helper method.
-
 
 # FIXME: Finish writing most or all of this module's tests. Roughly speaking:
 #
