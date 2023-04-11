@@ -1,0 +1,74 @@
+name: Lint Python code
+
+on: [push, pull_request]
+
+jobs:
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: flake8 Lint
+        uses: py-actions/flake8@v2
+
+  pylint:
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+
+      - name: Install pylint-exit
+        run: pipx install pylint-exit
+
+      - name: Install pylint-sarif (unofficial fork)
+        run: pipx install pylint-sarif-unofficial
+
+      - name: Install Conda environment from environment.yml
+        uses: mamba-org/provision-with-micromamba@v15
+
+      - name: Make editable install
+        run: pip install -e .
+
+      - name: Install pylint-actions plugin
+        run: pip install pylint-actions
+
+      - name: Check for unexpected pylint plugins
+        run: |
+          printf 'Verify pyproject.toml clearly loads no pylint plugins.\n'
+          printf "Otherwise, the next step's way of editing may not be safe.\n"
+          ! grep -q load-plugins pyproject.toml
+
+      - name: Configure pylint-actions plugin
+        run: |
+          perl -i -spwe 's/\Q$section\E$(?)\K/\n$item/' -- \
+              -section='[tool.pylint.main]' \
+              -item='load-plugins = "pylint_actions"' \
+              pyproject.toml
+
+      - name: Run pylint, output annotations
+        run: |
+          (shopt -s globstar; pylint -f actions -- **/*.py || pylint-exit "$?")
+
+      - name: Run pylint, output SARIF
+        run: (shopt -s globstar; pylint2sarif -- **/*.py)
+
+      - name: Upload SARIF to GitHub Security Center
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: pylint.sarif
