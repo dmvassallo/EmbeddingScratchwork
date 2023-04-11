@@ -1,6 +1,6 @@
 """Capturing audit events for tests. This uses at most one hook."""
 
-__all__ = ['extract', 'skip_if_unavailable']
+__all__ = ['extracting', 'skip_if_unavailable']
 
 import contextlib
 import sys
@@ -67,7 +67,7 @@ def _unsubscribe(event, listener):
 
 
 @contextlib.contextmanager
-def _listen(event, listener):
+def _listening(event, listener):
     """Context manager that subscribes and unsubscribes an event listener."""
     _subscribe(event, listener)
     try:
@@ -77,10 +77,10 @@ def _listen(event, listener):
 
 
 @contextlib.contextmanager
-def extract(event, extractor):
+def extracting(event, extractor):
     """Context manager that provides a list of custom-extracted event data."""
     extracts = []
-    with _listen(event, lambda *args: extracts.append(extractor(*args))):
+    with _listening(event, lambda *args: extracts.append(extractor(*args))):
         yield extracts
 
 

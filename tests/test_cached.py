@@ -130,7 +130,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
         self._write_fake_data_file()
         expected_open_event = _OpenEvent(str(self._path), 'r')
 
-        with _audit.extract('open', _OpenEvent.from_args) as open_events:
+        with _audit.extracting('open', _OpenEvent.from_args) as open_events:
             self.func('hola', data_dir=self._dir_path)
 
         self.assertIn(expected_open_event, open_events)
@@ -141,7 +141,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
         # TODO: Decide whether to keep allowing just 'x', or if 'w' is OK too.
         expected_open_event = _OpenEvent(str(self._path), 'x')
 
-        with _audit.extract('open', _OpenEvent.from_args) as open_events:
+        with _audit.extracting('open', _OpenEvent.from_args) as open_events:
             self.func('hola', data_dir=self._dir_path)
 
         self.assertIn(expected_open_event, open_events)
