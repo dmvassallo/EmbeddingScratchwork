@@ -81,7 +81,10 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
     # Test saving new files
     def test_saves_file_if_not_cached(self):
-        expected_message = f'INFO:embed.cached:{self.name}: saved: {self._path}'
+        expected_message = 'INFO:embed.cached:{name}: saved: {path}'.format(
+            name=self.name,
+            path=self._path,
+        )
 
         with self.assertLogs(logger=cached.__name__) as log_context:
             self.func('hola', data_dir=self._dir_path)
@@ -91,7 +94,11 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     # Test loading existing files
     def test_loads_file_if_cached(self):
         self._write_fake_data_file()
-        expected_message = f'INFO:embed.cached:{self.name}: loaded: {self._path}'
+
+        expected_message = 'INFO:embed.cached:{name}: loaded: {path}'.format(
+            name=self.name,
+            path=self._path,
+        )
 
         with self.assertLogs(logger=cached.__name__) as log_context:
             self.func('hola', data_dir=self._dir_path)
@@ -101,13 +108,15 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     # Test different functions access existing files
     def test_saves_file_that_any_implementation_can_load(self):
         self.func('hola', data_dir=self._dir_path)
+        message_format = 'INFO:embed.cached:{name}: loaded: {path}'
 
         for load_func in (cached.embed_one,
                           cached.embed_one_eu,
                           cached.embed_one_req):
             with self.subTest(load_func=load_func):
-                expected_message = (
-                    f'INFO:embed.cached:{load_func.__name__}: loaded: {self._path}'
+                expected_message = message_format.format(
+                    name=load_func.__name__,
+                    path=self._path,
                 )
 
                 with self.assertLogs(logger=cached.__name__) as log_context:
