@@ -78,7 +78,7 @@ def _listen(event, listener):
 
 @contextlib.contextmanager
 def extract(event, extractor):
-    """Context manager that provides a list of custom-extracted even data."""
+    """Context manager that provides a list of custom-extracted event data."""
     extracts = []
     with _listen(event, lambda *args: extracts.append(extractor(*args))):
         yield extracts
