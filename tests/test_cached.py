@@ -53,16 +53,14 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
         """Delete the temporary directory."""
         self._temporary_directory.cleanup()
 
-    # Test returned embeddings could plausibly be correct
+    # FIXME: Test returned embeddings could plausibly be correct
 
-    # Test delegation to the non-caching version
     def test_calls_same_name_non_caching_version_if_not_cached(self):
         with self._patch_underlying_embedder() as mock:
             self.func('hola', data_dir=self._dir_path)
 
         mock.assert_called_once_with('hola')
 
-    # Test saving new files
     def test_saves_file_if_not_cached(self):
         expected_message = 'INFO:embed.cached:{name}: saved: {path}'.format(
             name=self.name,
@@ -74,7 +72,6 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
         self.assertEqual(log_context.output, [expected_message])
 
-    # Test loading existing files
     def test_loads_file_if_cached(self):
         self._write_fake_data_file()
 
@@ -88,7 +85,6 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
         self.assertEqual(log_context.output, [expected_message])
 
-    # Test different functions access existing files
     def test_saves_file_that_any_implementation_can_load(self):
         self.func('hola', data_dir=self._dir_path)
         message_format = 'INFO:embed.cached:{name}: loaded: {path}'
@@ -107,7 +103,6 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
                 self.assertEqual(log_context.output, [expected_message])
 
-    # Test for load auditing event
     @_audit.skip_if_unavailable
     def test_load_confirmed_by_audit_event(self):
         self._write_fake_data_file()
@@ -118,7 +113,6 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
         self.assertIn(expected_open_event, open_events)
 
-    # Test for save auditing event
     @_audit.skip_if_unavailable
     def test_save_confirmed_by_audit_event(self):
         # TODO: Decide whether to keep allowing just 'x', or if 'w' is OK too.
@@ -129,12 +123,10 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
         self.assertIn(expected_open_event, open_events)
 
-    # Test file is created when should save
     def test_saved_embedding_exists(self):
         self.func('hola', data_dir=self._dir_path)
         self.assertTrue(self._path.is_file())
 
-    # Test even when data_dir is not passed
     def test_uses_default_data_dir_if_not_passed(self):
         expected_message = 'INFO:embed.cached:{name}: saved: {path}'.format(
             name=self.name,
