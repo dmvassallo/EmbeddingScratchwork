@@ -161,19 +161,9 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
         )
 
 
-# FIXME: Finish writing most or all of this module's tests. Roughly speaking:
-#
-#   (1) For each remaining "# Test ..." comment in the above class, either
-#       write a test, or convert it to a fixme if deferring it for later.
-#
-#       "Test returned embeddings could plausibly be correct" may make sense to
-#       defer, since reorganizing the test suite (with or without inheritance)
-#       could allow the logic in test_embed to be reused to do this robustly.
-#
-#   (2) Either make a second class here or modify and further parameterize the
-#       above class, so that the embed.cached.embed_many* functions are tested.
-#
-#   (3) Remove the "# Test ..." comments (or convert them to docstrings).
+# FIXME: Either make a second class here or modify and further parameterize the
+#        above class, so that the embed.cached.embed_many* functions are
+#        tested.
 
 
 # FIXME: Consider ways to reorganize the whole test suite (not just this file).
