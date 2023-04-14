@@ -12,7 +12,6 @@ otherwise like the same-named functions residing directly in ``embed``.
 
 import json
 import pathlib
-import sys
 import tempfile
 from typing import Any
 import unittest
@@ -22,14 +21,14 @@ from parameterized import parameterized_class
 
 import embed
 from embed import cached
-from tests import _helpers
-
-_helpers.configure_logging()
+from tests import _audit, _helpers
 
 _HOLA_FILENAME = (
     'b58e4a60c963f8b3c43d83cc9245020ce71d8311fa2f48cfd36deed6f472a71b.json'
 )
 """Filename that would be generated from the input ``'hola'``."""
+
+_helpers.configure_logging()
 
 
 @parameterized_class(('name', 'func'), [
@@ -109,30 +108,26 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
                 self.assertEqual(log_context.output, [expected_message])
 
     # Test for load auditing event
-    @unittest.skipIf(
-        sys.version_info < (3, 8),
-        'sys.addaudithook introduced in Python 3.8',
-    )
-    def test_for_load_audit_event(self):
+    @_audit.skip_if_unavailable
+    def test_load_confirmed_by_audit_event(self):
         self._write_fake_data_file()
-        expected_event_args = (str(self._path), 'r')
-        open_events = []
+        expected_open_event = _audit.OpenEvent(str(self._path), 'r')
 
-        def hook_open(event, args):
-            if event == 'open' and record_open:
-                path, mode, _ = args
-                open_events.append((path, mode))
-
-        record_open = True
-        sys.addaudithook(hook_open)
-        try:
+        with _audit.listening_for_open() as open_events:
             self.func('hola', data_dir=self._dir_path)
-        finally:
-            record_open = False
 
-        self.assertIn(expected_event_args, open_events)
+        self.assertIn(expected_open_event, open_events)
 
     # Test for save auditing event
+    @_audit.skip_if_unavailable
+    def test_save_confirmed_by_audit_event(self):
+        # TODO: Decide whether to keep allowing just 'x', or if 'w' is OK too.
+        expected_open_event = _audit.OpenEvent(str(self._path), 'x')
+
+        with _audit.listening_for_open() as open_events:
+            self.func('hola', data_dir=self._dir_path)
+
+        self.assertIn(expected_open_event, open_events)
 
     # Test file is created when should save
     def test_saved_embedding_exists(self):
