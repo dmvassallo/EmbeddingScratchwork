@@ -141,13 +141,12 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
             path=self._path,
         )
 
-        ddd_old = cached.DEFAULT_DATA_DIR
-        cached.DEFAULT_DATA_DIR = self._dir_path
-        try:
+        with unittest.mock.patch(
+            f'{cached.__name__}.DEFAULT_DATA_DIR',
+            self._dir_path,
+        ):
             with self.assertLogs(logger=cached.__name__) as log_context:
                 self.func('hola')
-        finally:
-            cached.DEFAULT_DATA_DIR = ddd_old
 
         self.assertEqual(
             log_context.output, [expected_message],
