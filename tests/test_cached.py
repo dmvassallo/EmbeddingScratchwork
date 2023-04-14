@@ -15,7 +15,7 @@ import pathlib
 import tempfile
 from typing import Any
 import unittest
-import unittest.mock
+from unittest.mock import patch
 
 from parameterized import parameterized_class
 
@@ -141,10 +141,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
             path=self._path,
         )
 
-        with unittest.mock.patch(
-            f'{cached.__name__}.DEFAULT_DATA_DIR',
-            self._dir_path,
-        ):
+        with patch(f'{cached.__name__}.DEFAULT_DATA_DIR', self._dir_path):
             with self.assertLogs(logger=cached.__name__) as log_context:
                 self.func('hola')
 
@@ -166,7 +163,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
     def _patch_underlying_embedder(self):
         """Patch the same-named function in ``embed``, to examine its calls."""
-        return unittest.mock.patch(
+        return patch(
             target=f'{embed.__name__}.{self.name}',
             wraps=getattr(embed, self.name),
         )
