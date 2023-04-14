@@ -1,87 +1,63 @@
-"""Capturing audit events for tests. This uses at most one hook."""
+"""Capturing ``open`` audit events for tests. This uses at most one hook."""
 
-__all__ = ['extracting', 'skip_if_unavailable']
+__all__ = ['OpenEvent', 'listening_for_open', 'skip_if_unavailable']
 
 import contextlib
 import sys
 import unittest
 
+import attrs
 
-_table = None
-"""Table mapping each event to its listeners, or None if not yet needed."""
+_hooked = False
+"""Whether the audit hook has been installed."""
+
+_open_events = None
+"""The current event collector list. ``None``, whenever not collecting."""
+
+
+@attrs.frozen
+class OpenEvent:
+    """The information from an ``open`` event that we make assertions about."""
+
+    path = attrs.field()
+    """The ``path`` argument in an ``open`` audit event."""
+
+    mode = attrs.field()
+    """The ``mode`` argument in an ``open`` audit event."""
+
+    @classmethod
+    def from_args(cls, path, mode, _):
+        """Create from the actual audit event arguments. Discards ``flags``."""
+        return cls(path, mode)
 
 
 def _hook(event, args):
-    """Single audit hook used for all events and handlers."""
-    try:
-        # Subscripting a dict with str keys should be sufficiently protected by
-        # the GIL in CPython. This doesn't protect the table rows. But those
-        # are tuples that we always replace, rather than lists that we mutate,
-        # so we should observe consistent state.
-        listeners = _table[event]
-    except KeyError:
+    """Auditing event hook that conditionally reports ``open`` events."""
+    if event != 'open':
         return
+    open_events = _open_events  # Copy reference to avoid race condition.
+    if open_events is None:
+        return
+    open_events.append(OpenEvent.from_args(*args))
 
-    for listener in listeners:
-        listener(*args)
 
+@contextlib.contextmanager
+def listening_for_open():
+    """Context manager to collect information on open events in a list."""
+    global _hooked, _open_events
 
-def _subscribe(event, listener):
-    """Attach a detachable listener to an event."""
-    global _table
-
-    if _table is None:
-        _table = {}
+    if not _hooked:
+        _hooked = True
         sys.addaudithook(_hook)
 
-    old_listeners = _table.get(event, ())
-    _table[event] = (*old_listeners, listener)
+    if _open_events is not None:
+        raise RuntimeError(f'{listening_for_open.__name__} is not reentrant')
 
-
-def _fail_unsubscribe(event, listener):
-    """Raise an exception for an unsuccessful attempt to detach a listener."""
-    raise ValueError(f'{event!r} listener {listener!r} never subscribed')
-
-
-def _unsubscribe(event, listener):
-    """Detach a listener that was attached to an event."""
-    if _table is None:
-        _fail_unsubscribe(event, listener)
-
+    _open_events = []
     try:
-        listeners = _table[event]
-    except KeyError:
-        _fail_unsubscribe(event, listener)
-
-    # Work with the sequence in reverse to remove the most recent listener.
-    listeners_reversed = list(reversed(listeners))
-    try:
-        listeners_reversed.remove(listener)
-    except ValueError:
-        _fail_unsubscribe(event, listener)
-
-    if listeners_reversed:
-        _table[event] = tuple(reversed(listeners_reversed))
-    else:
-        del _table[event]
-
-
-@contextlib.contextmanager
-def _listening(event, listener):
-    """Context manager that subscribes and unsubscribes an event listener."""
-    _subscribe(event, listener)
-    try:
-        yield
+        yield _open_events
     finally:
-        _unsubscribe(event, listener)
-
-
-@contextlib.contextmanager
-def extracting(event, extractor):
-    """Context manager that provides a list of custom-extracted event data."""
-    extracts = []
-    with _listening(event, lambda *args: extracts.append(extractor(*args))):
-        yield extracts
+        _open_events = None
 
 
 skip_if_unavailable = unittest.skipIf(

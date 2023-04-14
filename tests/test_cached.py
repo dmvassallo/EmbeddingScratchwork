@@ -17,7 +17,6 @@ from typing import Any
 import unittest
 import unittest.mock
 
-import attrs
 from parameterized import parameterized_class
 
 import embed
@@ -30,22 +29,6 @@ _HOLA_FILENAME = (
 """Filename that would be generated from the input ``'hola'``."""
 
 _helpers.configure_logging()
-
-
-@attrs.frozen
-class _OpenEvent:
-    """The information from an ``open`` event that we make assertions about."""
-
-    path = attrs.field()
-    """The ``path`` argument in an ``open`` audit event."""
-
-    mode = attrs.field()
-    """The ``mode`` argument in an ``open`` audit event."""
-
-    @classmethod
-    def from_args(cls, path, mode, _):
-        """Create from the actual audit event arguments. Discards ``flags``."""
-        return cls(path, mode)
 
 
 @parameterized_class(('name', 'func'), [
@@ -128,9 +111,9 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     @_audit.skip_if_unavailable
     def test_load_confirmed_by_audit_event(self):
         self._write_fake_data_file()
-        expected_open_event = _OpenEvent(str(self._path), 'r')
+        expected_open_event = _audit.OpenEvent(str(self._path), 'r')
 
-        with _audit.extracting('open', _OpenEvent.from_args) as open_events:
+        with _audit.listening_for_open() as open_events:
             self.func('hola', data_dir=self._dir_path)
 
         self.assertIn(expected_open_event, open_events)
@@ -139,9 +122,9 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     @_audit.skip_if_unavailable
     def test_save_confirmed_by_audit_event(self):
         # TODO: Decide whether to keep allowing just 'x', or if 'w' is OK too.
-        expected_open_event = _OpenEvent(str(self._path), 'x')
+        expected_open_event = _audit.OpenEvent(str(self._path), 'x')
 
-        with _audit.extracting('open', _OpenEvent.from_args) as open_events:
+        with _audit.listening_for_open() as open_events:
             self.func('hola', data_dir=self._dir_path)
 
         self.assertIn(expected_open_event, open_events)
