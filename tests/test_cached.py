@@ -149,7 +149,10 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
         finally:
             cached.DEFAULT_DATA_DIR = ddd_old
 
-        self.assertEqual(log_context.output, [expected_message])
+        self.assertEqual(
+            log_context.output, [expected_message],
+            'DEFAULT_DATA_DIR should be used',
+        )
 
     @property
     def _path(self):
