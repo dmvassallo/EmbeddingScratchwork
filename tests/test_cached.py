@@ -135,6 +135,21 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
         self.assertTrue(self._path.is_file())
 
     # Test even when data_dir is not passed
+    def test_uses_default_data_dir_if_not_passed(self):
+        expected_message = 'INFO:embed.cached:{name}: saved: {path}'.format(
+            name=self.name,
+            path=self._path,
+        )
+
+        ddd_old = cached.DEFAULT_DATA_DIR
+        cached.DEFAULT_DATA_DIR = self._dir_path
+        try:
+            with self.assertLogs(logger=cached.__name__) as log_context:
+                self.func('hola')
+        finally:
+            cached.DEFAULT_DATA_DIR = ddd_old
+
+        self.assertEqual(log_context.output, [expected_message])
 
     @property
     def _path(self):
