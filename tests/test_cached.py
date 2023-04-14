@@ -161,9 +161,18 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
         )
 
 
-# FIXME: Either make a second class here or modify and further parameterize the
-#        above class, so that the embed.cached.embed_many* functions are
-#        tested.
+# FIXME: Make a second class here, or modify and further parameterize the above
+#        class, so that the embed.cached.embed_many* functions are tested.
+#
+#   TestDiskCachedEmbedOne and TestDiskCachedEmbedMany would need to differ by:
+#
+#   (1) Which embedding functions the class is parameterized by.
+#
+#   (2) What input (one text vs. a sequence of texts) is given to the
+#       functions.
+#
+#   (3) When we test that a saved embedding can be loaded by "all three"
+#       implementation, *which* three implementations.
 
 
 # FIXME: Consider ways to reorganize the whole test suite (not just this file).
