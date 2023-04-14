@@ -296,7 +296,6 @@ class TestDiskCachedEmbedMany(unittest.TestCase):
         )
 
 
-
 # FIXME: Make a second class here, or modify and further parameterize the above
 #        class, so that the embed.cached.embed_many* functions are tested.
 #
