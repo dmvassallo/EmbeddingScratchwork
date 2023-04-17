@@ -57,8 +57,8 @@ def _save_json(path, obj):
         file.write('\n')
 
 
-def _cache_on_disk(text_or_texts, *, data_dir, func):
-    """Helper function to add disk caching to an embedding function."""
+def _embed_with_disk_caching(func, text_or_texts, data_dir):
+    """Load cached embeddings from disk, or compute and save them."""
     path = _build_path(text_or_texts, data_dir)
     try:
         parsed = _load_json(path)
@@ -75,33 +75,33 @@ def _cache_on_disk(text_or_texts, *, data_dir, func):
 
 def embed_one(text, *, data_dir=None):
     """Embed a single piece of text. Caches to disk."""
-    return _cache_on_disk(text, data_dir=data_dir, func=embed.embed_one)
+    return _embed_with_disk_caching(embed.embed_one, text, data_dir)
 
 
 def embed_many(texts, *, data_dir=None):
     """Embed multiple pieces of text. Caches to disk."""
-    return _cache_on_disk(texts, data_dir=data_dir, func=embed.embed_many)
+    return _embed_with_disk_caching(embed.embed_many, texts, data_dir)
 
 
 def embed_one_eu(text, *, data_dir=None):
     """
     Embed a single piece of text. Uses ``embeddings_utils``. Caches to disk.
     """
-    return _cache_on_disk(text, data_dir=data_dir, func=embed.embed_one_eu)
+    return _embed_with_disk_caching(embed.embed_one_eu, text, data_dir)
 
 
 def embed_many_eu(texts, *, data_dir=None):
     """
     Embed multiple pieces of text. Uses ``embeddings_utils``. Caches to disk.
     """
-    return _cache_on_disk(texts, data_dir=data_dir, func=embed.embed_many_eu)
+    return _embed_with_disk_caching(embed.embed_many_eu, texts, data_dir)
 
 
 def embed_one_req(text, *, data_dir=None):
     """Embed a single piece of text. Uses ``requests``. Caches to disk."""
-    return _cache_on_disk(text, data_dir=data_dir, func=embed.embed_one_req)
+    return _embed_with_disk_caching(embed.embed_one_req, text, data_dir)
 
 
 def embed_many_req(texts, *, data_dir=None):
     """Embed multiple pieces of text. Uses ``requests``. Caches to disk."""
-    return _cache_on_disk(texts, data_dir=data_dir, func=embed.embed_many_req)
+    return _embed_with_disk_caching(embed.embed_many_req, texts, data_dir)
