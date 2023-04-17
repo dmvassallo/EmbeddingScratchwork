@@ -299,5 +299,6 @@ class TestDiskCachedEmbedMany(unittest.TestCase):
             __name__=embedder.__name__,
         )
 
+
 if __name__ == '__main__':
     unittest.main()

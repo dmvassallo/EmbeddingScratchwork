@@ -12,7 +12,6 @@ __all__ = [
     'embed_many_req',
 ]
 
-import functools
 import json
 import logging
 import pathlib
