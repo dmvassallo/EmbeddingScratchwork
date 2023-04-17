@@ -27,8 +27,8 @@ jobs:
         env:
           TESTS_CI_NONBLOCKING: ${{ vars.TESTS_CI_NONBLOCKING }}
 
-  test:
-    name: Unit Tests
+  tests:
+    name: Tests
 
     needs: [check-for-api-key, read-blocking-config]
 
@@ -68,9 +68,44 @@ jobs:
         if: needs.read-blocking-config.outputs.use-mutex != 'false'
         uses: EliahKagan/actions-mutex@v2
 
-      - name: Run Unit Tests
+      - name: Run tests
         run: python -m unittest -v
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TESTS_CACHE_EMBEDDING_CALLS: 'yes'
+          TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY: 'yes'
+          TESTS_LOGGING_LEVEL: 'INFO'
+
+  tests-as-scripts:
+    name: Tests as scripts
+
+    needs: [check-for-api-key, read-blocking-config]
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+
+      - name: Install Conda environment from environment.yml
+        uses: mamba-org/provision-with-micromamba@v15
+
+      - name: Make editable install
+        run: pip install -e .
+
+      - name: Set up mutex
+        if: needs.read-blocking-config.outputs.use-mutex != 'false'
+        uses: EliahKagan/actions-mutex@v2
+
+      - name: Run test modules as scripts
+        run: meta/run-test-scripts
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY: 'no'
           TESTS_LOGGING_LEVEL: 'INFO'

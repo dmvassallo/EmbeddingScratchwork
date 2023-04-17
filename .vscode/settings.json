@@ -1,10 +1,12 @@
 {
     "cSpell.language": "en,es",
     "cSpell.words": [
+        "addaudithook",
         "autobuild",
         "backoff",
         "bewuethr",
         "bierner",
+        "blake3",
         "buildscript",
         "catrun",
         "codeql",
@@ -18,6 +20,7 @@
         "dtype",
         "eamodio",
         "Eliah",
+        "embedder",
         "fernandrone",
         "floatfmt",
         "gaurav",
@@ -47,6 +50,8 @@
         "tablefmt",
         "tamasfe",
         "unpatch",
+        "unpatches",
+        "unpatching",
         "Vassallo"
     ],
     "cSpell.ignoreWords": [
