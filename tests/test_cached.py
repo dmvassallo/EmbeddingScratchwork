@@ -160,9 +160,11 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
 
     def _patch_underlying_embedder(self):
         """Patch the same-named function in ``embed``, to examine its calls."""
+        embedder = getattr(embed, self.name)
         return patch(
             target=f'{embed.__name__}.{self.name}',
-            wraps=getattr(embed, self.name),
+            wraps=embedder,
+            __name__=embedder.__name__,
         )
 
 
@@ -290,11 +292,12 @@ class TestDiskCachedEmbedMany(unittest.TestCase):
 
     def _patch_underlying_embedder(self):
         """Patch the same-named function in ``embed``, to examine its calls."""
+        embedder = getattr(embed, self.name)
         return patch(
             target=f'{embed.__name__}.{self.name}',
-            wraps=getattr(embed, self.name),
+            wraps=embedder,
+            __name__=embedder.__name__,
         )
-
 
 if __name__ == '__main__':
     unittest.main()

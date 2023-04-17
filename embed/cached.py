@@ -58,61 +58,51 @@ def _save_json(path, obj):
         file.write('\n')
 
 
-def _cache_on_disk(func):
-    """Decorator to add disk caching to an embedding function."""
-    @functools.wraps(func)
-    def wrapper(text_or_texts, *, data_dir=None):
-        path = _build_path(text_or_texts, data_dir)
-        try:
-            parsed = _load_json(path)
-        except OSError:
-            embeddings = func(text_or_texts)
-            _save_json(path=path, obj=embeddings.tolist())
-            _logger.info('%s: saved: %s', wrapper.__name__, path)
-        else:
-            embeddings = np.array(parsed, dtype=np.float32)
-            _logger.info('%s: loaded: %s', wrapper.__name__, path)
+def _cache_on_disk(text_or_texts, *, data_dir, func):
+    """Helper function to add disk caching to an embedding function."""
+    path = _build_path(text_or_texts, data_dir)
+    try:
+        parsed = _load_json(path)
+    except OSError:
+        embeddings = func(text_or_texts)
+        _save_json(path=path, obj=embeddings.tolist())
+        _logger.info('%s: saved: %s', func.__name__, path)
+    else:
+        embeddings = np.array(parsed, dtype=np.float32)
+        _logger.info('%s: loaded: %s', func.__name__, path)
 
-        return embeddings
-
-    return wrapper
+    return embeddings
 
 
-@_cache_on_disk
-def embed_one(text):
+def embed_one(text, *, data_dir=None):
     """Embed a single piece of text. Caches to disk."""
-    return embed.embed_one(text)
+    return _cache_on_disk(text, data_dir=data_dir, func=embed.embed_one)
 
 
-@_cache_on_disk
-def embed_many(texts):
+def embed_many(texts, *, data_dir=None):
     """Embed multiple pieces of text. Caches to disk."""
-    return embed.embed_many(texts)
+    return _cache_on_disk(texts, data_dir=data_dir, func=embed.embed_many)
 
 
-@_cache_on_disk
-def embed_one_eu(text):
+def embed_one_eu(text, *, data_dir=None):
     """
     Embed a single piece of text. Uses ``embeddings_utils``. Caches to disk.
     """
-    return embed.embed_one_eu(text)
+    return _cache_on_disk(text, data_dir=data_dir, func=embed.embed_one_eu)
 
 
-@_cache_on_disk
-def embed_many_eu(texts):
+def embed_many_eu(texts, *, data_dir=None):
     """
     Embed multiple pieces of text. Uses ``embeddings_utils``. Caches to disk.
     """
-    return embed.embed_many_eu(texts)
+    return _cache_on_disk(texts, data_dir=data_dir, func=embed.embed_many_eu)
 
 
-@_cache_on_disk
-def embed_one_req(text):
+def embed_one_req(text, *, data_dir=None):
     """Embed a single piece of text. Uses ``requests``. Caches to disk."""
-    return embed.embed_one_req(text)
+    return _cache_on_disk(text, data_dir=data_dir, func=embed.embed_one_req)
 
 
-@_cache_on_disk
-def embed_many_req(texts):
+def embed_many_req(texts, *, data_dir=None):
     """Embed multiple pieces of text. Uses ``requests``. Caches to disk."""
-    return embed.embed_many_req(texts)
+    return _cache_on_disk(texts, data_dir=data_dir, func=embed.embed_many_req)
