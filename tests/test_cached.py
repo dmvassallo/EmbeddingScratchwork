@@ -36,6 +36,16 @@ _HOLA_HELLO_FILENAME = (
 _helpers.configure_logging()
 
 
+def _patch_non_disk_caching_embedder(name):
+    """Patch a function in ``embed`` to examine its calls."""
+    embedder = getattr(embed, name)
+    return patch(
+        target=f'{embed.__name__}.{name}',
+        wraps=embedder,
+        __name__=embedder.__name__,
+    )
+
+
 @parameterized_class(('name', 'func'), [
     (cached.embed_one.__name__, staticmethod(cached.embed_one)),
     (cached.embed_one_eu.__name__, staticmethod(cached.embed_one_eu)),
@@ -61,7 +71,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
     # FIXME: Test returned embeddings could plausibly be correct.
 
     def test_calls_same_name_non_caching_version_if_not_cached(self):
-        with self._patch_underlying_embedder() as mock:
+        with _patch_non_disk_caching_embedder(self.name) as mock:
             self.func('hola', data_dir=self._dir_path)
 
         mock.assert_called_once_with('hola')
@@ -158,15 +168,6 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
         with open(file=self._path, mode='w', encoding='utf-8') as file:
             json.dump(obj=fake_data, fp=file)
 
-    def _patch_underlying_embedder(self):
-        """Patch the same-named function in ``embed``, to examine its calls."""
-        embedder = getattr(embed, self.name)
-        return patch(
-            target=f'{embed.__name__}.{self.name}',
-            wraps=embedder,
-            __name__=embedder.__name__,
-        )
-
 
 @parameterized_class(('name', 'func'), [
     (cached.embed_many.__name__, staticmethod(cached.embed_many)),
@@ -193,7 +194,7 @@ class TestDiskCachedEmbedMany(unittest.TestCase):
     # FIXME: Test returned embeddings could plausibly be correct
 
     def test_calls_same_name_non_caching_version_if_not_cached(self):
-        with self._patch_underlying_embedder() as mock:
+        with _patch_non_disk_caching_embedder(self.name) as mock:
             self.func(['hola', 'hello'], data_dir=self._dir_path)
 
         mock.assert_called_once_with(['hola', 'hello'])
@@ -289,15 +290,6 @@ class TestDiskCachedEmbedMany(unittest.TestCase):
         fake_data = [1.0] + [0.0] * (embed.DIMENSION - 1)  # Normalized vector.
         with open(file=self._path, mode='w', encoding='utf-8') as file:
             json.dump(obj=fake_data, fp=file)
-
-    def _patch_underlying_embedder(self):
-        """Patch the same-named function in ``embed``, to examine its calls."""
-        embedder = getattr(embed, self.name)
-        return patch(
-            target=f'{embed.__name__}.{self.name}',
-            wraps=embedder,
-            __name__=embedder.__name__,
-        )
 
 
 if __name__ == '__main__':
