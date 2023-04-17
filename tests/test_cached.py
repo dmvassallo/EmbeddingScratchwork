@@ -287,7 +287,12 @@ class TestDiskCachedEmbedMany(unittest.TestCase):
 
     def _write_fake_data_file(self):
         """Create a file containing a fake embedding."""
-        fake_data = [1.0] + [0.0] * (embed.DIMENSION - 1)  # Normalized vector.
+        # Two normalized vectors.
+        fake_data = [
+            [1.0] + [0.0] + [0.0] * (embed.DIMENSION - 2),
+            [0.0] + [1.0] + [0.0] * (embed.DIMENSION - 2),
+        ]
+
         with open(file=self._path, mode='w', encoding='utf-8') as file:
             json.dump(obj=fake_data, fp=file)
 
