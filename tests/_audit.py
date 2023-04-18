@@ -8,10 +8,10 @@ import unittest
 
 import attrs
 
-_hooked = False
+_hooked = False  # pylint: disable=invalid-name  # Not a constant.
 """Whether the audit hook has been installed."""
 
-_open_events = None
+_open_events = None  # pylint: disable=invalid-name  # Not a constant.
 """The current event collector list. ``None``, whenever not collecting."""
 
 
@@ -44,6 +44,8 @@ def _hook(event, args):
 @contextlib.contextmanager
 def listening_for_open():
     """Context manager to collect information on open events in a list."""
+    # pylint: disable=global-statement
+    # We really do want to mutate this shared state maintained at module level.
     global _hooked, _open_events
 
     if not _hooked:
