@@ -44,9 +44,18 @@ multiplication](https://numpy.org/doc/stable/reference/generated/numpy.matmul.ht
 return them as NumPy arrays: rank-1 arrays (vectors) for individual embeddings,
 or rank-2 arrays (matrices) for batches of embeddings.
 
+[`embed.cached`](embed/cached.py) contains corresponding
+functions that cache embeddings on disk, and check for them before contacting
+OpenAI’s servers.
+
+### Major Modules (Tests)
+
 [`test_embed`](tests/test_embed.py) has automated tests of the functions in
 `embed`. This includes testing that some examples’ similarities are within
 expected ranges.
+
+[`test_cached`](tests/test_cached.py) has automated tests specific to
+functionality in `embed.cached`.
 
 ### Notebooks
 
