@@ -68,7 +68,7 @@ class TestDiskCachedEmbedOne(unittest.TestCase):
         """Delete the temporary directory."""
         self._temporary_directory.cleanup()
 
-    # FIXME: Test returned embeddings could plausibly be correct.
+    # FIXME: Test that returned embeddings could plausibly be correct.
 
     def test_calls_same_name_non_caching_version_if_not_cached(self):
         with _patch_non_disk_caching_embedder(self.name) as mock:
@@ -191,7 +191,7 @@ class TestDiskCachedEmbedMany(unittest.TestCase):
         """Delete the temporary directory."""
         self._temporary_directory.cleanup()
 
-    # FIXME: Test returned embeddings could plausibly be correct
+    # FIXME: Test that returned embeddings could plausibly be correct.
 
     def test_calls_same_name_non_caching_version_if_not_cached(self):
         with _patch_non_disk_caching_embedder(self.name) as mock:
