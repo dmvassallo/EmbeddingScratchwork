@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 
-"""
-Tests for embedding functions.
-
-This is a work in progress using inheritance instead of parameterized_class.
-"""
+"""Tests for behavior that all embedding functions should have."""
 
 # pylint: disable=missing-function-docstring
 # All test methods have self-documenting names.
