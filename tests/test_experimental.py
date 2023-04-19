@@ -28,6 +28,7 @@ class TestConstants(unittest.TestCase):
         self.assertEqual(embed.DIMENSION, 1536)
 
 
+@_helpers.maybe_cache_embeddings_in_memory
 class _TestEmbedOneBase(ABC, unittest.TestCase):
     """Tests for ``embed_one``, ``embed_one_eu``, and ``embed_one_req``."""
 
@@ -69,6 +70,7 @@ class _TestEmbedOneBase(ABC, unittest.TestCase):
 class _TestEmbedManyBase(ABC, unittest.TestCase):
     """Tests for ``embed_many``, ``embed_many_eu``, and ``embed_many_req``."""
 
+    @_helpers.maybe_cache_embeddings_in_memory
     def setUp(self):
         self._many = self.func([
             'Your text string goes here',
