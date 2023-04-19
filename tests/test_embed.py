@@ -24,8 +24,17 @@ class TestConstants(unittest.TestCase):
         self.assertEqual(embed.DIMENSION, 1536)
 
 
+class _TestEmbedBase(ABC, unittest.TestCase):
+    """Abstract base to provide helpers and fixtures."""
+
+    @property
+    @abstractmethod
+    def func(self):
+        """Embedding function being tested."""
+
+
 @_helpers.maybe_cache_embeddings_in_memory
-class _TestEmbedOneBase(ABC, unittest.TestCase):
+class _TestEmbedOneBase(_TestEmbedBase):
     """Tests for ``embed_one``, ``embed_one_eu``, and ``embed_one_req``."""
 
     def test_returns_numpy_array(self):
@@ -57,13 +66,8 @@ class _TestEmbedOneBase(ABC, unittest.TestCase):
         result = np.dot(sentence_one, sentence_two)
         self.assertLess(result, 0.8)
 
-    @property
-    @abstractmethod
-    def func(self):
-        """Embedding function being tested."""
 
-
-class _TestEmbedManyBase(ABC, unittest.TestCase):
+class _TestEmbedManyBase(_TestEmbedBase):
     """Tests for ``embed_many``, ``embed_many_eu``, and ``embed_many_req``."""
 
     @_helpers.maybe_cache_embeddings_in_memory
@@ -96,11 +100,6 @@ class _TestEmbedManyBase(ABC, unittest.TestCase):
     def test_different_meanings_are_dissimilar(self):
         result = np.dot(self._many[0], self._many[1])
         self.assertLess(result, 0.8)
-
-    @property
-    @abstractmethod
-    def func(self):
-        """Embedding function being tested."""
 
 
 class TestEmbedOne(_TestEmbedOneBase):
