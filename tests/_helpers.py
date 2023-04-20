@@ -4,7 +4,6 @@ __all__ = [
     'getenv_bool',
     'configure_logging',
     'maybe_cache_embeddings_in_memory',
-    'Caller',
 ]
 
 import atexit
@@ -192,30 +191,3 @@ In-memory caching is not done by default. It is controlled by the
 process startup by ``getenv_bool``. If it is enabled, each embedding function
 has its own in-memory cache, so bugs in some don't hide bugs in others.
 """
-
-
-class Caller:
-    """Proxy to call a function via a supplier, to support monkey-patching."""
-
-    __slots__ = ('_func_supplier',)
-
-    def __init__(self, func_supplier):
-        """Make a ``Caller`` proxy that stores the given function supplier."""
-        self._func_supplier = func_supplier
-
-    def __repr__(self):
-        """Code-like (but non-``exec``able) representation for debugging."""
-        return f'{type(self).__name__}(lambda: {self._func_supplier()!r})'
-
-    def __str__(self):
-        """The ``str`` of the function resolved through the stored supplier."""
-        return str(self._func_supplier())
-
-    def __call__(self, *args, **kwargs):
-        """Resolve the function through the stored supplier and call it."""
-        return self._func_supplier()(*args, **kwargs)
-
-    @property
-    def __name__(self):
-        """The name of the function resolved through the stored supplier."""
-        return self._func_supplier().__name__
