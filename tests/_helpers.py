@@ -72,9 +72,17 @@ def configure_logging():
     logging.basicConfig(level=getattr(logging, level))
 
 
-def _identity_function(arg):
-    """Return the argument unchanged."""
-    return arg
+class _NullContextDecorator:
+    """Null context manager that is also a decorator."""
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        pass
+
+    def __call__(self, func):
+        return func
 
 
 @attrs.mutable
@@ -158,7 +166,7 @@ def _get_maybe_cache_embeddings_in_memory():
     See ``maybe_cache_embeddings_in_memory`` for details.
     """
     if not getenv_bool('TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY'):
-        return _identity_function
+        return _NullContextDecorator()  # Don't patch.
 
     patches = {
         name: _logged_cache_in_memory_for_testing(getattr(embed, name))
