@@ -27,6 +27,8 @@ class TestConstants(unittest.TestCase):
 class _TestEmbedBase(ABC, unittest.TestCase):
     """Abstract base to provide helpers and fixtures."""
 
+    # FIXME: Add a setUp and tearDown method to handle memory caching.
+
     @property
     @abstractmethod
     def func(self):
