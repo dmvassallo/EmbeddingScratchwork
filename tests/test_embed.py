@@ -27,7 +27,11 @@ class TestConstants(unittest.TestCase):
 class _TestEmbedBase(ABC, unittest.TestCase):
     """Abstract base to provide helpers and fixtures."""
 
-    # FIXME: Add a setUp and tearDown method to handle memory caching.
+    def setUp(self):
+        _helpers.maybe_cache_embeddings_in_memory.__enter__()
+
+    def tearDown(self):
+        _helpers.maybe_cache_embeddings_in_memory.__exit__(None, None, None)
 
     @property
     @abstractmethod
@@ -35,7 +39,6 @@ class _TestEmbedBase(ABC, unittest.TestCase):
         """Embedding function being tested."""
 
 
-@_helpers.maybe_cache_embeddings_in_memory
 class _TestEmbedOneBase(_TestEmbedBase):
     """Tests for ``embed_one``, ``embed_one_eu``, and ``embed_one_req``."""
 
@@ -72,8 +75,8 @@ class _TestEmbedOneBase(_TestEmbedBase):
 class _TestEmbedManyBase(_TestEmbedBase):
     """Tests for ``embed_many``, ``embed_many_eu``, and ``embed_many_req``."""
 
-    @_helpers.maybe_cache_embeddings_in_memory
     def setUp(self):
+        super().setUp()
         self._many = self.func([
             'Your text string goes here',
             'The cat runs.',
