@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Tests for embedding functions in the ``embed.cached`` submodule.
+Tests specific to the embedding functions in the ``embed.cached`` submodule.
 
 Those embedding functions are the versions that cache to disk. They are
 otherwise like the same-named functions residing directly in ``embed``.
@@ -66,7 +66,9 @@ class _TestDiskCachedEmbedBase(ABC, unittest.TestCase):
     @property
     @abstractmethod
     def filename(self):
-        """Filename that would be generated from the input ``text_or_texts``."""
+        """
+        Filename that should be generated from the input ``text_or_texts``.
+        """
 
     @property
     @abstractmethod
@@ -76,7 +78,9 @@ class _TestDiskCachedEmbedBase(ABC, unittest.TestCase):
     @property
     @abstractmethod
     def func_group(self):
-        """Single or multiple embedding function group. Compatible with ``func``."""
+        """
+        Single or multiple embedding function group. Compatible with ``func``.
+        """
 
     @property
     @abstractmethod
@@ -187,7 +191,7 @@ class _TestDiskCachedEmbedBase(ABC, unittest.TestCase):
 
 
 class _TestDiskCachedEmbedOneBase(_TestDiskCachedEmbedBase):
-    """Abstract base for embed_one* group customizations."""
+    """Abstract base for ``embed_one*`` group customizations."""
 
     @property
     def text_or_texts(self):
@@ -208,7 +212,7 @@ class _TestDiskCachedEmbedOneBase(_TestDiskCachedEmbedBase):
 
 
 class _TestDiskCachedEmbedManyBase(_TestDiskCachedEmbedBase):
-    """Abstract base for embed_many* group customizations."""
+    """Abstract base for ``embed_many*`` group customizations."""
 
     @property
     def text_or_texts(self):
@@ -232,7 +236,7 @@ class _TestDiskCachedEmbedManyBase(_TestDiskCachedEmbedBase):
 
 
 class TestDiskCachedEmbedOne(_TestDiskCachedEmbedOneBase):
-    """Tests for disk cached embed_one."""
+    """Tests for disk cached ``embed_one``."""
 
     @property
     def func(self):
@@ -240,7 +244,7 @@ class TestDiskCachedEmbedOne(_TestDiskCachedEmbedOneBase):
 
 
 class TestDiskCachedEmbedOneEu(_TestDiskCachedEmbedOneBase):
-    """Tests for disk cached embed_one_eu."""
+    """Tests for disk cached ``embed_one_eu``."""
 
     @property
     def func(self):
@@ -248,7 +252,7 @@ class TestDiskCachedEmbedOneEu(_TestDiskCachedEmbedOneBase):
 
 
 class TestDiskCachedEmbedOneReq(_TestDiskCachedEmbedOneBase):
-    """Tests for disk cached embed_one_req."""
+    """Tests for disk cached ``embed_one_req``."""
 
     @property
     def func(self):
@@ -256,7 +260,7 @@ class TestDiskCachedEmbedOneReq(_TestDiskCachedEmbedOneBase):
 
 
 class TestDiskCachedEmbedMany(_TestDiskCachedEmbedManyBase):
-    """Tests for disk cached embed_many."""
+    """Tests for disk cached ``embed_many``."""
 
     @property
     def func(self):
@@ -264,7 +268,7 @@ class TestDiskCachedEmbedMany(_TestDiskCachedEmbedManyBase):
 
 
 class TestDiskCachedEmbedManyEu(_TestDiskCachedEmbedManyBase):
-    """Tests for disk cached embed_many_eu."""
+    """Tests for disk cached ``embed_many_eu``."""
 
     @property
     def func(self):
@@ -272,7 +276,7 @@ class TestDiskCachedEmbedManyEu(_TestDiskCachedEmbedManyBase):
 
 
 class TestDiskCachedEmbedManyReq(_TestDiskCachedEmbedManyBase):
-    """Tests for disk cached embed_many_req."""
+    """Tests for disk cached ``embed_many_req``."""
 
     @property
     def func(self):
