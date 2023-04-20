@@ -30,8 +30,10 @@ class _TestEmbedBase(ABC, unittest.TestCase):
     def setUp(self):
         _helpers.maybe_cache_embeddings_in_memory.__enter__()
 
-    def tearDown(self):
-        _helpers.maybe_cache_embeddings_in_memory.__exit__(None, None, None)
+        self.addCleanup(
+            _helpers.maybe_cache_embeddings_in_memory.__exit__,
+            None, None, None,
+        )
 
     @property
     @abstractmethod
@@ -77,6 +79,7 @@ class _TestEmbedManyBase(_TestEmbedBase):
 
     def setUp(self):
         super().setUp()
+
         self._many = self.func([
             'Your text string goes here',
             'The cat runs.',
