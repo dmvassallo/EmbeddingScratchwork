@@ -34,16 +34,6 @@ _HOLA_HELLO_FILENAME = (
 _helpers.configure_logging()
 
 
-def _patch_non_disk_caching_embedder(name):
-    """Patch a function in ``embed`` to examine its calls."""
-    embedder = getattr(embed, name)
-    return patch(
-        target=f'{embed.__name__}.{name}',
-        wraps=embedder,
-        __name__=embedder.__name__,
-    )
-
-
 @_helpers.maybe_cache_embeddings_in_memory
 class _TestDiskCachedEmbedBase(ABC, unittest.TestCase):
     """Tests of ``embed.cached.embed*`` functions, which cache to disk."""
@@ -90,7 +80,7 @@ class _TestDiskCachedEmbedBase(ABC, unittest.TestCase):
     # FIXME: Test that returned embeddings could plausibly be correct.
 
     def test_calls_same_name_non_caching_version_if_not_cached(self):
-        with _patch_non_disk_caching_embedder(self._name) as mock:
+        with self._patch_non_disk_caching_embedder() as mock:
             self.func(self.text_or_texts, data_dir=self._dir_path)
 
         mock.assert_called_once_with(self.text_or_texts)
@@ -183,6 +173,15 @@ class _TestDiskCachedEmbedBase(ABC, unittest.TestCase):
     def _path(self):
         """Path of temporary test file."""
         return self._dir_path / self.filename
+
+    def _patch_non_disk_caching_embedder(self):
+        """Patch a function in ``embed`` to examine its calls."""
+        embedder = getattr(embed, self._name)
+        return patch(
+            target=f'{embed.__name__}.{self._name}',
+            wraps=embedder,
+            __name__=embedder.__name__,
+        )
 
     def _write_fake_data_file(self):
         """Create a file containing a fake embedding."""
