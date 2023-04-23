@@ -5,15 +5,13 @@
 # pylint: disable=missing-function-docstring
 # All test methods have self-documenting names.
 
-from abc import ABC, abstractmethod
-import sys
 import unittest
 
 import numpy as np
 from parameterized import parameterized
 
 import embed
-from tests import _helpers
+from tests import _base, _helpers
 
 _helpers.configure_logging()
 
@@ -25,24 +23,7 @@ class TestConstants(unittest.TestCase):
         self.assertEqual(embed.DIMENSION, 1536)
 
 
-class _TestEmbedBase(ABC, unittest.TestCase):
-    """Abstract base to provide helpers and fixtures."""
-
-    def setUp(self):
-        _helpers.maybe_cache_embeddings_in_memory.__enter__()
-
-        self.addCleanup(
-            _helpers.maybe_cache_embeddings_in_memory.__exit__,
-            *sys.exc_info(),
-        )
-
-    @property
-    @abstractmethod
-    def func(self):
-        """Embedding function being tested."""
-
-
-class _TestEmbedOneBase(_TestEmbedBase):
+class _TestEmbedOneBase(_base.TestEmbedBase):
     """Tests for ``embed_one``, ``embed_one_eu``, and ``embed_one_req``."""
 
     def test_returns_numpy_array(self):
@@ -75,7 +56,7 @@ class _TestEmbedOneBase(_TestEmbedBase):
         self.assertLess(result, 0.8)
 
 
-class _TestEmbedManyBase(_TestEmbedBase):
+class _TestEmbedManyBase(_base.TestEmbedBase):
     """Tests for ``embed_many``, ``embed_many_eu``, and ``embed_many_req``."""
 
     def setUp(self):
