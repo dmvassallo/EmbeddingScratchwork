@@ -6,6 +6,7 @@
 # All test methods have self-documenting names.
 
 from abc import ABC, abstractmethod
+import sys
 import unittest
 
 import numpy as np
@@ -32,7 +33,7 @@ class _TestEmbedBase(ABC, unittest.TestCase):
 
         self.addCleanup(
             _helpers.maybe_cache_embeddings_in_memory.__exit__,
-            None, None, None,
+            *sys.exc_info(),
         )
 
     @property
