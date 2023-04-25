@@ -34,8 +34,8 @@ _HOLA_HELLO_FILENAME = (
 _helpers.configure_logging()
 
 
-class _TestDiskCachedEmbedBase(_bases.TestEmbedBase):
-    """Tests of ``embed.cached.embed*`` functions, which cache to disk."""
+class _TestFixtureLogic(_bases.TestEmbedBase):
+    """Shared test fixture logic for disk caching tests and general tests."""
 
     def setUp(self):
         """Create a temporary directory."""
@@ -49,6 +49,10 @@ class _TestDiskCachedEmbedBase(_bases.TestEmbedBase):
         """Delete the temporary directory."""
         self._temporary_directory.cleanup()
         super().tearDown()
+
+
+class _TestDiskCachedEmbedBase(_TestFixtureLogic):
+    """Tests of ``embed.cached.embed*`` functions, which cache to disk."""
 
     @property
     @abstractmethod
