@@ -1,7 +1,9 @@
 """Shared base classes for embedding tests."""
 
 from abc import ABC, abstractmethod
+import pathlib
 import sys
+import tempfile
 import unittest
 
 import numpy as np
@@ -99,3 +101,20 @@ class TestEmbedManyBase(TestEmbedBase):
     def test_different_meanings_are_dissimilar(self):
         result = np.dot(self._many[0], self._many[1])
         self.assertLess(result, 0.8)
+
+
+class TestDiskCachedBase(TestEmbedBase):
+    """Shared test fixture logic for all tests of disk caching versions."""
+
+    def setUp(self):
+        """Create a temporary directory."""
+        super().setUp()
+
+        # pylint: disable=consider-using-with  # tearDown cleans this up.
+        self._temporary_directory = tempfile.TemporaryDirectory()
+        self._dir_path = pathlib.Path(self._temporary_directory.name)
+
+    def tearDown(self):
+        """Delete the temporary directory."""
+        self._temporary_directory.cleanup()
+        super().tearDown()

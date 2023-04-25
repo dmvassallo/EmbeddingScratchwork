@@ -12,8 +12,6 @@ otherwise like the same-named functions residing directly in ``embed``.
 
 from abc import abstractmethod
 import json
-import pathlib
-import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -34,24 +32,7 @@ _HOLA_HELLO_FILENAME = (
 _helpers.configure_logging()
 
 
-class _TestDiskCachedBase(_bases.TestEmbedBase):
-    """Shared test fixture logic for all tests of disk caching versions."""
-
-    def setUp(self):
-        """Create a temporary directory."""
-        super().setUp()
-
-        # pylint: disable=consider-using-with  # tearDown cleans this up.
-        self._temporary_directory = tempfile.TemporaryDirectory()
-        self._dir_path = pathlib.Path(self._temporary_directory.name)
-
-    def tearDown(self):
-        """Delete the temporary directory."""
-        self._temporary_directory.cleanup()
-        super().tearDown()
-
-
-class _TestDiskCachedCachingBase(_TestDiskCachedBase):
+class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
     """
     Tests specific to caching behavior of ``embed.cached.embed*`` functions.
     """
