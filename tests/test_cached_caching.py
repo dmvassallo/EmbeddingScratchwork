@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Tests specific to the embedding functions in the ``embed.cached`` submodule.
+Tests of disk caching behavior of ``embed.cached.embed*`` functions.
 
 Those embedding functions are the versions that cache to disk. They are
 otherwise like the same-named functions residing directly in ``embed``.
