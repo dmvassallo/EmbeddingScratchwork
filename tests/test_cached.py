@@ -19,7 +19,7 @@ from unittest.mock import patch
 
 import embed
 from embed import cached
-from tests import _audit, _base, _helpers
+from tests import _audit, _bases, _helpers
 
 _HOLA_FILENAME = (
     'b58e4a60c963f8b3c43d83cc9245020ce71d8311fa2f48cfd36deed6f472a71b.json'
@@ -34,7 +34,7 @@ _HOLA_HELLO_FILENAME = (
 _helpers.configure_logging()
 
 
-class _TestDiskCachedEmbedBase(_base.TestEmbedBase):
+class _TestDiskCachedEmbedBase(_bases.TestEmbedBase):
     """Tests of ``embed.cached.embed*`` functions, which cache to disk."""
 
     def setUp(self):

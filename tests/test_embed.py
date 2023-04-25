@@ -11,7 +11,7 @@ import numpy as np
 from parameterized import parameterized
 
 import embed
-from tests import _base, _helpers
+from tests import _bases, _helpers
 
 _helpers.configure_logging()
 
@@ -23,7 +23,7 @@ class TestConstants(unittest.TestCase):
         self.assertEqual(embed.DIMENSION, 1536)
 
 
-class _TestEmbedOneBase(_base.TestEmbedBase):
+class _TestEmbedOneBase(_bases.TestEmbedBase):
     """Tests for ``embed_one``, ``embed_one_eu``, and ``embed_one_req``."""
 
     def test_returns_numpy_array(self):
@@ -56,7 +56,7 @@ class _TestEmbedOneBase(_base.TestEmbedBase):
         self.assertLess(result, 0.8)
 
 
-class _TestEmbedManyBase(_base.TestEmbedBase):
+class _TestEmbedManyBase(_bases.TestEmbedBase):
     """Tests for ``embed_many``, ``embed_many_eu``, and ``embed_many_req``."""
 
     def setUp(self):
