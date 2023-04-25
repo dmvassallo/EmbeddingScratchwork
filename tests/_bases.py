@@ -1,4 +1,4 @@
-"""Shared base for embedding tests."""
+"""Shared base classes for embedding tests."""
 
 from abc import ABC, abstractmethod
 import sys
@@ -29,7 +29,9 @@ class TestEmbedBase(ABC, unittest.TestCase):
 
 
 class TestEmbedOneBase(TestEmbedBase):
-    """Tests for ``embed_one``, ``embed_one_eu``, and ``embed_one_req``."""
+    """
+    Tests for ``embed.embed_one*`` functions (the non-disk-caching functions).
+    """
 
     def test_returns_numpy_array(self):
         result = self.func('Your text string goes here')
@@ -62,7 +64,9 @@ class TestEmbedOneBase(TestEmbedBase):
 
 
 class TestEmbedManyBase(TestEmbedBase):
-    """Tests for ``embed_many``, ``embed_many_eu``, and ``embed_many_req``."""
+    """
+    Tests for ``embed.embed_many*`` functions (the non-disk-caching functions).
+    """
 
     def setUp(self):
         super().setUp()

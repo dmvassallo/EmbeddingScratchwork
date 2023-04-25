@@ -34,8 +34,8 @@ _HOLA_HELLO_FILENAME = (
 _helpers.configure_logging()
 
 
-class _TestFixtureLogic(_bases.TestEmbedBase):
-    """Shared test fixture logic for disk caching tests and general tests."""
+class _TestDiskCachedBase(_bases.TestEmbedBase):
+    """Shared test fixture logic for all tests of disk caching versions."""
 
     def setUp(self):
         """Create a temporary directory."""
@@ -51,8 +51,10 @@ class _TestFixtureLogic(_bases.TestEmbedBase):
         super().tearDown()
 
 
-class _TestDiskCachedEmbedBase(_TestFixtureLogic):
-    """Tests of ``embed.cached.embed*`` functions, which cache to disk."""
+class _TestDiskCachedCachingBase(_TestDiskCachedBase):
+    """
+    Tests specific to caching behavior of ``embed.cached.embed*`` functions.
+    """
 
     @property
     @abstractmethod
@@ -195,7 +197,7 @@ class _TestDiskCachedEmbedBase(_TestFixtureLogic):
             json.dump(obj=self.fake_data, fp=file)
 
 
-class _TestDiskCachedEmbedOneBase(_TestDiskCachedEmbedBase):
+class _TestDiskCachedEmbedOneBase(_TestDiskCachedCachingBase):
     """Abstract base for ``embed_one*`` group customizations."""
 
     @property
@@ -216,7 +218,7 @@ class _TestDiskCachedEmbedOneBase(_TestDiskCachedEmbedBase):
         return cached.embed_one, cached.embed_one_eu, cached.embed_one_req
 
 
-class _TestDiskCachedEmbedManyBase(_TestDiskCachedEmbedBase):
+class _TestDiskCachedEmbedManyBase(_TestDiskCachedCachingBase):
     """Abstract base for ``embed_many*`` group customizations."""
 
     @property
@@ -288,7 +290,7 @@ class TestDiskCachedEmbedManyReq(_TestDiskCachedEmbedManyBase):
         return cached.embed_many_req
 
 
-del _TestDiskCachedEmbedBase
+del _TestDiskCachedCachingBase
 del _TestDiskCachedEmbedOneBase
 del _TestDiskCachedEmbedManyBase
 
