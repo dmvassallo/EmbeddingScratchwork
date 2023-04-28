@@ -7,9 +7,11 @@
     "customizations": {
         "vscode": {
             "extensions": [
+                "alefragnani.numbered-bookmarks",
                 "bierner.markdown-preview-github-styles",
                 "eamodio.gitlens",
                 "GitHub.vscode-github-actions",
+                "GitHub.vscode-pull-request-github",
                 "mhutchie.git-graph",
                 "ms-python.python",
                 "MS-vsliveshare.vsliveshare",
