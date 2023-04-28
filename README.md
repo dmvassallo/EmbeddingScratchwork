@@ -50,12 +50,14 @@ OpenAI’s servers.
 
 ### Major Modules (Tests)
 
+<!-- FIXME: Update this again when all new test modules have been created. -->
+
 [`test_embed`](tests/test_embed.py) has automated tests of the functions in
 `embed`. This includes testing that some examples’ similarities are within
 expected ranges.
 
-[`test_cached`](tests/test_cached.py) has automated tests specific to
-functionality in `embed.cached`.
+[`test_cached_caching`](tests/test_cached_caching.py) has automated tests
+*specific* to functionality in `embed.cached`.
 
 ### Notebooks
 
