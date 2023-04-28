@@ -15,7 +15,22 @@ from embed import cached
 from tests import _bases
 
 
-class _TestDiskCacheHitBase(_bases.TestDiskCachedBase):
+class _TestDiskCacheEmbeddingsBase(_bases.TestDiskCachedBase):
+    """Base class for the embeddings tests of the disk caching versions."""
+
+    def setUp(self):
+        """Patch ``DEFAULT_DATA_DIR`` to the temporary directory."""
+        super().setUp()
+
+        self._old_data_dir = cached.DEFAULT_DATA_DIR
+        cached.DEFAULT_DATA_DIR = self._dir_path
+
+    def tearDown(self):  # FIXME: Do this with addCleanup in setUp instead.
+        cached.DEFAULT_DATA_DIR = self._old_data_dir
+        super().tearDown()
+
+
+class _TestDiskCacheHitBase(_TestDiskCacheEmbeddingsBase):
     """Test fixture so embeddings are pre-cached to disk."""
 
     def setUp(self):
@@ -26,7 +41,41 @@ class _TestDiskCacheHitBase(_bases.TestDiskCachedBase):
             shutil.copy(path, self._dir_path)
 
 
-class _TestDiskCacheMissBase(_bases.TestDiskCachedBase):
+
+class TestDiskCacheHitEmbedOne(
+    _bases.TestEmbedOneBase,
+    _TestDiskCacheHitBase,
+):
+    """Tests for disk cached ``embed_one`` with embeddings pre-cached."""
+
+    @property
+    def func(self):
+        return cached.embed_one
+
+
+class TestDiskCacheHitEmbedOneEu(
+    _bases.TestEmbedOneBase,
+    _TestDiskCacheHitBase,
+):
+    """Tests for disk cached ``embed_one_eu`` with embeddings pre-cached."""
+
+    @property
+    def func(self):
+        return cached.embed_one_eu
+
+
+class TestDiskCacheHitEmbedOneReq(
+    _bases.TestEmbedOneBase,
+    _TestDiskCacheHitBase,
+):
+    """Tests for disk cached ``embed_one_req`` with embeddings pre-cached."""
+
+    @property
+    def func(self):
+        return cached.embed_one_req
+
+
+class _TestDiskCacheMissBase(_TestDiskCacheEmbeddingsBase):
     pass
 
 
