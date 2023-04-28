@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 
-"""Tests for behavior that all embedding functions should have."""
+"""
+Tests for behavior that all embedding functions should have.
+
+This consists mostly of tests of embeddings from ``embed.embed*`` functions.
+This does not test the disk caching versions; see ``test_cached_embeddings``.
+"""
 
 # pylint: disable=missing-function-docstring
 # All test methods have self-documenting names.
