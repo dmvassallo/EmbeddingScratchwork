@@ -7,6 +7,7 @@ Those embedding functions are the versions that cache to disk. They are
 otherwise like the same-named functions residing directly in ``embed``.
 """
 
+import pathlib
 import shutil
 import unittest
 
@@ -21,7 +22,7 @@ class _TestDiskCacheHitBase(_bases.TestDiskCachedBase):
         """Copy embeddings to the temporary directory."""
         super().setUp()
 
-        for path in cached.DEFAULT_DATA_DIR.glob('*.json'):
+        for path in pathlib.Path('tests_data').glob('*.json'):
             shutil.copy(path, self._dir_path)
 
 
