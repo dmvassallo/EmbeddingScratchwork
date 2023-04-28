@@ -1,6 +1,32 @@
 # Notes
 
-## `TestDiskCachedEmbedOne` vs. `TestDiskCachedEmbedMany`
+## *Current* notes
+
+These notes relate to the diamond diagram of test classes.
+
+### Reusing test logic from what had been in `test_embed.py`
+
+To reuse that test logic for both the non-disk-caching (as currently done) and
+disk-caching tests, two possible options are:
+
+1. Patch `embed.cached.DEFAULT_DATA_DIR` so `func` properties can just return
+   functions from `embed.cached`.
+
+2. Have the `func` property overloads of "cached" test classes that inherit
+   general embeddings test methods return synthesized functions that bind
+   `data_dir`.
+
+Neither plays perfectly with our diamond diagram of fixtures.
+
+### The `hier.jpg` diagrams
+
+Those diagrams were drafts and do not exactly reflect the change being made.
+
+## *Old* notes
+
+These old notes are temporarily retained, for reference.
+
+### `TestDiskCachedEmbedOne` vs. `TestDiskCachedEmbedMany`
 
 Those two test classes differ in four ways:
 
@@ -13,7 +39,7 @@ Those two test classes differ in four ways:
 4. When we test that a saved embedding can be loaded by "all three"
    implementations, *which* three implementations.
 
-## Possible ways to reorganize the whole test suite
+### Possible ways to reorganize the whole test suite
 
 Reorganization may include how the suite is broken up into modules, but also
 whether inheritance would better express the code reuse and fixture logic
