@@ -17,6 +17,8 @@ class TestEmbedBase(ABC, unittest.TestCase):
     """Abstract base to provide helpers and fixtures."""
 
     def setUp(self):
+        super().setUp()
+
         _helpers.maybe_cache_embeddings_in_memory.__enter__()
 
         self.addCleanup(
@@ -114,7 +116,7 @@ class TestDiskCachedBase(TestEmbedBase):
         self._temporary_directory = tempfile.TemporaryDirectory()
         self._dir_path = pathlib.Path(self._temporary_directory.name)
 
-    def tearDown(self):
+    def tearDown(self):  # FIXME: Do this with addCleanup in setUp instead.
         """Delete the temporary directory."""
         self._temporary_directory.cleanup()
         super().tearDown()

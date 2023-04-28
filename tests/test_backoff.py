@@ -81,6 +81,8 @@ class TestBackoff(unittest.TestCase):
 
     def setUp(self):
         """Help us avoid running the test on CI, and decrease stack size."""
+        super().setUp()
+
         if 'CI' in os.environ:
             # pylint: disable=broad-exception-raised  # Error that blocks test.
             raise Exception(
@@ -91,9 +93,10 @@ class TestBackoff(unittest.TestCase):
         _logger.warning(
             "Running full backoff test, which shouldn't usually be done.")
 
-    def tearDown(self):
+    def tearDown(self):  # FIXME: Do this with addCleanup from setUp instead.
         """Restore the stack size."""
         threading.stack_size(self._old_stack_size)
+        super().tearDown()
 
     def test_embed_one_req_backs_off(self):
         """``embed_one_req`` backs off under high load and logs that it did."""
