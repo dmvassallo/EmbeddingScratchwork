@@ -18,6 +18,8 @@ class TestApiKey(unittest.TestCase):
 
     def setUp(self):
         """Save api_key attributes. Also pre-patch them, for log redaction."""
+        super().setUp()
+
         # This cannot be done straightforwardly with unittest.mock.patch
         # because that expects to be able to delete attributes, and the
         # embed.api_key property (deliberately) has no deleter.
@@ -26,10 +28,12 @@ class TestApiKey(unittest.TestCase):
         openai.api_key = 'sk-fake-redact-outer'
         embed.api_key = 'sk-fake-redact-inner'
 
-    def tearDown(self):
+    def tearDown(self):  # FIXME: Do this with addCleanup from setUp instead.
         """Unpatch api_key attributes."""
         embed.api_key = self._real_key_embed
         openai.api_Key = self._real_key_openai
+
+        super().tearDown()
 
     @parameterized.expand([
         ('str', 'sk-fake-setting-sets'),
