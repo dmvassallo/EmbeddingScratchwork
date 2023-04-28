@@ -4,6 +4,26 @@
 
 These notes relate to the diamond diagram of test classes.
 
+### Planned modules
+
+We plan to have these modules to test embedding functions in the `embed` and
+`embed_cached` modules:
+
+- `test_embed`
+- `test_cached_embeddings`
+- `test_cached_caching`
+
+We will also continue to have:
+
+- At least one, and likely more, nonpublic modules providing base classes for
+  test classes in the above modules.
+- Other, already existing test modules that test more specialized
+  functionality.
+
+The test helper module `_helpers` may or may not continue to exist but should
+continue to become smaller and simpler. The `_audit` module will likely be
+unaffected by changes related to these plans.
+
 ### Reusing test logic from what had been in `test_embed.py`
 
 To reuse that test logic for both the non-disk-caching (as currently done) and
