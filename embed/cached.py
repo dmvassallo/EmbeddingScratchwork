@@ -14,14 +14,14 @@ __all__ = [
 
 import json
 import logging
-import pathlib
+from pathlib import Path
 
 import blake3
 import numpy as np
 
 import embed
 
-DEFAULT_DATA_DIR = pathlib.Path('data')
+DEFAULT_DATA_DIR = Path('data')
 """Default directory to cache embeddings."""
 
 _logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ def _build_path(text_or_texts, data_dir):
 
     serialized_data = json.dumps(text_or_texts).encode()
     basename = _compute_blake3_hash(serialized_data).hexdigest()
-    return pathlib.Path(data_dir, f'{basename}.json')  # data_dir may be a str.
+    return Path(data_dir, f'{basename}.json')  # data_dir may be a str.
 
 
 def _load_json(path):

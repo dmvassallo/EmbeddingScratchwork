@@ -3,9 +3,9 @@
 # TODO: Consider splitting this into multiple modules.
 
 from abc import ABC, abstractmethod
-import pathlib
+from pathlib import Path
 import sys
-import tempfile
+from tempfile import TemporaryDirectory
 import unittest
 
 import numpy as np
@@ -24,7 +24,18 @@ class TestBase(unittest.TestCase):
         super().setUpClass()
         _helpers.configure_logging()
 
-    # TODO: Conditionally implement simplified enterContext when Python < 3.11.
+    if sys.version_info < (3, 11):
+        def enterContext(self, cm):
+            """
+            Enter the given context manager and arrange to exit it on cleanup.
+
+            This supplies a simplified version of ``TestCase.enterContext`` for
+            versions of Python that do not have it.
+            """
+            # We must call __enter__ to implement the needed "with"-like logic.
+            context = cm.__enter__()  # pylint: disable=unnecessary-dunder-call
+            self.addCleanup(lambda: cm.__exit__(*sys.exc_info()))
+            return context
 
 
 class TestEmbedBase(TestBase, ABC):
@@ -39,13 +50,7 @@ class TestEmbedBase(TestBase, ABC):
         with on-disk caching, which is a feature of the code under test.
         """
         super().setUp()
-
-        _helpers.maybe_cache_embeddings_in_memory.__enter__()
-
-        self.addCleanup(
-            _helpers.maybe_cache_embeddings_in_memory.__exit__,
-            *sys.exc_info(),
-        )
+        self.enterContext(_helpers.maybe_cache_embeddings_in_memory)
 
     @property
     @abstractmethod
@@ -60,14 +65,8 @@ class TestDiskCachedBase(TestEmbedBase):
         """Create a temporary directory."""
         super().setUp()
 
-        # pylint: disable=consider-using-with  # tearDown cleans this up.
-        self._temporary_directory = tempfile.TemporaryDirectory()
-        self._dir_path = pathlib.Path(self._temporary_directory.name)
-
-    def tearDown(self):  # FIXME: Do this with addCleanup in setUp instead.
-        """Delete the temporary directory."""
-        self._temporary_directory.cleanup()
-        super().tearDown()
+        # pylint: disable=consider-using-with  # enterContext is like "with".
+        self._dir_path = Path(self.enterContext(TemporaryDirectory()))
 
 
 class TestEmbedOneBase(TestEmbedBase):
