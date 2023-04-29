@@ -30,7 +30,7 @@ import unittest
 
 import backoff
 
-from tests import _helpers
+from tests import _bases, _helpers
 import embed
 
 _STACK_SIZE = 32_768
@@ -41,8 +41,6 @@ _BATCH_COUNT = 600
 
 _BATCH_SIZE = 8
 """Number of requests each batch makes sequentially in the backoff test."""
-
-_helpers.configure_logging()
 
 _logger = logging.getLogger(__name__)
 """Logger for messages from this test module."""
@@ -68,7 +66,7 @@ def _run_batch(batch_index):
     _helpers.getenv_bool('TESTS_RUN_BACKOFF_TEST_I_KNOW_WHAT_I_AM_DOING'),
     "No need to regularly slam OpenAI's servers. Also: very slow.",
 )
-class TestBackoff(unittest.TestCase):
+class TestBackoff(_bases.TestBase):
     """
     Test backoff in one of the functions using ``requests`` (``test_one_req``).
 

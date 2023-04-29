@@ -7,9 +7,6 @@ Those embedding functions are the versions that cache to disk. They are
 otherwise like the same-named functions residing directly in ``embed``.
 """
 
-# pylint: disable=missing-function-docstring
-# All test methods have self-documenting names.
-
 from abc import abstractmethod
 import json
 import unittest
@@ -17,7 +14,7 @@ from unittest.mock import patch
 
 import embed
 from embed import cached
-from tests import _audit, _bases, _helpers
+from tests import _audit, _bases
 
 _HOLA_FILENAME = (
     'b58e4a60c963f8b3c43d83cc9245020ce71d8311fa2f48cfd36deed6f472a71b.json'
@@ -28,8 +25,6 @@ _HOLA_HELLO_FILENAME = (
     '4a77f419587b08963e94105b8b9272531e53ade9621b613fda175aa0a96cd839.json'
 )
 """Filename that would be generated from the input ``['hola', 'hello']``."""
-
-_helpers.configure_logging()
 
 
 class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
@@ -66,7 +61,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
     def func(self):
         """Disk caching embedding function being tested."""
 
-    # FIXME: Test that returned embeddings could plausibly be correct.
+    # pylint: disable=missing-function-docstring  # Tests' names describe them.
 
     def test_calls_same_name_non_caching_version_if_not_cached(self):
         with self._patch_non_disk_caching_embedder() as mock:
