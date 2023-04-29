@@ -41,7 +41,6 @@ class _TestDiskCacheHitBase(_TestDiskCacheEmbeddingsBase):
             shutil.copy(path, self._dir_path)
 
 
-
 class TestDiskCacheHitEmbedOne(
     _bases.TestEmbedOneBase,
     _TestDiskCacheHitBase,
