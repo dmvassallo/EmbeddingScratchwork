@@ -5,43 +5,42 @@ __all__ = ['listening_for_open', 'skip_if_unavailable']
 import contextlib
 import sys
 import unittest
-import unittest.mock
 
 _hooked = False  # pylint: disable=invalid-name  # Not a constant.
 """Whether the audit hook has been installed."""
 
-_listener_for_open = None  # pylint: disable=invalid-name  # Not a constant.
-"""The current listener that ``open`` event args are passed to, or ``None``."""
+_listener = None  # pylint: disable=invalid-name  # Not a constant.
+"""The current listener the hook passes ``open`` event args to, or ``None``."""
 
 
 def _hook(event, args):
     """Auditing event hook that conditionally reports ``open`` events."""
     if event != 'open':
         return
-    listener = _listener_for_open  # Copy reference to avoid race condition.
-    if _listener_for_open is not None:
+    listener = _listener  # Copy reference to avoid race condition.
+    if _listener is not None:
         listener(*args)
 
 
 @contextlib.contextmanager
-def listening_for_open():
-    """Context manager to pass ``open`` event args to a call-recording mock."""
+def listening_for_open(listener):
+    """Context manager to pass ``open`` event args to a listener."""
     # pylint: disable=global-statement
     # We really do want to mutate this shared state maintained at module level.
-    global _hooked, _listener_for_open
+    global _hooked, _listener
 
     if not _hooked:
         _hooked = True
         sys.addaudithook(_hook)
 
-    if _listener_for_open is not None:
+    if _listener is not None:
         raise RuntimeError(f'{listening_for_open.__name__} is not reentrant')
 
-    _listener_for_open = unittest.mock.Mock()
+    _listener = listener
     try:
-        yield _listener_for_open
+        yield listener
     finally:
-        _listener_for_open = None
+        _listener = None
 
 
 skip_if_unavailable = unittest.skipIf(

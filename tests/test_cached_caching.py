@@ -13,7 +13,7 @@ otherwise like the same-named functions residing directly in ``embed``.
 from abc import abstractmethod
 import json
 import unittest
-from unittest.mock import ANY, patch
+from unittest.mock import ANY, Mock, patch
 
 import embed
 from embed import cached
@@ -118,14 +118,14 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
     def test_load_confirmed_by_audit_event(self):
         self._write_fake_data_file()
 
-        with _audit.listening_for_open() as listener:
+        with _audit.listening_for_open(Mock()) as listener:
             self.func(self.text_or_texts, data_dir=self._dir_path)
 
         listener.assert_any_call(str(self._path), 'r', ANY)
 
     @_audit.skip_if_unavailable
     def test_save_confirmed_by_audit_event(self):
-        with _audit.listening_for_open() as listener:
+        with _audit.listening_for_open(Mock()) as listener:
             self.func(self.text_or_texts, data_dir=self._dir_path)
 
         # TODO: Decide whether to keep allowing just 'x', or if 'w' is OK too.
