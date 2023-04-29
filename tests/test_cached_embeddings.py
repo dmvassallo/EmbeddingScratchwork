@@ -12,7 +12,9 @@ import shutil
 import unittest
 
 from embed import cached
-from tests import _bases
+from tests import _bases, _helpers
+
+_helpers.configure_logging()
 
 
 class _TestDiskCacheEmbeddingsBase(_bases.TestDiskCachedBase):
