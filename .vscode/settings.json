@@ -42,6 +42,7 @@
         "prebuild",
         "prebuilds",
         "pylint",
+        "pyreverse",
         "pyver",
         "repr",
         "safetensors",
