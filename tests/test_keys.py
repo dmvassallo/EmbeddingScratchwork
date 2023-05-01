@@ -8,12 +8,10 @@ import openai
 from parameterized import parameterized
 
 import embed
-from tests import _helpers
-
-_helpers.configure_logging()
+from tests import _bases
 
 
-class TestApiKey(unittest.TestCase):
+class TestApiKey(_bases.TestBase):
     """Tests for ``embed.api_key``."""
 
     def setUp(self):

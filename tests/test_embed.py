@@ -7,26 +7,22 @@ This consists mostly of tests of embeddings from ``embed.embed*`` functions.
 This does not test the disk caching versions; see ``test_cached_embeddings``.
 """
 
-# pylint: disable=missing-function-docstring
-# All test methods have self-documenting names.
-
 import unittest
 
 import embed
-from tests import _bases, _helpers
-
-_helpers.configure_logging()
+from tests import _bases
 
 
-class TestConstants(unittest.TestCase):
+class TestConstants(_bases.TestBase):
     """Tests for public constants in ``embed``."""
 
     def test_model_dimension_is_1536(self):
+        """``DIMENSION``'s value is correct for ``text-embedding-ada-002``."""
         self.assertEqual(embed.DIMENSION, 1536)
 
 
 class TestEmbedOne(_bases.TestEmbedOneBase):
-    """Tests for ``embed_one``."""
+    """Tests for the non-disk-caching ``embed_one``."""
 
     @property
     def func(self):
@@ -34,7 +30,7 @@ class TestEmbedOne(_bases.TestEmbedOneBase):
 
 
 class TestEmbedOneEu(_bases.TestEmbedOneBase):
-    """Tests for ``embed_one_eu``."""
+    """Tests for the non-disk-caching ``embed_one_eu``."""
 
     @property
     def func(self):
@@ -42,7 +38,7 @@ class TestEmbedOneEu(_bases.TestEmbedOneBase):
 
 
 class TestEmbedOneReq(_bases.TestEmbedOneBase):
-    """Tests for ``embed_one_req``."""
+    """Tests for the non-disk-caching ``embed_one_req``."""
 
     @property
     def func(self):
@@ -50,7 +46,7 @@ class TestEmbedOneReq(_bases.TestEmbedOneBase):
 
 
 class TestEmbedMany(_bases.TestEmbedManyBase):
-    """Tests for ``embed_many``."""
+    """Tests for the non-disk-caching ``embed_many``."""
 
     @property
     def func(self):
@@ -58,7 +54,7 @@ class TestEmbedMany(_bases.TestEmbedManyBase):
 
 
 class TestEmbedManyEu(_bases.TestEmbedManyBase):
-    """Tests for ``embed_many_eu``."""
+    """Tests for the non-disk-caching ``embed_many_eu``."""
 
     @property
     def func(self):
@@ -66,7 +62,7 @@ class TestEmbedManyEu(_bases.TestEmbedManyBase):
 
 
 class TestEmbedManyReq(_bases.TestEmbedManyBase):
-    """Tests for ``embed_many_req``."""
+    """Tests for the non-disk-caching ``embed_many_req``."""
 
     @property
     def func(self):

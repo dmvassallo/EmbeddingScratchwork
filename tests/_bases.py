@@ -1,5 +1,7 @@
 """Shared base classes for embedding tests."""
 
+# TODO: Consider splitting this into multiple modules.
+
 from abc import ABC, abstractmethod
 import pathlib
 import sys
@@ -13,10 +15,29 @@ import embed
 from tests import _helpers
 
 
-class TestEmbedBase(ABC, unittest.TestCase):
-    """Abstract base to provide helpers and fixtures."""
+class TestBase(unittest.TestCase):
+    """Base class for all test classes in the project."""
+
+    @classmethod
+    def setUpClass(cls):
+        """Make sure logging is configured as requested in the environment."""
+        super().setUpClass()
+        _helpers.configure_logging()
+
+    # TODO: Conditionally implement simplified enterContext when Python < 3.11.
+
+
+class TestEmbedBase(TestBase, ABC):
+    """Base of all classes that test embedding functions."""
 
     def setUp(self):
+        """
+        Arrange to cache ``embed*`` calls' results in memory, if requested.
+
+        In-memory caching is a feature of this test suite, which can be used to
+        reduce the number of API calls made on CI. It should not be confused
+        with on-disk caching, which is a feature of the code under test.
+        """
         super().setUp()
 
         _helpers.maybe_cache_embeddings_in_memory.__enter__()
@@ -32,10 +53,32 @@ class TestEmbedBase(ABC, unittest.TestCase):
         """Embedding function being tested."""
 
 
+class TestDiskCachedBase(TestEmbedBase):
+    """Shared test fixture logic for all tests of disk caching versions."""
+
+    def setUp(self):
+        """Create a temporary directory."""
+        super().setUp()
+
+        # pylint: disable=consider-using-with  # tearDown cleans this up.
+        self._temporary_directory = tempfile.TemporaryDirectory()
+        self._dir_path = pathlib.Path(self._temporary_directory.name)
+
+    def tearDown(self):  # FIXME: Do this with addCleanup in setUp instead.
+        """Delete the temporary directory."""
+        self._temporary_directory.cleanup()
+        super().tearDown()
+
+
 class TestEmbedOneBase(TestEmbedBase):
     """
-    Tests for ``embed.embed_one*`` functions (the non-disk-caching functions).
+    Tests of core ``embed.embed_one*`` functionality.
+
+    These are the tests of the behaviors shared by all single-text embedding
+    functions (regardless of whether they perform disk-based caching).
     """
+
+    # pylint: disable=missing-function-docstring  # Tests' names describe them.
 
     def test_returns_numpy_array(self):
         result = self.func('Your text string goes here')
@@ -69,10 +112,16 @@ class TestEmbedOneBase(TestEmbedBase):
 
 class TestEmbedManyBase(TestEmbedBase):
     """
-    Tests for ``embed.embed_many*`` functions (the non-disk-caching functions).
+    Tests of core ``embed_many*`` functionality.
+
+    These are the tests of the behaviors shared by all multiple-text embedding
+    functions (regardless of whether they perform disk-based caching).
     """
 
     def setUp(self):
+        """
+        Get an embeddings matrix from the ``embed_many*`` function under test.
+        """
         super().setUp()
 
         self._many = self.func([
@@ -82,6 +131,8 @@ class TestEmbedManyBase(TestEmbedBase):
             'The dog walks.',
             'El perro camina.',
         ])
+
+    # pylint: disable=missing-function-docstring  # Tests' names describe them.
 
     def test_returns_numpy_array(self):
         with self.subTest('ndarray'):
@@ -103,20 +154,3 @@ class TestEmbedManyBase(TestEmbedBase):
     def test_different_meanings_are_dissimilar(self):
         result = np.dot(self._many[0], self._many[1])
         self.assertLess(result, 0.8)
-
-
-class TestDiskCachedBase(TestEmbedBase):
-    """Shared test fixture logic for all tests of disk caching versions."""
-
-    def setUp(self):
-        """Create a temporary directory."""
-        super().setUp()
-
-        # pylint: disable=consider-using-with  # tearDown cleans this up.
-        self._temporary_directory = tempfile.TemporaryDirectory()
-        self._dir_path = pathlib.Path(self._temporary_directory.name)
-
-    def tearDown(self):  # FIXME: Do this with addCleanup in setUp instead.
-        """Delete the temporary directory."""
-        self._temporary_directory.cleanup()
-        super().tearDown()
