@@ -107,10 +107,6 @@ class TestDiskCacheHitEmbedManyReq(
         return cached.embed_many_req
 
 
-class _TestDiskCacheMissBase(_TestDiskCacheEmbeddingsBase):
-    pass
-
-
 class TestDiskCacheMissEmbedOne(
     _bases.TestEmbedOneBase,
     _TestDiskCacheEmbeddingsBase,
