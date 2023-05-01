@@ -41,7 +41,6 @@ class _TestDiskCacheHitBase(_TestDiskCacheEmbeddingsBase):
             shutil.copy(path, self._dir_path)
 
 
-
 class TestDiskCacheHitEmbedOne(
     _bases.TestEmbedOneBase,
     _TestDiskCacheHitBase,
@@ -110,6 +109,72 @@ class TestDiskCacheHitEmbedManyReq(
 
 class _TestDiskCacheMissBase(_TestDiskCacheEmbeddingsBase):
     pass
+
+
+class TestDiskCacheMissEmbedOne(
+    _bases.TestEmbedOneBase,
+    _TestDiskCacheEmbeddingsBase,
+):
+    """Tests for disk cached ``embed_one``, embeddings not pre-cached."""
+
+    @property
+    def func(self):
+        return cached.embed_one
+
+
+class TestDiskCacheMissEmbedOneEu(
+    _bases.TestEmbedOneBase,
+    _TestDiskCacheEmbeddingsBase,
+):
+    """Tests for disk cached ``embed_one_eu``, embeddings not pre-cached."""
+
+    @property
+    def func(self):
+        return cached.embed_one_eu
+
+
+class TestDiskCacheMissEmbedOneReq(
+    _bases.TestEmbedOneBase,
+    _TestDiskCacheEmbeddingsBase,
+):
+    """Tests for disk cached ``embed_one_req``, embeddings not pre-cached."""
+
+    @property
+    def func(self):
+        return cached.embed_one_req
+
+
+class TestDiskCacheMissEmbedMany(
+    _bases.TestEmbedManyBase,
+    _TestDiskCacheEmbeddingsBase,
+):
+    """Tests for disk cached ``embed_many``, embeddings not pre-cached."""
+
+    @property
+    def func(self):
+        return cached.embed_many
+
+
+class TestDiskCacheMissEmbedManyEu(
+    _bases.TestEmbedManyBase,
+    _TestDiskCacheEmbeddingsBase,
+):
+    """Tests for disk cached ``embed_many_eu``, embeddings not pre-cached."""
+
+    @property
+    def func(self):
+        return cached.embed_many_eu
+
+
+class TestDiskCacheMissEmbedManyReq(
+    _bases.TestEmbedManyBase,
+    _TestDiskCacheEmbeddingsBase,
+):
+    """Tests for disk cached ``embed_many_req``, embeddings not pre-cached."""
+
+    @property
+    def func(self):
+        return cached.embed_many_req
 
 
 if __name__ == '__main__':
