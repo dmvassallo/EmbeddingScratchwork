@@ -17,7 +17,9 @@ dependencies:
   - pylint
 
   # Notebooks
+  - graphviz
   - ipykernel
+  - python-graphviz
   - tabulate
 
   # PyPI
