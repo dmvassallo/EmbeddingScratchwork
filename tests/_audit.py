@@ -18,7 +18,7 @@ def _hook(event, args):
     if event != 'open':
         return
     listener = _listener  # Copy reference to avoid race condition.
-    if _listener is not None:
+    if listener is not None:
         listener(*args)
 
 
