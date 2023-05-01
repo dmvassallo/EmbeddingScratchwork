@@ -75,6 +75,39 @@ class TestDiskCacheHitEmbedOneReq(
         return cached.embed_one_req
 
 
+class TestDiskCacheHitEmbedMany(
+    _bases.TestEmbedManyBase,
+    _TestDiskCacheHitBase,
+):
+    """Tests for disk cached ``embed_many`` with embeddings pre-cached."""
+
+    @property
+    def func(self):
+        return cached.embed_many
+
+
+class TestDiskCacheHitEmbedManyEu(
+    _bases.TestEmbedManyBase,
+    _TestDiskCacheHitBase,
+):
+    """Tests for disk cached ``embed_many_eu`` with embeddings pre-cached."""
+
+    @property
+    def func(self):
+        return cached.embed_many_eu
+
+
+class TestDiskCacheHitEmbedManyReq(
+    _bases.TestEmbedManyBase,
+    _TestDiskCacheHitBase,
+):
+    """Tests for disk cached ``embed_many_req`` with embeddings pre-cached."""
+
+    @property
+    def func(self):
+        return cached.embed_many_req
+
+
 class _TestDiskCacheMissBase(_TestDiskCacheEmbeddingsBase):
     pass
 
