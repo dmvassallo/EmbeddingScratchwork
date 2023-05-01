@@ -18,11 +18,6 @@ import attrs
 
 import embed
 
-try:
-    _cache_in_memory = functools.cache
-except AttributeError:  # No functools.cache before Python 3.9.
-    _cache_in_memory = functools.lru_cache(maxsize=None)
-
 _logger = logging.getLogger(__name__)
 """Logger for messages from this test helper module."""
 
@@ -52,7 +47,6 @@ def getenv_bool(name):
         f"Can't parse environment variable as boolean: {name}={value!r}")
 
 
-@_cache_in_memory
 def configure_logging():
     """
     Set logging level from the ``TESTS_LOGGING_LEVEL`` environment variable.
