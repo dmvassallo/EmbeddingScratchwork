@@ -91,7 +91,7 @@ class TestBackoff(_bases.TestBase):
         _logger.warning(
             "Running full backoff test, which shouldn't usually be done.")
 
-    def tearDown(self):  # FIXME: Do this with addCleanup from setUp instead.
+    def tearDown(self):
         """Restore the stack size."""
         threading.stack_size(self._old_stack_size)
         super().tearDown()

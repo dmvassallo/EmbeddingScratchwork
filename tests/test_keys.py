@@ -26,7 +26,7 @@ class TestApiKey(_bases.TestBase):
         openai.api_key = 'sk-fake-redact-outer'
         embed.api_key = 'sk-fake-redact-inner'
 
-    def tearDown(self):  # FIXME: Do this with addCleanup from setUp instead.
+    def tearDown(self):
         """Unpatch api_key attributes."""
         embed.api_key = self._real_key_embed
         openai.api_Key = self._real_key_openai

@@ -7,9 +7,10 @@ Those embedding functions are the versions that cache to disk. They are
 otherwise like the same-named functions residing directly in ``embed``.
 """
 
-import pathlib
+from pathlib import Path
 import shutil
 import unittest
+from unittest.mock import patch
 
 from embed import cached
 from tests import _bases
@@ -22,12 +23,9 @@ class _TestDiskCacheEmbeddingsBase(_bases.TestDiskCachedBase):
         """Patch ``DEFAULT_DATA_DIR`` to the temporary directory."""
         super().setUp()
 
-        self._old_data_dir = cached.DEFAULT_DATA_DIR
-        cached.DEFAULT_DATA_DIR = self._dir_path
-
-    def tearDown(self):  # FIXME: Do this with addCleanup in setUp instead.
-        cached.DEFAULT_DATA_DIR = self._old_data_dir
-        super().tearDown()
+        self.enterContext(
+            patch(f'{cached.__name__}.DEFAULT_DATA_DIR', self._dir_path),
+        )
 
 
 class _TestDiskCacheHitBase(_TestDiskCacheEmbeddingsBase):
@@ -37,7 +35,7 @@ class _TestDiskCacheHitBase(_TestDiskCacheEmbeddingsBase):
         """Copy embeddings to the temporary directory."""
         super().setUp()
 
-        for path in pathlib.Path('tests_data').glob('*.json'):
+        for path in Path('tests_data').glob('*.json'):
             shutil.copy(path, self._dir_path)
 
 
