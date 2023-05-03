@@ -1,7 +1,5 @@
 """Shared base classes for embedding tests."""
 
-# TODO: Consider splitting this into multiple modules.
-
 from abc import ABC, abstractmethod
 from pathlib import Path
 import sys
