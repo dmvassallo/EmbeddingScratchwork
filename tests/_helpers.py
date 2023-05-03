@@ -140,21 +140,11 @@ def _logged_cache_in_memory_for_testing(func):
     return independent_cache(func)
 
 
-def _get_cache_embeddings_in_memory():
-    """
-    Create a decorator that monkey-patches in-memory caching for test cases.
-
-    See ``cache_embeddings_in_memory`` for details.
-    """
-    patches = {
-        name: _logged_cache_in_memory_for_testing(getattr(embed, name))
-        for name in embed.__all__
-        if name.startswith('embed_')
-    }
-    return unittest.mock.patch.multiple(embed, **patches)
-
-
-cache_embeddings_in_memory = _get_cache_embeddings_in_memory()
+cache_embeddings_in_memory = unittest.mock.patch.multiple(embed, **{
+    name: _logged_cache_in_memory_for_testing(getattr(embed, name))
+    for name in embed.__all__
+    if name.startswith('embed_')
+})
 """
 Arrange monkey-patching of in-memory caching for test cases.
 
