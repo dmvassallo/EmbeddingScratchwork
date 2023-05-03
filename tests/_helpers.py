@@ -128,11 +128,7 @@ def _report_nontrivial_cache_statistics():
 
 
 def _logged_cache_in_memory_for_testing(func):
-    """
-    Wrap an embedding function and cache its results in memory.
-
-    This can be used to make it so the tests make fewer OpenAI API calls.
-    """
+    """Wrap an embedding function and cache its results in memory."""
     independent_cache = _logged_cache_in_memory_by(
         key=pickle.dumps,
         stats=_in_memory_embedding_cache_stats,
