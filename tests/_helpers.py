@@ -3,7 +3,7 @@
 __all__ = [
     'getenv_bool',
     'configure_logging',
-    'maybe_cache_embeddings_in_memory',
+    'cache_embeddings_in_memory',
 ]
 
 import atexit
@@ -64,19 +64,6 @@ def configure_logging():
     if level not in {'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'}:
         raise ValueError(f'unrecognized logging level {level!r}')
     logging.basicConfig(level=getattr(logging, level))
-
-
-class _NullContextDecorator:
-    """Null context manager that is also a decorator."""
-
-    def __enter__(self):
-        pass
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass
-
-    def __call__(self, func):
-        return func
 
 
 @attrs.mutable
@@ -153,15 +140,12 @@ def _logged_cache_in_memory_for_testing(func):
     return independent_cache(func)
 
 
-def _get_maybe_cache_embeddings_in_memory():
+def _get_cache_embeddings_in_memory():
     """
-    Create a decorator that may monkey-patch in-memory caching for test cases.
+    Create a decorator that monkey-patches in-memory caching for test cases.
 
-    See ``maybe_cache_embeddings_in_memory`` for details.
+    See ``cache_embeddings_in_memory`` for details.
     """
-    if not getenv_bool('TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY'):
-        return _NullContextDecorator()  # Don't patch.
-
     patches = {
         name: _logged_cache_in_memory_for_testing(getattr(embed, name))
         for name in embed.__all__
@@ -170,26 +154,12 @@ def _get_maybe_cache_embeddings_in_memory():
     return unittest.mock.patch.multiple(embed, **patches)
 
 
-maybe_cache_embeddings_in_memory = _get_maybe_cache_embeddings_in_memory()
+cache_embeddings_in_memory = _get_cache_embeddings_in_memory()
 """
-Decorator that may monkey-patch in-memory caching for test cases.
+Arrange monkey-patching of in-memory caching for test cases.
 
-This is a test fixture in decorator form. If tests were not configured to use
-in-memory caching, it has no effect. If they were, the decorated test case
-gains an arrange step that monkey-patches ``embed.embed_*`` functions to equip
-them with in-memory caching, and a cleanup step that unpatches them. Although
-patching and unpatching happen on each test run, the caches live as long as the
-test runner process. Cached embeddings are thus reused across tests.
-
-This can be applied to a function/method or a whole test class. If applied to a
-class, the class must be a subclass of ``unittest.TestCase``, and the effect is
-the same as applying it to every ``test_*`` method in the class. (Occasionally
-it may make sense to apply this to a function that doesn't represent a test
-case, but decorating a class only modifies test case methods.) See
-``unittest.mock.patch`` for more information on these patching semantics.
-
-In-memory caching is not done by default. It is controlled by the
-``TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY`` environment variable, parsed at
-process startup by ``getenv_bool``. If it is enabled, each embedding function
-has its own in-memory cache, so bugs in some don't hide bugs in others.
+This is a ``unittest.mock.patch`` patcher for all the ``embed.embed_*``
+functions to equip them with in-memory caching, and a cleanup step that
+unpatches them. The caches live as long as the test runner process, so cached
+embeddings are thus reused across tests.
 """

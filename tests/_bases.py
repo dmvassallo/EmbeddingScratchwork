@@ -48,9 +48,16 @@ class TestEmbedBase(TestBase, ABC):
         In-memory caching is a feature of this test suite, which can be used to
         reduce the number of API calls made on CI. It should not be confused
         with on-disk caching, which is a feature of the code under test.
+
+        In-memory caching is not done by default. It is controlled by the
+        ``TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY`` environment variable. If it
+        is enabled, each embedding function has its own in-memory cache, so
+        bugs in some don't hide bugs in others.
         """
         super().setUp()
-        self.enterContext(_helpers.maybe_cache_embeddings_in_memory)
+
+        if _helpers.getenv_bool('TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY'):
+            self.enterContext(_helpers.cache_embeddings_in_memory)
 
     @property
     @abstractmethod
