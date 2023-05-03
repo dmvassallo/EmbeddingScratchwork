@@ -1,65 +1,46 @@
 """Capturing ``open`` audit events for tests. This uses at most one hook."""
 
-__all__ = ['OpenEvent', 'listening_for_open', 'skip_if_unavailable']
+__all__ = ['listening_for_open', 'skip_if_unavailable']
 
 import contextlib
 import sys
 import unittest
 
-import attrs
-
 _hooked = False  # pylint: disable=invalid-name  # Not a constant.
 """Whether the audit hook has been installed."""
 
-_open_events = None  # pylint: disable=invalid-name  # Not a constant.
-"""The current event collector list. ``None``, whenever not collecting."""
-
-
-@attrs.frozen
-class OpenEvent:
-    """The information from an ``open`` event that we make assertions about."""
-
-    path = attrs.field()
-    """The ``path`` argument in an ``open`` audit event."""
-
-    mode = attrs.field()
-    """The ``mode`` argument in an ``open`` audit event."""
-
-    @classmethod
-    def from_args(cls, path, mode, _):
-        """Create from the actual audit event arguments. Discards ``flags``."""
-        return cls(path, mode)
+_listener = None  # pylint: disable=invalid-name  # Not a constant.
+"""The current listener the hook passes ``open`` event args to, or ``None``."""
 
 
 def _hook(event, args):
     """Auditing event hook that conditionally reports ``open`` events."""
     if event != 'open':
         return
-    open_events = _open_events  # Copy reference to avoid race condition.
-    if open_events is None:
-        return
-    open_events.append(OpenEvent.from_args(*args))
+    listener = _listener  # Copy reference to avoid race condition.
+    if listener is not None:
+        listener(*args)
 
 
 @contextlib.contextmanager
-def listening_for_open():
-    """Context manager to collect information on open events in a list."""
+def listening_for_open(listener):
+    """Context manager to pass ``open`` event args to a listener."""
     # pylint: disable=global-statement
     # We really do want to mutate this shared state maintained at module level.
-    global _hooked, _open_events
+    global _hooked, _listener
 
     if not _hooked:
         _hooked = True
         sys.addaudithook(_hook)
 
-    if _open_events is not None:
+    if _listener is not None:
         raise RuntimeError(f'{listening_for_open.__name__} is not reentrant')
 
-    _open_events = []
+    _listener = listener
     try:
-        yield _open_events
+        yield listener
     finally:
-        _open_events = None
+        _listener = None
 
 
 skip_if_unavailable = unittest.skipIf(

@@ -50,12 +50,15 @@ OpenAI’s servers.
 
 ### Major Modules (Tests)
 
-[`test_embed`](tests/test_embed.py) has automated tests of the functions in
-`embed`. This includes testing that some examples’ similarities are within
-expected ranges.
+[`test_embed`](tests/test_embed.py) tests the functions directly in `embed`.
+This includes testing that similarities are within expected ranges.
 
-[`test_cached`](tests/test_cached.py) has automated tests specific to
-functionality in `embed.cached`.
+[`test_cached_embeddings`](tests/test_cached_embeddings.py) tests those same
+general behaviors for the functions in `embed.cached` that cache results to
+disk.
+
+[`test_cached_caching`](tests/test_cached_caching.py) also tests the function
+in `embed.cached`, but tests the on-disk caching functionality itself.
 
 ### Notebooks
 
@@ -64,6 +67,9 @@ usage and experiments, calling functions in the `embed` module.
 
 [`structure.ipynb`](notebooks/structure.ipynb) examines the JSON responses
 returned by the OpenAI embeddings API endpoint.
+
+[`cached.ipynb`](notebooks/cached.ipynb) shows examples of on-disk caching and
+generates some test data used in `test_cached_embeddings`.
 
 ## Setup
 

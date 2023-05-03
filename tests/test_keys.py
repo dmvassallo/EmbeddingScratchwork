@@ -8,16 +8,16 @@ import openai
 from parameterized import parameterized
 
 import embed
-from tests import _helpers
-
-_helpers.configure_logging()
+from tests import _bases
 
 
-class TestApiKey(unittest.TestCase):
+class TestApiKey(_bases.TestBase):
     """Tests for ``embed.api_key``."""
 
     def setUp(self):
         """Save api_key attributes. Also pre-patch them, for log redaction."""
+        super().setUp()
+
         # This cannot be done straightforwardly with unittest.mock.patch
         # because that expects to be able to delete attributes, and the
         # embed.api_key property (deliberately) has no deleter.
@@ -30,6 +30,8 @@ class TestApiKey(unittest.TestCase):
         """Unpatch api_key attributes."""
         embed.api_key = self._real_key_embed
         openai.api_Key = self._real_key_openai
+
+        super().tearDown()
 
     @parameterized.expand([
         ('str', 'sk-fake-setting-sets'),

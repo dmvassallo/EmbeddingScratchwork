@@ -3,8 +3,7 @@
 __all__ = [
     'getenv_bool',
     'configure_logging',
-    'maybe_cache_embeddings_in_memory',
-    'Caller',
+    'cache_embeddings_in_memory',
 ]
 
 import atexit
@@ -18,11 +17,6 @@ import unittest.mock
 import attrs
 
 import embed
-
-try:
-    _cache_in_memory = functools.cache
-except AttributeError:  # No functools.cache before Python 3.9.
-    _cache_in_memory = functools.lru_cache(maxsize=None)
 
 _logger = logging.getLogger(__name__)
 """Logger for messages from this test helper module."""
@@ -53,7 +47,6 @@ def getenv_bool(name):
         f"Can't parse environment variable as boolean: {name}={value!r}")
 
 
-@_cache_in_memory
 def configure_logging():
     """
     Set logging level from the ``TESTS_LOGGING_LEVEL`` environment variable.
@@ -71,11 +64,6 @@ def configure_logging():
     if level not in {'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'}:
         raise ValueError(f'unrecognized logging level {level!r}')
     logging.basicConfig(level=getattr(logging, level))
-
-
-def _identity_function(arg):
-    """Return the argument unchanged."""
-    return arg
 
 
 @attrs.mutable
@@ -140,11 +128,7 @@ def _report_nontrivial_cache_statistics():
 
 
 def _logged_cache_in_memory_for_testing(func):
-    """
-    Wrap an embedding function and cache its results in memory.
-
-    This can be used to make it so the tests make fewer OpenAI API calls.
-    """
+    """Wrap an embedding function and cache its results in memory."""
     independent_cache = _logged_cache_in_memory_by(
         key=pickle.dumps,
         stats=_in_memory_embedding_cache_stats,
@@ -152,70 +136,16 @@ def _logged_cache_in_memory_for_testing(func):
     return independent_cache(func)
 
 
-def _get_maybe_cache_embeddings_in_memory():
-    """
-    Create a decorator that may monkey-patch in-memory caching for test cases.
-
-    See ``maybe_cache_embeddings_in_memory`` for details.
-    """
-    if not getenv_bool('TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY'):
-        return _identity_function
-
-    patches = {
-        name: _logged_cache_in_memory_for_testing(getattr(embed, name))
-        for name in embed.__all__
-        if name.startswith('embed_')
-    }
-    return unittest.mock.patch.multiple(embed, **patches)
-
-
-maybe_cache_embeddings_in_memory = _get_maybe_cache_embeddings_in_memory()
+cache_embeddings_in_memory = unittest.mock.patch.multiple(embed, **{
+    name: _logged_cache_in_memory_for_testing(getattr(embed, name))
+    for name in embed.__all__
+    if name.startswith('embed_')
+})
 """
-Decorator that may monkey-patch in-memory caching for test cases.
+Arrange monkey-patching of in-memory caching for test cases.
 
-This is a test fixture in decorator form. If tests were not configured to use
-in-memory caching, it has no effect. If they were, the decorated test case
-gains an arrange step that monkey-patches ``embed.embed_*`` functions to equip
-them with in-memory caching, and a cleanup step that unpatches them. Although
-patching and unpatching happen on each test run, the caches live as long as the
-test runner process. Cached embeddings are thus reused across tests.
-
-This can be applied to a function/method or a whole test class. If applied to a
-class, the class must be a subclass of ``unittest.TestCase``, and the effect is
-the same as applying it to every ``test_*`` method in the class. (Occasionally
-it may make sense to apply this to a function that doesn't represent a test
-case, but decorating a class only modifies test case methods.) See
-``unittest.mock.patch`` for more information on these patching semantics.
-
-In-memory caching is not done by default. It is controlled by the
-``TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY`` environment variable, parsed at
-process startup by ``getenv_bool``. If it is enabled, each embedding function
-has its own in-memory cache, so bugs in some don't hide bugs in others.
+This is a ``unittest.mock.patch`` patcher for all the ``embed.embed_*``
+functions to equip them with in-memory caching, and a cleanup step that
+unpatches them. The caches live as long as the test runner process, so cached
+embeddings are thus reused across tests.
 """
-
-
-class Caller:
-    """Proxy to call a function via a supplier, to support monkey-patching."""
-
-    __slots__ = ('_func_supplier',)
-
-    def __init__(self, func_supplier):
-        """Make a ``Caller`` proxy that stores the given function supplier."""
-        self._func_supplier = func_supplier
-
-    def __repr__(self):
-        """Code-like (but non-``exec``able) representation for debugging."""
-        return f'{type(self).__name__}(lambda: {self._func_supplier()!r})'
-
-    def __str__(self):
-        """The ``str`` of the function resolved through the stored supplier."""
-        return str(self._func_supplier())
-
-    def __call__(self, *args, **kwargs):
-        """Resolve the function through the stored supplier and call it."""
-        return self._func_supplier()(*args, **kwargs)
-
-    @property
-    def __name__(self):
-        """The name of the function resolved through the stored supplier."""
-        return self._func_supplier().__name__
