@@ -55,11 +55,8 @@ _is_backoff_message = re.compile(
 def _run_batch(batch_index):
     """Run a batch of ``_BATCH_SIZE`` sequential jobs in the backoff test."""
     for job_index in range(_BATCH_SIZE):
-        # Note: We support Python 3.7, so we can't write {batch_index=}.
-        embed.embed_one_req(
-            'Testing rate limiting. '
-            f'batch_index={batch_index} job_index={job_index}',
-        )
+        text = f'Testing rate limiting. {batch_index=} {job_index=}'
+        embed.embed_one_req(text)
 
 
 @unittest.skipUnless(
