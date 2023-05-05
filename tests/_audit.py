@@ -1,10 +1,9 @@
 """Capturing ``open`` audit events for tests. This uses at most one hook."""
 
-__all__ = ['listening_for_open', 'skip_if_unavailable']
+__all__ = ['listening_for_open']
 
 import contextlib
 import sys
-import unittest
 
 _hooked = False  # pylint: disable=invalid-name  # Not a constant.
 """Whether the audit hook has been installed."""
@@ -41,10 +40,3 @@ def listening_for_open(listener):
         yield listener
     finally:
         _listener = None
-
-
-skip_if_unavailable = unittest.skipIf(
-    sys.version_info < (3, 8),
-    'sys.addaudithook introduced in Python 3.8',
-)
-"""Skip a ``unittest`` test if audit event functionality is unavailable."""
