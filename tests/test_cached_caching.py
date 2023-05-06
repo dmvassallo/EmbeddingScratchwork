@@ -111,7 +111,6 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
 
                 self.assertEqual(log_context.output, [expected_message])
 
-    @subaudit.skip_if_unavailable
     def test_load_confirmed_by_audit_event(self):
         self._write_fake_data_file()
 
@@ -120,7 +119,6 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
 
         listener.assert_any_call(str(self._path), 'r', ANY)
 
-    @subaudit.skip_if_unavailable
     def test_save_confirmed_by_audit_event(self):
         with subaudit.listening('open', Mock()) as listener:
             self.func(self.text_or_texts, data_dir=self._dir_path)
