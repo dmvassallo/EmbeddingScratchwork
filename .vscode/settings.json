@@ -10,6 +10,7 @@
         "blake3",
         "buildscript",
         "catrun",
+        "codegraph",
         "codeql",
         "codespace",
         "codespaces",
