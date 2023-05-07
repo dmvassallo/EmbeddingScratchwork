@@ -27,8 +27,54 @@ jobs:
         env:
           TESTS_CI_NONBLOCKING: ${{ vars.TESTS_CI_NONBLOCKING }}
 
-  tests:
-    name: Tests
+  tests-poetry:
+    name: Tests (Poetry)
+
+    needs: [check-for-api-key, read-blocking-config]
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.11', '3.10', '3.9', '3.8']
+
+    runs-on: ${{ matrix.os }}
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      # FIXME: Make sure we are using the correct version of Python.
+
+      - name: Install the environment
+        run: poetry install --only=main,dev
+
+      - name: Print Python version
+        run: poetry run python -V
+
+      - name: Set up mutex
+        if: needs.read-blocking-config.outputs.use-mutex != 'false'
+        uses: EliahKagan/actions-mutex@v2
+
+      - name: Run tests
+        run: poetry run python -m unittest -v
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY: 'yes'
+          TESTS_LOGGING_LEVEL: 'INFO'
+
+  tests-conda:
+    name: Tests (Conda)
 
     needs: [check-for-api-key, read-blocking-config]
 
