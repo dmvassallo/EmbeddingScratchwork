@@ -29,4 +29,4 @@ cd -
 ~/mambaforge/condabin/mamba run --name EmbeddingScratchwork pip install -e .
 
 # Set up project environment for poetry.
-# poetry install  # FIXME: Uncomment once pyproject.toml lists dependencies.
+poetry install
