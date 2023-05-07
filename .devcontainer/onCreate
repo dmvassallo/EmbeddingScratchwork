@@ -9,6 +9,9 @@ printf '\n%s\n' '. ~/.git_prompt_activate.bash' >>~/.bashrc
 git config --global color.diff.new blue
 git config --global devcontainers-theme.hide-status 1
 
+# Set up container-wide Graphviz installation (for when running via Poetry).
+.devcontainer/install-graphviz 8.0.5
+
 # Set up Poetry and its plugins.
 pipx install poetry
 pipx inject poetry poetry-plugin-sort poetry-plugin-up
