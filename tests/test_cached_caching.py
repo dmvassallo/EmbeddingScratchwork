@@ -12,9 +12,11 @@ import json
 import unittest
 from unittest.mock import ANY, Mock, patch
 
+import subaudit
+
 import embed
 from embed import cached
-from tests import _audit, _bases
+from tests import _bases
 
 _HOLA_FILENAME = (
     'b58e4a60c963f8b3c43d83cc9245020ce71d8311fa2f48cfd36deed6f472a71b.json'
@@ -112,13 +114,13 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
     def test_load_confirmed_by_audit_event(self):
         self._write_fake_data_file()
 
-        with _audit.listening_for_open(Mock()) as listener:
+        with subaudit.listening('open', Mock()) as listener:
             self.func(self.text_or_texts, data_dir=self._dir_path)
 
         listener.assert_any_call(str(self._path), 'r', ANY)
 
     def test_save_confirmed_by_audit_event(self):
-        with _audit.listening_for_open(Mock()) as listener:
+        with subaudit.listening('open', Mock()) as listener:
             self.func(self.text_or_texts, data_dir=self._dir_path)
 
         # TODO: Decide whether to keep allowing just 'x', or if 'w' is OK too.
