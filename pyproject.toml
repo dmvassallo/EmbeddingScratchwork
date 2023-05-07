@@ -1,9 +1,5 @@
-# Currently, this file exists only to allow "pip install -e ." to succeed when
-# run in the conda environment. In the future we might support poetry, in which
-# case this file will be repaced with a generated file that lists dependencies.
-
 [tool.poetry]
-name = "EmbeddingScratchwork"
+name = "embeddingscratchwork"
 version = "0.1.0"
 description = "Scratch work for embeddings"
 authors = [
@@ -15,6 +11,26 @@ readme = "README.md"
 packages = [
     { include = "embed" },
 ]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+backoff = "^2.2.1"
+blake3 = "^0.3.3"
+numpy = "^1.24.3"
+openai = { extras = ["embeddings"], version = "^0.27.6" }
+requests = "^2.30.0"
+
+[tool.poetry.group.dev.dependencies]
+attrs = "^23.1.0"
+flake8 = { version = "^6.0.0", python = ">=3.8.1,<4.0" }
+parameterized = "^0.9.0"
+pylint = "^2.17.4"
+subaudit = "^0.1.0"
+
+[tool.poetry.group.notebook.dependencies]
+graphviz = "^0.20.1"
+ipykernel = "^6.22.0"
+tabulate = "^0.9.0"
 
 [build-system]
 requires = ["poetry-core"]

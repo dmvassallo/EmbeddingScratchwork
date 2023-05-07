@@ -16,7 +16,7 @@ dependencies:
   - parameterized
   - pylint
 
-  # Notebooks
+  # For notebooks
   - graphviz
   - ipykernel
   - python-graphviz

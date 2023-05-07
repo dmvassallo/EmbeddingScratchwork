@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -eu
 
 # Customize git configuration for shell prompt and terminal colors.
 ln -s -- "$(realpath .devcontainer/git_prompt_activate.bash)" \
@@ -9,6 +9,13 @@ printf '\n%s\n' '. ~/.git_prompt_activate.bash' >>~/.bashrc
 git config --global color.diff.new blue
 git config --global devcontainers-theme.hide-status 1
 
+# Set up container-wide Graphviz installation (for when running via Poetry).
+.devcontainer/install-graphviz 8.0.5
+
+# Set up Poetry and its plugins.
+pipx install poetry
+pipx inject poetry poetry-plugin-sort poetry-plugin-up
+
 # Set up Mambaforge, which provides conda and mamba.
 cd /tmp
 wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
@@ -16,9 +23,13 @@ chmod +x Mambaforge-Linux-x86_64.sh
 ./Mambaforge-Linux-x86_64.sh -b
 rm Mambaforge-Linux-x86_64.sh
 ~/mambaforge/condabin/mamba init --all
+~/mambaforge/condabin/conda config --set auto_activate_base false
 ~/mambaforge/condabin/mamba update --all --yes
 cd -
 
 # Set up project environment for conda/mamba.
 ~/mambaforge/condabin/mamba env create
 ~/mambaforge/condabin/mamba run --name EmbeddingScratchwork pip install -e .
+
+# Set up project environment for poetry.
+poetry install

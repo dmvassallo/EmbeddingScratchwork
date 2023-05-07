@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -e
+
+if [ -z "$1" ]; then
+    printf '%s: error: Graphviz version to install not specified\n' "$0" >&2
+    exit 1
+fi
+
+mkdir -p ~/src
+cd ~/src
+wget "https://gitlab.com/api/v4/projects/4207231/packages/generic/graphviz-releases/$1/graphviz-$1.tar.xz"
+tar xf graphviz-*.tar.xz
+cd graphviz-*/
+./configure && make && sudo make install  # Assumes sudo requires no password.
