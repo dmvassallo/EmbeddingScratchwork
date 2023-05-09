@@ -242,7 +242,7 @@ There are three good ways to run the automated tests in
 
 ### Continuous integration checks
 
-This repository run CI checks from several [GitHub Actions
+This repository runs CI checks from several [GitHub Actions
 workflows](.github/workflows/). Forks inherit these workflows, but they are not
 usually enabled automatically. They [can be
 enabled](https://github.com/github/docs/issues/15761) in a fork’s [“Actions”
