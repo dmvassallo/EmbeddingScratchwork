@@ -42,6 +42,10 @@ jobs:
     permissions:
       contents: write
 
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - name: Check out source repository
         uses: actions/checkout@v3
@@ -54,13 +58,17 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
 
-      # FIXME: Make sure we are using the correct version of Python.
-
       - name: Install the environment
         run: poetry install --only=main,dev
 
       - name: Print Python version
         run: poetry run python -V
+
+      - name: Validate Python version
+        run: |
+          poetry run python -c \
+              'import sys; assert sys.version.startswith(f"{sys.argv[1]}.")' \
+              ${{ matrix.python-version }}
 
       - name: Set up mutex
         if: needs.read-blocking-config.outputs.use-mutex != 'false'
@@ -110,6 +118,12 @@ jobs:
       - name: Print Python version
         run: python -V
 
+      - name: Validate Python version
+        run: |
+          python -c \
+              'import sys; assert sys.version.startswith(f"{sys.argv[1]}.")' \
+              ${{ matrix.python-version }}
+
       - name: Set up mutex
         if: needs.read-blocking-config.outputs.use-mutex != 'false'
         uses: EliahKagan/actions-mutex@v2
@@ -144,6 +158,12 @@ jobs:
 
       - name: Make editable install
         run: pip install -e .
+
+      - name: Print Python version
+        run: python -V
+
+      - name: Validate Python version
+        run: python -c 'import sys; assert sys.version_info[:2] == (3, 11)'
 
       - name: Set up mutex
         if: needs.read-blocking-config.outputs.use-mutex != 'false'
