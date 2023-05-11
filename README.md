@@ -1,7 +1,8 @@
 <!-- SPDX-License-Identifier: 0BSD -->
 
 <!-- markdownlint-capture -->
-<!-- markdownlint-disable first-line-h1 line-length -->
+<!-- markdownlint-disable first-line-h1 line-length no-inline-html -->
+<!-- Using inline HTML to have control of image width. -->
 <img src="doc/logo.svg"
      alt="Drawing of text-embedding-ada-002 embedding vectors for two sentences – “El gato corre.” and “The cat runs.” – and the 22.7° angle between them"
      title="Drawing of text-embedding-ada-002 embedding vectors for two sentences – “El gato corre.” and “The cat runs.” – and the 22.7° angle between them"
