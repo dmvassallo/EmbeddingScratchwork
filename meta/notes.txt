@@ -1,3 +1,0 @@
-Trigger a new Codespaces prebuild on main.
-Add poetry-based CI test jobs (via PR). Keep the conda jobs too.
-Enable Dependabot security updates and transitive version updates.
