@@ -12,6 +12,7 @@ dependencies:
   - orjson
   - requests
   - safetensors
+  - tiktoken
 
   # For development
   - attrs

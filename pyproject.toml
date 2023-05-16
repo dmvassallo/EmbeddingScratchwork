@@ -37,6 +37,7 @@ openai = { extras = ["embeddings"], version = "^0.27.8" }
 orjson = "^3.9.1"
 requests = "^2.31.0"
 safetensors = "^0.3.1"
+tiktoken = "^0.4.0"
 
 [tool.poetry.group.dev.dependencies]
 attrs = "^23.1.0"
