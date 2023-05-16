@@ -9,6 +9,7 @@ dependencies:
   - numpy
   - openai
   - requests
+  - tiktoken
 
   # For development
   - attrs
