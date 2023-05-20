@@ -9,6 +9,7 @@ dependencies:
   - lxml
   - numpy
   - openai
+  - polars
   - requests
   - tiktoken
 
