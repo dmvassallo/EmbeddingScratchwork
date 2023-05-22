@@ -51,8 +51,8 @@ def embed_one(text):
 def embed_many(texts):
     """Embed multiple pieces of text."""
     openai_response = _create_embedding(texts)
-    data = sorted(openai_response.data, key=operator.itemgetter('index'))
-    return np.array([datum.embedding for datum in data], dtype=np.float32)
+    embeddings = [datum.embedding for datum in openai_response.data]
+    return np.array(embeddings, dtype=np.float32)
 
 
 def embed_one_eu(text):
@@ -106,5 +106,5 @@ def embed_many_req(texts):
     """Embed multiple pieces of text. Uses ``requests``."""
     response = _post_request(texts)
     response.raise_for_status()
-    data = sorted(response.json()['data'], key=operator.itemgetter('index'))
-    return np.array([datum['embedding'] for datum in data], dtype=np.float32)
+    embeddings = [datum['embedding'] for datum in response.json()['data']]
+    return np.array(embeddings, dtype=np.float32)
