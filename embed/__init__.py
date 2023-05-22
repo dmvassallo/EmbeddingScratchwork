@@ -13,7 +13,6 @@ __all__ = [
 
 import datetime
 import http
-import operator
 
 import backoff
 import numpy as np
