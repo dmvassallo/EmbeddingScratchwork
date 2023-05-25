@@ -1,5 +1,5 @@
 #!/bin/sh
-# This runs test modules as scripts, mainly for CI. Run it from the repo root.
+# A CI job runs this from the repo root. It runs each test module as a script.
 
 set -eux
 

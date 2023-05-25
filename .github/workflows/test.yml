@@ -170,7 +170,7 @@ jobs:
         uses: EliahKagan/actions-mutex@v2
 
       - name: Run test modules as scripts
-        run: meta/run-test-scripts
+        run: .github/workflows/run-test-scripts
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY: 'no'
