@@ -33,33 +33,13 @@ jobs:
       - name: Check out source repository
         uses: actions/checkout@v3
 
-      - name: Install pylint-exit
-        run: pipx install pylint-exit
-
-      - name: Install pylint-sarif (unofficial fork)
-        run: pipx install pylint-sarif-unofficial
-
-      - name: Install Conda environment from environment.yml
-        uses: mamba-org/provision-with-micromamba@v15
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: environment.yml
 
       - name: Make editable install
         run: pip install -e .
-
-      - name: Install pylint-actions plugin
-        run: pip install pylint-actions
-
-      - name: Check for unexpected pylint plugins
-        run: |
-          printf 'Verify pyproject.toml clearly loads no pylint plugins.\n'
-          printf "Otherwise, the next step's way of editing may not be safe.\n"
-          ! grep -q load-plugins pyproject.toml
-
-      - name: Configure pylint-actions plugin
-        run: |
-          perl -i -spwe 's/\Q$section\E$(?)\K/\n$item/' -- \
-              -section='[tool.pylint.main]' \
-              -item='load-plugins = "pylint_actions"' \
-              pyproject.toml
 
       - name: Run pylint, output annotations
         run: |
