@@ -26,4 +26,7 @@ dependencies:
   - pip
   - pip:
     - blake3
+    - pylint-actions
+    - pylint-exit
+    - pylint-sarif-unofficial
     - subaudit
