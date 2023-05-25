@@ -40,7 +40,7 @@ jobs:
         run: pipx install pylint-sarif-unofficial
 
       - name: Install Conda environment from environment.yml
-        uses: mamba-org/provision-with-micromamba@v15
+        uses: mamba-org/provision-with-micromamba@v16
 
       - name: Make editable install
         run: pip install -e .
