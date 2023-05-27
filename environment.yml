@@ -8,6 +8,7 @@ dependencies:
   - backoff
   - numpy
   - openai
+  - orjson
   - requests
 
   # For development

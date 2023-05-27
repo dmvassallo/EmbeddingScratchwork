@@ -12,12 +12,14 @@ __all__ = [
     'embed_many_req',
 ]
 
+import functools
 import json
 import logging
 from pathlib import Path
 
 import blake3
 import numpy as np
+import orjson
 
 import embed
 
@@ -26,6 +28,14 @@ DEFAULT_DATA_DIR = Path('data')
 
 _logger = logging.getLogger(__name__)
 """Logger for messages from this submodule."""
+
+_custom_dumps = functools.partial(
+    orjson.dumps,
+    option=(orjson.OPT_APPEND_NEWLINE |
+            orjson.OPT_INDENT_2 |
+            orjson.OPT_SERIALIZE_NUMPY),
+)
+"""Call ``orjson.dumps`` with custom options for serializing embeddings."""
 
 
 def _compute_blake3_hash(serialized_data):
@@ -44,30 +54,17 @@ def _build_path(text_or_texts, data_dir):
     return Path(data_dir, f'{basename}.json')  # data_dir may be a str.
 
 
-def _load_json(path):
-    """Load JSON from a file."""
-    with open(path, mode='r', encoding='utf-8') as file:
-        return json.load(file)
-
-
-def _save_json(path, obj):
-    """Save JSON to a file."""
-    with open(path, mode='x', encoding='utf-8') as file:
-        json.dump(obj=obj, fp=file, indent=4)
-        file.write('\n')
-
-
 def _embed_with_disk_caching(func, text_or_texts, data_dir):
     """Load cached embeddings from disk, or compute and save them."""
     path = _build_path(text_or_texts, data_dir)
     try:
-        parsed = _load_json(path)
+        json_bytes = path.read_bytes()
     except OSError:
         embeddings = func(text_or_texts)
-        _save_json(path=path, obj=embeddings.tolist())
+        path.write_bytes(_custom_dumps(embeddings))
         _logger.info('%s: saved: %s', func.__name__, path)
     else:
-        embeddings = np.array(parsed, dtype=np.float32)
+        embeddings = np.array(orjson.loads(json_bytes), dtype=np.float32)
         _logger.info('%s: loaded: %s', func.__name__, path)
 
     return embeddings
