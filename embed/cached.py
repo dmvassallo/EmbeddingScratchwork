@@ -12,7 +12,6 @@ __all__ = [
     'embed_many_req',
 ]
 
-import functools
 import logging
 from pathlib import Path
 
@@ -25,16 +24,15 @@ import embed
 DEFAULT_DATA_DIR = Path('data')
 """Default directory to cache embeddings."""
 
+_ORJSON_SAVE_OPTIONS = (
+    orjson.OPT_APPEND_NEWLINE |
+    orjson.OPT_INDENT_2 |
+    orjson.OPT_SERIALIZE_NUMPY
+)
+"""Options for ``orjson.dumps`` when it is called to serialize embeddings."""
+
 _logger = logging.getLogger(__name__)
 """Logger for messages from this submodule."""
-
-_serialize_embeddings = functools.partial(
-    orjson.dumps,
-    option=(orjson.OPT_APPEND_NEWLINE |
-            orjson.OPT_INDENT_2 |
-            orjson.OPT_SERIALIZE_NUMPY),
-)
-"""Call ``orjson.dumps`` with custom options for serializing embeddings."""
 
 
 def _compute_blake3_hash(serialized_data):
@@ -59,7 +57,7 @@ def _embed_with_disk_caching(func, text_or_texts, data_dir):
         json_bytes = path.read_bytes()
     except OSError:
         embeddings = func(text_or_texts)
-        path.write_bytes(_serialize_embeddings(embeddings))
+        path.write_bytes(orjson.dumps(embeddings, option=_ORJSON_SAVE_OPTIONS))
         _logger.info('%s: saved: %s', func.__name__, path)
     else:
         embeddings = np.array(orjson.loads(json_bytes), dtype=np.float32)
