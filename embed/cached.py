@@ -35,18 +35,14 @@ _logger = logging.getLogger(__name__)
 """Logger for messages from this submodule."""
 
 
-def _compute_blake3_hash(serialized_data):
-    """Compute a blake3 hash of binary data."""
-    # pylint: disable=not-callable  # Callable native code without type stubs.
-    return blake3.blake3(serialized_data)
-
-
 def _build_path(text_or_texts, data_dir):
     """Build a path for ``_disk_cache``'s wrapper to save/load embeddings."""
     if data_dir is None:
         data_dir = DEFAULT_DATA_DIR
 
-    basename = _compute_blake3_hash(orjson.dumps(text_or_texts)).hexdigest()
+    serialized_input = orjson.dumps(text_or_texts)
+    hasher = blake3.blake3(serialized_input)  # pylint: disable=not-callable
+    basename = hasher.hexdigest()
     return Path(data_dir, f'{basename}.json')  # data_dir may be a str.
 
 
