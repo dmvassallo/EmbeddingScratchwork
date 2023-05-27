@@ -45,6 +45,7 @@ disable = [
     "consider-using-f-string",
     "too-few-public-methods",
 ]
+generated-members = "orjson.*"
 load-plugins = [
     "pylint_actions",
 ]
