@@ -13,7 +13,6 @@ __all__ = [
 ]
 
 import functools
-import json
 import logging
 from pathlib import Path
 
@@ -29,7 +28,7 @@ DEFAULT_DATA_DIR = Path('data')
 _logger = logging.getLogger(__name__)
 """Logger for messages from this submodule."""
 
-_custom_dumps = functools.partial(
+_serialize_embeddings = functools.partial(
     orjson.dumps,
     option=(orjson.OPT_APPEND_NEWLINE |
             orjson.OPT_INDENT_2 |
@@ -49,8 +48,7 @@ def _build_path(text_or_texts, data_dir):
     if data_dir is None:
         data_dir = DEFAULT_DATA_DIR
 
-    serialized_data = json.dumps(text_or_texts).encode()
-    basename = _compute_blake3_hash(serialized_data).hexdigest()
+    basename = _compute_blake3_hash(orjson.dumps(text_or_texts)).hexdigest()
     return Path(data_dir, f'{basename}.json')  # data_dir may be a str.
 
 
@@ -61,7 +59,7 @@ def _embed_with_disk_caching(func, text_or_texts, data_dir):
         json_bytes = path.read_bytes()
     except OSError:
         embeddings = func(text_or_texts)
-        path.write_bytes(_custom_dumps(embeddings))
+        path.write_bytes(_serialize_embeddings(embeddings))
         _logger.info('%s: saved: %s', func.__name__, path)
     else:
         embeddings = np.array(orjson.loads(json_bytes), dtype=np.float32)

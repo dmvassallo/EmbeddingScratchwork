@@ -24,7 +24,7 @@ _HOLA_FILENAME = (
 """Filename that would be generated from the input ``'hola'``."""
 
 _HOLA_HELLO_FILENAME = (
-    '4a77f419587b08963e94105b8b9272531e53ade9621b613fda175aa0a96cd839.json'
+    '2e41e52e67421c1d106bb8a5b9225ad1143761240862ed61e5be5ed20f39f2fd.json'
 )
 """Filename that would be generated from the input ``['hola', 'hello']``."""
 
