@@ -123,7 +123,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
         with subaudit.listening('open', Mock()) as listener:
             self.func(self.text_or_texts, data_dir=self._dir_path)
 
-        listener.assert_any_call(str(self._path), 'w', ANY)
+        listener.assert_any_call(str(self._path), 'x', ANY)
 
     def test_saved_embedding_exists(self):
         self.func(self.text_or_texts, data_dir=self._dir_path)

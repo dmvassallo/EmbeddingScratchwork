@@ -49,6 +49,12 @@ def _build_path(text_or_texts, data_dir):
     return data_dir / f'{basename}.json'
 
 
+def _create_binary_file(path, data):
+    """Create a new binary file with the given data. Uses ``x`` in ``mode``."""
+    with open(file=path, mode='xb') as file:
+        file.write(data)
+
+
 def _embed_with_disk_caching(func, text_or_texts, data_dir):
     """Load cached embeddings from disk, or compute and save them."""
     path = _build_path(text_or_texts, data_dir)
@@ -56,7 +62,8 @@ def _embed_with_disk_caching(func, text_or_texts, data_dir):
         json_bytes = path.read_bytes()
     except OSError:
         embeddings = func(text_or_texts)
-        path.write_bytes(orjson.dumps(embeddings, option=_ORJSON_SAVE_OPTIONS))
+        json_bytes = orjson.dumps(embeddings, option=_ORJSON_SAVE_OPTIONS)
+        _create_binary_file(path, json_bytes)
         _logger.info('%s: saved: %s', func.__name__, path)
     else:
         embeddings = np.array(orjson.loads(json_bytes), dtype=np.float32)
