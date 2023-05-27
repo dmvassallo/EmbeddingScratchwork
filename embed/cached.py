@@ -37,13 +37,11 @@ _logger = logging.getLogger(__name__)
 
 def _build_path(text_or_texts, data_dir):
     """Build a path for ``_disk_cache``'s wrapper to save/load embeddings."""
-    if data_dir is None:
-        data_dir = DEFAULT_DATA_DIR
-
+    data_dir = Path(DEFAULT_DATA_DIR if data_dir is None else data_dir)
     serialized_input = orjson.dumps(text_or_texts)
     hasher = blake3.blake3(serialized_input)  # pylint: disable=not-callable
     basename = hasher.hexdigest()
-    return Path(data_dir, f'{basename}.json')  # data_dir may be a str.
+    return data_dir / f'{basename}.json'
 
 
 def _embed_with_disk_caching(func, text_or_texts, data_dir):
