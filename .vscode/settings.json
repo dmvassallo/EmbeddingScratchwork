@@ -9,6 +9,7 @@
         "bierner",
         "blake3",
         "buildscript",
+        "cachers",
         "catrun",
         "codegraph",
         "codeql",
