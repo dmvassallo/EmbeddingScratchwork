@@ -56,7 +56,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install poetry
-        run: pip install poetry  # Explore other approaches.
+        run: pip install poetry  # TODO: Explore other approaches.
 
       - name: Install the environment
         run: poetry install --only=main,dev
