@@ -18,15 +18,17 @@ import embed
 from embed import cached
 from tests import _bases
 
-_HOLA_FILENAME = (
-    'b58e4a60c963f8b3c43d83cc9245020ce71d8311fa2f48cfd36deed6f472a71b.json'
+_HOLA_BASENAME = (
+    'b58e4a60c963f8b3c43d83cc9245020ce71d8311fa2f48cfd36deed6f472a71b'
 )
-"""Filename that would be generated from the input ``'hola'``."""
+"""Filename stem that would be generated from the input ``'hola'``."""
 
-_HOLA_HELLO_FILENAME = (
-    '2e41e52e67421c1d106bb8a5b9225ad1143761240862ed61e5be5ed20f39f2fd.json'
+_HOLA_HELLO_BASENAME = (
+    '2e41e52e67421c1d106bb8a5b9225ad1143761240862ed61e5be5ed20f39f2fd'
 )
-"""Filename that would be generated from the input ``['hola', 'hello']``."""
+"""
+Filename stem that would be generated from the input ``['hola', 'hello']``.
+"""
 
 
 class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
@@ -41,15 +43,24 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
 
     @property
     @abstractmethod
-    def filename(self):
+    def basename(self):
         """
-        Filename that should be generated from the input ``text_or_texts``.
+        Filename stem that should be generated from input ``text_or_texts``.
         """
+
+    @property
+    @abstractmethod
+    def file_type(self):
+        """File type (in file-extension form) for embeddings be saved in."""
 
     @property
     @abstractmethod
     def fake_data(self):
         """Fake data for testing loads from a file."""
+
+    @abstractmethod
+    def write_fake_data_file(self):
+        """Write a fake data file. Implementations should use ``fake_data``."""
 
     @property
     @abstractmethod
@@ -83,7 +94,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
         self.assertEqual(log_context.output, [expected_message])
 
     def test_loads_file_if_cached(self):
-        self._write_fake_data_file()
+        self.write_fake_data_file()
 
         expected_message = 'INFO:embed.cached:{name}: loaded: {path}'.format(
             name=self._name,
@@ -112,7 +123,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
                 self.assertEqual(log_context.output, [expected_message])
 
     def test_load_confirmed_by_audit_event(self):
-        self._write_fake_data_file()
+        self.write_fake_data_file()
 
         with subaudit.listening('open', Mock()) as listener:
             self.func(self.text_or_texts, data_dir=self._dir_path)
@@ -152,7 +163,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
     @property
     def _path(self):
         """Path of temporary test file."""
-        return self._dir_path / self.filename
+        return self._dir_path / f'{self.basename}.{self.file_type}'
 
     def _patch_non_disk_caching_embedder(self):
         """Patch a function in ``embed`` to examine its calls."""
@@ -163,11 +174,6 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
             __name__=embedder.__name__,
         )
 
-    def _write_fake_data_file(self):
-        """Create a file containing a fake embedding."""
-        with open(file=self._path, mode='w', encoding='utf-8') as file:
-            json.dump(obj=self.fake_data, fp=file)
-
 
 class _TestDiskCachedEmbedOneBase(_TestDiskCachedCachingBase):
     """Abstract base for ``embed_one*`` group customizations."""
@@ -177,8 +183,8 @@ class _TestDiskCachedEmbedOneBase(_TestDiskCachedCachingBase):
         return 'hola'
 
     @property
-    def filename(self):
-        return _HOLA_FILENAME
+    def basename(self):
+        return _HOLA_BASENAME
 
     @property
     def fake_data(self):
@@ -198,8 +204,8 @@ class _TestDiskCachedEmbedManyBase(_TestDiskCachedCachingBase):
         return ['hola', 'hello']
 
     @property
-    def filename(self):
-        return _HOLA_HELLO_FILENAME
+    def basename(self):
+        return _HOLA_HELLO_BASENAME
 
     @property
     def fake_data(self):
@@ -214,48 +220,91 @@ class _TestDiskCachedEmbedManyBase(_TestDiskCachedCachingBase):
         return cached.embed_many, cached.embed_many_eu, cached.embed_many_req
 
 
-class TestDiskCachedEmbedOne(_TestDiskCachedEmbedOneBase):
-    """Tests for disk cached ``embed_one``."""
+class _TestDiskCachedJsonBase(_TestDiskCachedCachingBase):
+    """Abstract base for tests using JSON serialization."""
+
+    @property
+    def file_type(self):
+        return 'json'
+
+    def write_fake_data_file(self):
+        """Create a JSON file containing a fake embedding."""
+        with open(file=self._path, mode='w', encoding='utf-8') as file:
+            json.dump(obj=self.fake_data, fp=file)
+
+
+class _TestDiskCachedSafetensorsBase(_TestDiskCachedCachingBase):
+    """Abstract base for tests using safetensors serialization."""
+
+    @property
+    def file_type(self):
+        return 'safetensors'
+
+    def write_fake_data_file(self):
+        """Write a safetensors file containing a fake embedding."""
+        raise NotImplementedError  # FIXME: Implement this.
+
+
+class TestDiskCachedEmbedOneJson(
+    _TestDiskCachedEmbedOneBase,
+    _TestDiskCachedJsonBase,
+):
+    """Tests for disk cached ``embed_one`` with JSON serialization."""
 
     @property
     def func(self):
         return cached.embed_one
 
 
-class TestDiskCachedEmbedOneEu(_TestDiskCachedEmbedOneBase):
-    """Tests for disk cached ``embed_one_eu``."""
+class TestDiskCachedEmbedOneEuJson(
+    _TestDiskCachedEmbedOneBase,
+    _TestDiskCachedJsonBase,
+):
+    """Tests for disk cached ``embed_one_eu`` with JSON serialization."""
 
     @property
     def func(self):
         return cached.embed_one_eu
 
 
-class TestDiskCachedEmbedOneReq(_TestDiskCachedEmbedOneBase):
-    """Tests for disk cached ``embed_one_req``."""
+class TestDiskCachedEmbedOneReqJson(
+    _TestDiskCachedEmbedOneBase,
+    _TestDiskCachedJsonBase,
+):
+    """Tests for disk cached ``embed_one_req`` with JSON serialization."""
 
     @property
     def func(self):
         return cached.embed_one_req
 
 
-class TestDiskCachedEmbedMany(_TestDiskCachedEmbedManyBase):
-    """Tests for disk cached ``embed_many``."""
+class TestDiskCachedEmbedManyJson(
+    _TestDiskCachedEmbedManyBase,
+    _TestDiskCachedJsonBase,
+):
+    """Tests for disk cached ``embed_many`` with JSON serialization."""
 
     @property
     def func(self):
         return cached.embed_many
 
 
-class TestDiskCachedEmbedManyEu(_TestDiskCachedEmbedManyBase):
-    """Tests for disk cached ``embed_many_eu``."""
+class TestDiskCachedEmbedManyEuJson(
+    _TestDiskCachedEmbedManyBase,
+    _TestDiskCachedJsonBase,
+):
+    """Tests for disk cached ``embed_many_eu`` with JSON serialization."""
 
     @property
     def func(self):
         return cached.embed_many_eu
 
 
-class TestDiskCachedEmbedManyReq(_TestDiskCachedEmbedManyBase):
-    """Tests for disk cached ``embed_many_req``."""
+class TestDiskCachedEmbedManyReqJson(
+    _TestDiskCachedEmbedManyBase,
+    _TestDiskCachedJsonBase,
+):
+    """Tests for disk cached ``embed_many_req`` with JSON serialization."""
 
     @property
     def func(self):
@@ -265,6 +314,8 @@ class TestDiskCachedEmbedManyReq(_TestDiskCachedEmbedManyBase):
 del _TestDiskCachedCachingBase
 del _TestDiskCachedEmbedOneBase
 del _TestDiskCachedEmbedManyBase
+del _TestDiskCachedJsonBase
+del _TestDiskCachedSafetensorsBase
 
 
 if __name__ == '__main__':
