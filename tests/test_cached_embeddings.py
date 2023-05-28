@@ -35,8 +35,9 @@ class _TestDiskCacheHitBase(_TestDiskCacheEmbeddingsBase):
         """Copy embeddings to the temporary directory."""
         super().setUp()
 
-        for path in Path('tests_data').glob('*.json'):
-            shutil.copy(path, self._dir_path)
+        for file_type in 'json', 'safetensors':
+            for path in Path('tests_data').glob(f'*.{file_type}'):
+                shutil.copy(path, self._dir_path)
 
 
 class TestDiskCacheHitEmbedOne(
