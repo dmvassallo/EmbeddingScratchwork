@@ -54,10 +54,10 @@ def _embed_with_disk_caching(func, text_or_texts, data_dir):
     path = _build_path(text_or_texts, data_dir)
     try:
         json_bytes = path.read_bytes()
-    except OSError:
+    except FileNotFoundError:
         embeddings = func(text_or_texts)
         json_bytes = orjson.dumps(embeddings, option=_ORJSON_SAVE_OPTIONS)
-        with path.open(mode='xb') as file:  # Fail if the file already exists.
+        with path.open(mode='xb') as file:  # Fail if the file somehow exists.
             file.write(json_bytes)
         _logger.info('%s: saved: %s', func.__name__, path)
     else:
