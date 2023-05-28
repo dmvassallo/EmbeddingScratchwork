@@ -44,6 +44,7 @@
         "nonblocking",
         "numpy",
         "openai",
+        "orjson",
         "pipx",
         "prebuild",
         "prebuilds",
