@@ -76,7 +76,7 @@ class TestDiskCachedBase(TestEmbedBase):
     @property
     @abstractmethod
     def file_type(self):
-        """Filetype (in file-extension form) to save and load embeddings in."""
+        """File type (in file-extension form) to save and load embeddings."""
 
 
 class TestEmbedOneBase(TestEmbedBase):
