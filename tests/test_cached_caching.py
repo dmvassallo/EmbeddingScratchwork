@@ -12,6 +12,8 @@ import json
 import unittest
 from unittest.mock import ANY, Mock, patch
 
+import numpy as np
+import safetensors.numpy
 import subaudit
 
 import embed
@@ -78,7 +80,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
 
     def test_calls_same_name_non_caching_version_if_not_cached(self):
         with self._patch_non_disk_caching_embedder() as mock:
-            self.func(self.text_or_texts, data_dir=self._dir_path)
+            self._call()
 
         mock.assert_called_once_with(self.text_or_texts)
 
@@ -89,7 +91,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
         )
 
         with self.assertLogs(logger=cached.__name__) as log_context:
-            self.func(self.text_or_texts, data_dir=self._dir_path)
+            self._call()
 
         self.assertEqual(log_context.output, [expected_message])
 
@@ -102,12 +104,12 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
         )
 
         with self.assertLogs(logger=cached.__name__) as log_context:
-            self.func(self.text_or_texts, data_dir=self._dir_path)
+            self._call()
 
         self.assertEqual(log_context.output, [expected_message])
 
     def test_saves_file_that_any_implementation_can_load(self):
-        self.func(self.text_or_texts, data_dir=self._dir_path)
+        self._call()
         message_format = 'INFO:embed.cached:{name}: loaded: {path}'
 
         for load_func in self.func_group:
@@ -118,7 +120,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
                 )
 
                 with self.assertLogs(logger=cached.__name__) as log_context:
-                    load_func(self.text_or_texts, data_dir=self._dir_path)
+                    self._call(func=load_func)
 
                 self.assertEqual(log_context.output, [expected_message])
 
@@ -126,18 +128,18 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
         self.write_fake_data_file()
 
         with subaudit.listening('open', Mock()) as listener:
-            self.func(self.text_or_texts, data_dir=self._dir_path)
+            self._call()
 
         listener.assert_any_call(str(self._path), 'r', ANY)
 
     def test_save_confirmed_by_audit_event(self):
         with subaudit.listening('open', Mock()) as listener:
-            self.func(self.text_or_texts, data_dir=self._dir_path)
+            self._call()
 
         listener.assert_any_call(str(self._path), 'w', ANY)
 
     def test_saved_embedding_exists(self):
-        self.func(self.text_or_texts, data_dir=self._dir_path)
+        self._call()
         self.assertTrue(self._path.is_file())
 
     def test_uses_default_data_dir_if_not_passed(self):
@@ -148,7 +150,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
 
         with patch(f'{cached.__name__}.DEFAULT_DATA_DIR', self._dir_path):
             with self.assertLogs(logger=cached.__name__) as log_context:
-                self.func(self.text_or_texts)
+                self.func(self.text_or_texts, file_type=self.file_type)
 
         self.assertEqual(
             log_context.output, [expected_message],
@@ -164,6 +166,17 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
     def _path(self):
         """Path of temporary test file."""
         return self._dir_path / f'{self.basename}.{self.file_type}'
+
+    def _call(self, *, func=None):
+        """Call a caching embedder. Pass usual per-subclass test arguments."""
+        if func is None:
+            func = self.func
+
+        return func(
+            self.text_or_texts,
+            data_dir=self._dir_path,
+            file_type=self.file_type,
+        )
 
     def _patch_non_disk_caching_embedder(self):
         """Patch a function in ``embed`` to examine its calls."""
@@ -242,7 +255,16 @@ class _TestDiskCachedSafetensorsBase(_TestDiskCachedCachingBase):
 
     def write_fake_data_file(self):
         """Write a safetensors file containing a fake embedding."""
-        raise NotImplementedError  # FIXME: Implement this.
+        data = np.array(self.fake_data, dtype=np.float32)
+        safetensors.numpy.save_file({'embeddings': data}, self._path)
+
+    @unittest.expectedFailure  # TODO: Look into observing native file access.
+    def test_load_confirmed_by_audit_event(self):
+        super().test_load_confirmed_by_audit_event()
+
+    @unittest.expectedFailure  # TODO: Look into observing native file access.
+    def test_save_confirmed_by_audit_event(self):
+        super().test_save_confirmed_by_audit_event()
 
 
 class TestDiskCachedEmbedOneJson(
@@ -250,6 +272,17 @@ class TestDiskCachedEmbedOneJson(
     _TestDiskCachedJsonBase,
 ):
     """Tests for disk cached ``embed_one`` with JSON serialization."""
+
+    @property
+    def func(self):
+        return cached.embed_one
+
+
+class TestDiskCachedEmbedOneSafetensors(
+    _TestDiskCachedEmbedOneBase,
+    _TestDiskCachedSafetensorsBase,
+):
+    """Tests for disk cached ``embed_one`` with safetensors serialization."""
 
     @property
     def func(self):
@@ -267,11 +300,37 @@ class TestDiskCachedEmbedOneEuJson(
         return cached.embed_one_eu
 
 
+class TestDiskCachedEmbedOneEuSafetensors(
+    _TestDiskCachedEmbedOneBase,
+    _TestDiskCachedSafetensorsBase,
+):
+    """
+    Tests for disk cached ``embed_one_eu`` with safetensors serialization.
+    """
+
+    @property
+    def func(self):
+        return cached.embed_one_eu
+
+
 class TestDiskCachedEmbedOneReqJson(
     _TestDiskCachedEmbedOneBase,
     _TestDiskCachedJsonBase,
 ):
     """Tests for disk cached ``embed_one_req`` with JSON serialization."""
+
+    @property
+    def func(self):
+        return cached.embed_one_req
+
+
+class TestDiskCachedEmbedOneReqSafetensors(
+    _TestDiskCachedEmbedOneBase,
+    _TestDiskCachedSafetensorsBase,
+):
+    """
+    Tests for disk cached ``embed_one_req`` with safetensors serialization.
+    """
 
     @property
     def func(self):
@@ -289,6 +348,17 @@ class TestDiskCachedEmbedManyJson(
         return cached.embed_many
 
 
+class TestDiskCachedEmbedManySafetensors(
+    _TestDiskCachedEmbedManyBase,
+    _TestDiskCachedSafetensorsBase,
+):
+    """Tests for disk cached ``embed_many`` with safetensors serialization."""
+
+    @property
+    def func(self):
+        return cached.embed_many
+
+
 class TestDiskCachedEmbedManyEuJson(
     _TestDiskCachedEmbedManyBase,
     _TestDiskCachedJsonBase,
@@ -300,11 +370,37 @@ class TestDiskCachedEmbedManyEuJson(
         return cached.embed_many_eu
 
 
+class TestDiskCachedEmbedManyEuSafetensors(
+    _TestDiskCachedEmbedManyBase,
+    _TestDiskCachedSafetensorsBase,
+):
+    """
+    Tests for disk cached ``embed_many_eu`` with safetensors serialization.
+    """
+
+    @property
+    def func(self):
+        return cached.embed_many_eu
+
+
 class TestDiskCachedEmbedManyReqJson(
     _TestDiskCachedEmbedManyBase,
     _TestDiskCachedJsonBase,
 ):
     """Tests for disk cached ``embed_many_req`` with JSON serialization."""
+
+    @property
+    def func(self):
+        return cached.embed_many_req
+
+
+class TestDiskCachedEmbedManyReqSafetensors(
+    _TestDiskCachedEmbedManyBase,
+    _TestDiskCachedSafetensorsBase,
+):
+    """
+    Tests for disk cached ``embed_many_req`` with safetensors serialization.
+    """
 
     @property
     def func(self):
