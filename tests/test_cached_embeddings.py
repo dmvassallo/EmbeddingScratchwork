@@ -7,12 +7,10 @@ Those embedding functions are the versions that cache to disk. They are
 otherwise like the same-named functions residing directly in ``embed``.
 """
 
-# FIXME: The safetensors tests wrongly test with JSON.
-
 from pathlib import Path
 import shutil
 import unittest
-from unittest.mock import patch
+import unittest.mock
 
 from embed import cached
 from tests import _bases
@@ -22,12 +20,15 @@ class _TestDiskCacheEmbeddingsBase(_bases.TestDiskCachedBase):
     """Base class for the embeddings tests of the disk caching versions."""
 
     def setUp(self):
-        """Patch ``DEFAULT_DATA_DIR`` to the temporary directory."""
+        """Patch ``DEFAULT_DATA_DIR`` and ``DEFAULT_FILE_TYPE``."""
         super().setUp()
+        self._patch('DEFAULT_DATA_DIR', self._dir_path)
+        self._patch('DEFAULT_FILE_TYPE', self.file_type)
 
-        self.enterContext(
-            patch(f'{cached.__name__}.DEFAULT_DATA_DIR', self._dir_path),
-        )
+    def _patch(self, attribute_name, new_value):
+        """Monkey-patch an ``embed.cached`` attribute. Unpatch on cleanup."""
+        target = f'{cached.__name__}.{attribute_name}'
+        self.enterContext(unittest.mock.patch(target, new_value))
 
 
 class _TestDiskCacheHitBase(_TestDiskCacheEmbeddingsBase):
