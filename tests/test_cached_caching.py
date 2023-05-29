@@ -52,11 +52,6 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
 
     @property
     @abstractmethod
-    def file_type(self):
-        """Filetype (in file-extension form) to save and load embeddings in."""
-
-    @property
-    @abstractmethod
     def fake_data(self):
         """Fake data for testing loads from a file."""
 
