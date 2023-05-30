@@ -75,7 +75,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
 
     def test_calls_same_name_non_caching_version_if_not_cached(self):
         with self._patch_non_disk_caching_embedder() as mock:
-            self._call()
+            self._call_caching_embedder()
 
         mock.assert_called_once_with(self.text_or_texts)
 
@@ -86,7 +86,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
         )
 
         with self.assertLogs(logger=cached.__name__) as log_context:
-            self._call()
+            self._call_caching_embedder()
 
         self.assertEqual(log_context.output, [expected_message])
 
@@ -99,12 +99,12 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
         )
 
         with self.assertLogs(logger=cached.__name__) as log_context:
-            self._call()
+            self._call_caching_embedder()
 
         self.assertEqual(log_context.output, [expected_message])
 
     def test_saves_file_that_any_implementation_can_load(self):
-        self._call()
+        self._call_caching_embedder()
         message_format = 'INFO:embed.cached:{name}: loaded: {path}'
 
         for load_func in self.func_group:
@@ -115,7 +115,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
                 )
 
                 with self.assertLogs(logger=cached.__name__) as log_context:
-                    self._call(func=load_func)
+                    self._call_caching_embedder(func=load_func)
 
                 self.assertEqual(log_context.output, [expected_message])
 
@@ -123,18 +123,18 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
         self.write_fake_data_file()
 
         with subaudit.listening('open', Mock()) as listener:
-            self._call()
+            self._call_caching_embedder()
 
         listener.assert_any_call(str(self._path), 'r', ANY)
 
     def test_save_confirmed_by_audit_event(self):
         with subaudit.listening('open', Mock()) as listener:
-            self._call()
+            self._call_caching_embedder()
 
         listener.assert_any_call(str(self._path), 'w', ANY)
 
     def test_saved_embedding_exists(self):
-        self._call()
+        self._call_caching_embedder()
         self.assertTrue(self._path.is_file())
 
     def test_uses_default_data_dir_if_not_passed(self):
@@ -177,9 +177,9 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
         """Path of temporary test file."""
         return self._dir_path / f'{self.basename}.{self.file_type}'
 
-    def _call(self, *, func=None):
+    def _call_caching_embedder(self, *, func=None):
         """Call a caching embedder. Pass usual per-subclass test arguments."""
-        if func is None:
+        if func is None:  # We usually call self.func. Use that as a default.
             func = self.func
 
         return func(
