@@ -24,7 +24,7 @@ import embed
 DEFAULT_DATA_DIR = Path('data')
 """Default directory to cache embeddings."""
 
-DEFAULT_FILE_TYPE = 'json'
+DEFAULT_FILE_TYPE = 'safetensors'
 """Default file type to use for caching embeddings."""
 
 _ORJSON_SAVE_OPTIONS = (
