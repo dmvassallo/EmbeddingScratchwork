@@ -152,6 +152,21 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
             'DEFAULT_DATA_DIR should be used',
         )
 
+    def test_uses_default_file_type_if_not_passed(self):
+        expected_message = 'INFO:embed.cached:{name}: saved: {path}'.format(
+            name=self._name,
+            path=self._path,
+        )
+
+        with patch(f'{cached.__name__}.DEFAULT_FILE_TYPE', self.file_type):
+            with self.assertLogs(logger=cached.__name__) as log_context:
+                self.func(self.text_or_texts, data_dir=self._dir_path)
+
+        self.assertEqual(
+            log_context.output, [expected_message],
+            'DEFAULT_FILE_TYPE should be used',
+        )
+
     @property
     def _name(self):
         """Name of the disk caching embedding function being tested."""
