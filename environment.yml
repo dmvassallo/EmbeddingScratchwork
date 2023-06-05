@@ -10,6 +10,7 @@ dependencies:
   - openai
   - orjson
   - requests
+  - safetensors
 
   # For development
   - attrs

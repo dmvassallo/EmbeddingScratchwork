@@ -73,6 +73,11 @@ class TestDiskCachedBase(TestEmbedBase):
         # pylint: disable=consider-using-with  # enterContext is like "with".
         self._dir_path = Path(self.enterContext(TemporaryDirectory()))
 
+    @property
+    @abstractmethod
+    def file_type(self):
+        """File type (in file-extension form) to save and load embeddings."""
+
 
 class TestEmbedOneBase(TestEmbedBase):
     """
