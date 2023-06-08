@@ -50,3 +50,4 @@ generated-members = "orjson.*"
 load-plugins = [
     "pylint_actions",
 ]
+max-parents = 8
