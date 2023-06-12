@@ -35,7 +35,7 @@ subaudit = "^0.1.0"
 
 [tool.poetry.group.notebook.dependencies]
 graphviz = "^0.20.1"
-ipykernel = "^6.23.1"
+ipykernel = "^6.23.2"
 jupyter-collaboration = "^1.0.0"
 jupyterlab = "^4.0.2"
 nbdime = "^3.2.1"
