@@ -42,6 +42,7 @@
         "markdownlint",
         "mhutchie",
         "micromamba",
+        "nbdime",
         "ndarray",
         "nonblocking",
         "numpy",
