@@ -22,7 +22,7 @@ _TRUTHY_REGEX = re.compile(r'true|yes|1', re.IGNORECASE)
 """Regex to match a configuration string considered to mean ``True``."""
 
 _FALSY_REGEX = re.compile(r'(?:false|no|0)?', re.IGNORECASE)
-"""Regex to match a configuration string conisdered to mean ``False``."""
+"""Regex to match a configuration string considered to mean ``False``."""
 
 _logger = logging.getLogger(__name__)
 """Logger for messages from this test helper module."""
@@ -74,7 +74,7 @@ class _CacheStats:
     """Number of times the cache was checked and an item was NOT found."""
 
     hits = attrs.field(default=0)
-    """Number times the cache was checked and an an item WAS found."""
+    """Number times the cache was checked and an item WAS found."""
 
     def __bool__(self):
         """Whether any cache accesses (hits or misses) have occurred."""
