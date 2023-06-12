@@ -28,5 +28,6 @@
             }
         }
     },
-    "onCreateCommand": [".devcontainer/onCreate"]
+    "onCreateCommand": [".devcontainer/onCreate"],
+    "postStartCommand": [".devcontainer/postStart"]
 }
