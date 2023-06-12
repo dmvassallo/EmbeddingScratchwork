@@ -42,14 +42,14 @@ _BATCH_COUNT = 600
 _BATCH_SIZE = 8
 """Number of requests each batch makes sequentially in the backoff test."""
 
-_logger = logging.getLogger(__name__)
-"""Logger for messages from this test module."""
-
-_is_backoff_message = re.compile(
+_BACKOFF_MESSAGE_REGEX = re.compile(
     r'INFO:backoff:Backing off _post_request\(\.\.\.\) for [0-9.]+s '
     r'\(<Response \[429\]>\)',
-).fullmatch
-"""Check if the string is a log message about backoff with expected details."""
+)
+"""Regex to match a log message aobut backoff with expected details."""
+
+_logger = logging.getLogger(__name__)
+"""Logger for messages from this test module."""
 
 
 def _run_batch(batch_index):
@@ -105,7 +105,7 @@ class TestBackoff(_bases.TestBase):
                 )
 
         got_backoff = any(
-            _is_backoff_message(message)
+            _BACKOFF_MESSAGE_REGEX.fullmatch(message)
             for message in log_context.output
         )
         self.assertTrue(got_backoff)

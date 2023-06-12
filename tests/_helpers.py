@@ -18,14 +18,14 @@ import attrs
 
 import embed
 
+_TRUTHY_REGEX = re.compile(r'true|yes|1', re.IGNORECASE)
+"""Regex to match a configuration string considered to mean ``True``."""
+
+_FALSY_REGEX = re.compile(r'(?:false|no|0)?', re.IGNORECASE)
+"""Regex to match a configuration string conisdered to mean ``False``."""
+
 _logger = logging.getLogger(__name__)
 """Logger for messages from this test helper module."""
-
-_truthy_config = re.compile(r'true|yes|1', re.IGNORECASE).fullmatch
-"""Check if a configuration string should be considered to mean ``True``."""
-
-_falsy_config = re.compile(r'(?:false|no|0)?', re.IGNORECASE).fullmatch
-"""Check if a configuration string should be considered to mean ``False``."""
 
 
 def getenv_bool(name):
@@ -39,9 +39,9 @@ def getenv_bool(name):
     - Otherwise, the value is ill-formed, and ``RuntimeError`` is raised.
     """
     value = os.environ.get(name, default='')
-    if _truthy_config(value):
+    if _TRUTHY_REGEX.fullmatch(value):
         return True
-    if _falsy_config(value):
+    if _FALSY_REGEX.fullmatch(value):
         return False
     raise RuntimeError(
         f"Can't parse environment variable as boolean: {name}={value!r}")
