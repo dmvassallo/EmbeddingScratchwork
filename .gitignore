@@ -1,5 +1,6 @@
 # Cached Python bytecode
 __pycache__/
 
-# Jupyter notebook checkpoints
+# Local Jupyter files
 .ipynb_checkpoints/
+.jupyter_ystore.db
