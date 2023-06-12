@@ -88,17 +88,22 @@ _THREE_LETTER_DIR_NAMES = tuple(ch * 3 for ch in string.ascii_lowercase)
 """Directory names for testing, higher above the point of greatest interest."""
 
 
+def _create_and_enter_single_directory(name):
+    """``mkdir`` one new subdirectory and ``cd`` into it."""
+    subdir = Path(name)
+    subdir.mkdir()
+    os.chdir(subdir)
+
+
 def _create_and_enter_directories(names):
     """``mkdir`` each new subdirectory and ``cd`` into it. Builds a chain."""
     for name in names:
-        subdir = Path(name)
-        subdir.mkdir()
-        os.chdir(subdir)
+        _create_and_enter_single_directory(name)
 
 
-def _write_fake_key_file():
+def _write_fake_key_file(fake_key):
     """Write a ``.api_key`` file with a fake key, in the current directory."""
-    Path('.api_key').write_text('sk-fake_from_file', encoding='utf-8')
+    Path('.api_key').write_text(fake_key, encoding='utf-8')
 
 
 class TestGetKeyIfAvailable(_bases.TestBase):
@@ -127,13 +132,13 @@ class TestGetKeyIfAvailable(_bases.TestBase):
         self.assertEqual(result, 'sk-fake_from_env')
 
     def test_uses_env_var_instead_of_key_file(self):
-        _write_fake_key_file()
+        _write_fake_key_file('sk-fake_from_file')
         result = _get_key_if_available()
         self.assertEqual(result, 'sk-fake_from_env')
 
     def test_uses_key_file_in_cwd_when_no_env_var(self):
         del os.environ['OPENAI_API_KEY']
-        _write_fake_key_file()
+        _write_fake_key_file('sk-fake_from_file')
         result = _get_key_if_available()
         self.assertEqual(result, 'sk-fake_from_file')
 
@@ -144,12 +149,8 @@ class TestGetKeyIfAvailable(_bases.TestBase):
 
     def test_key_file_in_parent_when_no_repo_not_used(self):
         del os.environ['OPENAI_API_KEY']
-        _write_fake_key_file()
-
-        subdir = Path('subdir')
-        subdir.mkdir()
-        os.chdir(subdir)
-
+        _write_fake_key_file('sk-fake_from_file')
+        _create_and_enter_single_directory('subdir')
         result = _get_key_if_available()
         self.assertIsNone(result)
 
@@ -159,7 +160,7 @@ class TestGetKeyIfAvailable(_bases.TestBase):
     ])
     def test_key_file_outside_repo_not_used(self, _name, above, below):
         del os.environ['OPENAI_API_KEY']
-        _write_fake_key_file()
+        _write_fake_key_file('sk-fake_from_file')
         _create_and_enter_directories(_TWO_CAP_LETTER_DIR_NAMES[:above])
         dulwich.porcelain.init()
         _create_and_enter_directories(_ONE_LETTER_DIR_NAMES[:below])
@@ -175,7 +176,7 @@ class TestGetKeyIfAvailable(_bases.TestBase):
         del os.environ['OPENAI_API_KEY']
         dulwich.porcelain.init()
         _create_and_enter_directories(_TWO_CAP_LETTER_DIR_NAMES[:above])
-        _write_fake_key_file()
+        _write_fake_key_file('sk-fake_from_file')
         _create_and_enter_directories(_ONE_LETTER_DIR_NAMES[:below])
         result = _get_key_if_available()
         self.assertEqual(result, 'sk-fake_from_file')
@@ -187,7 +188,7 @@ class TestGetKeyIfAvailable(_bases.TestBase):
     def test_key_file_in_outer_nested_repo_not_used(self, _name,
                                                     above, between, below):
         del os.environ['OPENAI_API_KEY']
-        _write_fake_key_file()
+        _write_fake_key_file('sk-fake_from_file')
         _create_and_enter_directories(_THREE_LETTER_DIR_NAMES[:above])
         dulwich.porcelain.init()  # Outer enclosing repo.
         _create_and_enter_directories(_TWO_CAP_LETTER_DIR_NAMES[:between])
@@ -208,14 +209,29 @@ class TestGetKeyIfAvailable(_bases.TestBase):
         _create_and_enter_directories(_THREE_LETTER_DIR_NAMES[:above])
         dulwich.porcelain.init()  # Inner enclosed ("current") repo.
         _create_and_enter_directories(_TWO_CAP_LETTER_DIR_NAMES[:between])
-        _write_fake_key_file()
+        _write_fake_key_file('sk-fake_from_file')
         _create_and_enter_directories(_ONE_LETTER_DIR_NAMES[:below])
         result = _get_key_if_available()
         self.assertEqual(result, 'sk-fake_from_file')
 
-    # FIXME: Test that current directory is preferred to parent in repo.
+    def test_prefers_env_var_to_any_files_in_repo(self):
+        _write_fake_key_file('sk-fake_from_file_parent')
+        dulwich.porcelain.init()
+        _create_and_enter_single_directory('subdir')
+        _write_fake_key_file('sk-fake_from_file_current')
+        result = _get_key_if_available()
+        self.assertEqual(result, 'sk-fake_from_env')
 
-    # FIXME: Test that env var is preferred to current dir in repo.
+    def test_prefers_current_dir_to_parent_in_repo(self):
+        del os.environ['OPENAI_API_KEY']
+        _write_fake_key_file('sk-fake_from_file_parent')
+        dulwich.porcelain.init()
+        _create_and_enter_single_directory('subdir')
+        _write_fake_key_file('sk-fake_from_file_current')
+        result = _get_key_if_available()
+        self.assertEqual(result, 'sk-fake_from_file_current')
+
+    # FIXME: Test that files with malformed keys are skipped.
 
 
 if __name__ == '__main__':
