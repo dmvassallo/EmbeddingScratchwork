@@ -78,11 +78,14 @@ class TestApiKey(_bases.TestBase):
         self.assertNotEqual(embed.api_key, pretend_key)
 
 
-_UPPER_DIR_NAMES = tuple(ch * 2 for ch in string.ascii_uppercase)
-"""Directory names for testing, for above the point of interest."""
-
-_LOWER_DIR_NAMES = tuple(string.ascii_lowercase)
+_ONE_LETTER_DIR_NAMES = tuple(string.ascii_lowercase)
 """Directory names for testing, for below the point of interest."""
+
+_TWO_CAP_LETTER_DIR_NAMES = tuple(ch * 2 for ch in string.ascii_uppercase)
+"""Directory names for testing, for above the point of greatest interest."""
+
+_THREE_LETTER_DIR_NAMES = tuple(ch * 3 for ch in string.ascii_lowercase)
+"""Directory names for testing, higher above the point of greatest interest."""
 
 
 def _create_and_enter_directory(name):
@@ -146,17 +149,41 @@ class TestGetKeyIfAvailable(_bases.TestBase):
         (f'up{up}_down{down}', up, down)
         for down in (0, 1, 2, 5, 10) for up in (1, 2)
     ])
-    def test_key_file_in_ancestor_outside_repo_not_used(self, _name, up, down):
+    def test_key_file_outside_repo_not_used(self, _name, up, down):
         del os.environ['OPENAI_API_KEY']
         Path('.api_key').write_text('sk-fake_from_file', encoding='utf-8')
 
-        for name in _UPPER_DIR_NAMES[:up]:
-            _create_and_enter_directory(name)
+        for upper_dir_name in _TWO_CAP_LETTER_DIR_NAMES[:up]:
+            _create_and_enter_directory(upper_dir_name)
 
         dulwich.porcelain.init()
 
-        for name in _LOWER_DIR_NAMES[:down]:
-            _create_and_enter_directory(name)
+        for lower_dir_name in _ONE_LETTER_DIR_NAMES[:down]:
+            _create_and_enter_directory(lower_dir_name)
+
+        result = _get_key_if_available()
+        self.assertIsNone(result)
+
+    @parameterized.expand([
+        (f'up{up}_gap{gap}_down{down}', up, gap, down)
+        for down in (0, 1, 3) for gap in (1, 2, 4) for up in (0, 1, 2)
+    ])
+    def test_key_file_in_outer_nested_repo_not_used(self, _name, up, gap, down):
+        del os.environ['OPENAI_API_KEY']
+        Path('.api_key').write_text('sk-fake_from_file', encoding='utf-8')
+
+        for upper_dir_name in _THREE_LETTER_DIR_NAMES[:up]:
+            _create_and_enter_directory(upper_dir_name)
+
+        dulwich.porcelain.init()  # Outer enclosing repo.
+
+        for gap_dir_name in _TWO_CAP_LETTER_DIR_NAMES[:gap]:
+            _create_and_enter_directory(gap_dir_name)
+
+        dulwich.porcelain.init()  # Inner enclosed (current) repo.
+
+        for lower_dir_name in _ONE_LETTER_DIR_NAMES[:down]:
+            _create_and_enter_directory(lower_dir_name)
 
         result = _get_key_if_available()
         self.assertIsNone(result)
