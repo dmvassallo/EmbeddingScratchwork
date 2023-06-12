@@ -74,7 +74,7 @@ class _CacheStats:
     """Number of times the cache was checked and an item was NOT found."""
 
     hits = attrs.field(default=0)
-    """Number times the cache was checked and an item WAS found."""
+    """Number of times the cache was checked and an item WAS found."""
 
     def __bool__(self):
         """Whether any cache accesses (hits or misses) have occurred."""
