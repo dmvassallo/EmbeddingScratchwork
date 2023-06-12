@@ -28,5 +28,5 @@
             }
         }
     },
-    "onCreateCommand": ".devcontainer/onCreate"
+    "onCreateCommand": [".devcontainer/onCreate"]
 }
