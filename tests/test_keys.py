@@ -6,6 +6,7 @@ import contextlib
 import os
 from pathlib import Path
 import string
+import sys
 from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
@@ -16,6 +17,20 @@ from parameterized import parameterized
 import embed
 from embed._keys import _get_key_if_available
 from tests import _bases
+
+
+if sys.version_info < (3, 11):
+    @contextlib.contextmanager
+    def _chdir(path):
+        """Trivial non-reentrant version of ``contextlib.chdir`` for < 3.11."""
+        _old_pwd = Path().absolute()
+        os.chdir(path)
+        try:
+            yield
+        finally:
+            os.chdir(_old_pwd)
+else:
+    _chdir = contextlib.chdir
 
 
 class TestApiKey(_bases.TestBase):
@@ -77,15 +92,15 @@ class TestGetKeyIfAvailable(_bases.TestBase):
     """
 
     def setUp(self):
+        """Put us in a temporary directory and patch OPENAI_API_KEY."""
         super().setUp()
 
-        self.enterContext(contextlib.chdir(
-            self.enterContext(TemporaryDirectory()),
-        ))
+        # Create a temporary directory (that will be cleaned up) and cd to it.
+        self.enterContext(_chdir(self.enterContext(TemporaryDirectory())))
 
-        self.enterContext(
-            patch.dict(os.environ, {'OPENAI_API_KEY': 'sk-fake_from_env'}),
-        )
+        # Patch OPENAI_API_KEY to a fake value in the environment.
+        environ_fragment = {'OPENAI_API_KEY': 'sk-fake_from_env'}
+        self.enterContext(patch.dict(os.environ, environ_fragment))
 
     def test_uses_env_var_when_no_key_file(self):
         result = _get_key_if_available()
