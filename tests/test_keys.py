@@ -3,6 +3,7 @@
 """Tests for the ``api_key`` property of the ``embed`` module."""
 
 import contextlib
+import logging
 import os
 from pathlib import Path
 import string
@@ -119,7 +120,9 @@ class TestGetKeyIfAvailable(_bases.TestBase):
     """
 
     def setUp(self):
-        """Put us in a temporary directory and patch OPENAI_API_KEY."""
+        """
+        Use a temporary directory; patch ``OPENAI_API_KEY``; quiet some logs.
+        """
         super().setUp()
 
         # Create a temporary directory (that will be cleaned up) and cd to it.
@@ -128,6 +131,10 @@ class TestGetKeyIfAvailable(_bases.TestBase):
         # Patch OPENAI_API_KEY to a fake value in the environment.
         environ_fragment = {'OPENAI_API_KEY': 'sk-fake_from_env'}
         self.enterContext(patch.dict(os.environ, environ_fragment))
+
+        # Temporarily suppress embed._keys log messages less severe than error.
+        logger = logging.getLogger(embed._keys.__name__)
+        self.enterContext(patch.object(logger, 'level', logging.ERROR))
 
     # pylint: disable=missing-function-docstring  # Tests' names describe them.
 
