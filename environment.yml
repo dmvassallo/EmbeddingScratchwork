@@ -21,7 +21,7 @@ dependencies:
   # For notebooks
   - graphviz
   - ipykernel
-  - jupyterlab
+  - jupyterlab>=4
   - jupyter-collaboration
   - python-graphviz
   - tabulate
