@@ -38,7 +38,9 @@ class TestApiKey(_bases.TestBase):
     """Tests for ``embed.api_key``."""
 
     def setUp(self):
-        """Save api_key attributes. Also pre-patch them, for log redaction."""
+        """
+        Save ``api_key`` attributes. Also pre-patch them, for log redaction.
+        """
         super().setUp()
 
         # This cannot be done straightforwardly with unittest.mock.patch
@@ -50,7 +52,7 @@ class TestApiKey(_bases.TestBase):
         embed.api_key = 'sk-fake_redact_inner'
 
     def tearDown(self):
-        """Unpatch api_key attributes."""
+        """Unpatch ``api_key`` attributes."""
         embed.api_key = self._real_key_embed
         openai.api_Key = self._real_key_openai
 
@@ -112,6 +114,8 @@ class TestGetKeyIfAvailable(_bases.TestBase):
 
     These tests test the code that is used to determine the automatic initial
     value of ``embed.api_key``.
+
+    The implementation logs extensively, but this does not currently test that.
     """
 
     def setUp(self):
@@ -231,7 +235,30 @@ class TestGetKeyIfAvailable(_bases.TestBase):
         result = _get_key_if_available()
         self.assertEqual(result, 'sk-fake_from_file_current')
 
-    # FIXME: Test that files with malformed keys are skipped.
+    @parameterized.expand([
+        ('no_prefix', 'fake_from_file'),
+        ('non_word_chars', 'sk-fake+from+file'),
+    ])
+    def test_malformed_key_not_used_from_key_file(self, _name, malformed_key):
+        del os.environ['OPENAI_API_KEY']
+        _write_fake_key_file(malformed_key)
+        result = _get_key_if_available()
+        self.assertIsNone(result)
+
+    @parameterized.expand([
+        ('no_prefix', 'fake_from_file_current'),
+        ('non_word_chars', 'sk-fake+from+file+current'),
+    ])
+    def test_skips_malformed_key_file_falls_back_to_ancestor_in_repo(
+        self, _name, malformed_key,
+    ):
+        del os.environ['OPENAI_API_KEY']
+        _write_fake_key_file('sk-fake_from_file_parent')
+        dulwich.porcelain.init()
+        _create_and_enter_single_directory('subdir')
+        _write_fake_key_file(malformed_key)
+        result = _get_key_if_available()
+        self.assertEqual(result, 'sk-fake_from_file_parent')
 
 
 if __name__ == '__main__':
