@@ -143,7 +143,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
             path=self._path,
         )
 
-        with patch(f'{cached.__name__}.DEFAULT_DATA_DIR', self._dir_path):
+        with patch(f'{cached.__name__}.DEFAULT_DATA_DIR', self.dir_path):
             with self.assertLogs(logger=cached.__name__) as log_context:
                 self.func(self.text_or_texts, file_type=self.file_type)
 
@@ -160,7 +160,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
 
         with patch(f'{cached.__name__}.DEFAULT_FILE_TYPE', self.file_type):
             with self.assertLogs(logger=cached.__name__) as log_context:
-                self.func(self.text_or_texts, data_dir=self._dir_path)
+                self.func(self.text_or_texts, data_dir=self.dir_path)
 
         self.assertEqual(
             log_context.output, [expected_message],
@@ -175,7 +175,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
     @property
     def _path(self):
         """Path of temporary test file."""
-        return self._dir_path / f'{self.basename}.{self.file_type}'
+        return self.dir_path / f'{self.basename}.{self.file_type}'
 
     def _call_caching_embedder(self, *, func=None):
         """Call a caching embedder. Pass usual per-subclass test arguments."""
@@ -184,7 +184,7 @@ class _TestDiskCachedCachingBase(_bases.TestDiskCachedBase):
 
         return func(
             self.text_or_texts,
-            data_dir=self._dir_path,
+            data_dir=self.dir_path,
             file_type=self.file_type,
         )
 

@@ -71,7 +71,7 @@ class TestDiskCachedBase(TestEmbedBase):
         super().setUp()
 
         # pylint: disable=consider-using-with  # enterContext is like "with".
-        self._dir_path = Path(self.enterContext(TemporaryDirectory()))
+        self.dir_path = Path(self.enterContext(TemporaryDirectory()))
 
     @property
     @abstractmethod
