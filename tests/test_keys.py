@@ -11,6 +11,7 @@ from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
+import dulwich.porcelain
 import openai
 from parameterized import parameterized
 
@@ -77,10 +78,18 @@ class TestApiKey(_bases.TestBase):
         self.assertNotEqual(embed.api_key, pretend_key)
 
 
-_parameterize_by_distance = parameterized.expand([
-    (str(distance), distance) for distance in (1, 2, 5, 10)
-])
-"""Parameterize a test case by a number of nested subdirectories."""
+_UPPER_DIR_NAMES = tuple(ch * 2 for ch in string.ascii_uppercase)
+"""Directory names for testing, for above the point of interest."""
+
+_LOWER_DIR_NAMES = tuple(string.ascii_lowercase)
+"""Directory names for testing, for below the point of interest."""
+
+
+def _create_and_enter_directory(name):
+    """``mkdir`` a new directory and ``cd`` into it."""
+    subdir = Path(name)
+    subdir.mkdir()
+    os.chdir(subdir)
 
 
 class TestGetKeyIfAvailable(_bases.TestBase):
@@ -133,15 +142,21 @@ class TestGetKeyIfAvailable(_bases.TestBase):
         result = _get_key_if_available()
         self.assertIsNone(result)
 
-    @_parameterize_by_distance
-    def test_key_file_in_ancestor_outside_repo_not_used(self, _name, distance):
+    @parameterized.expand([
+        (f'up{up}_down{down}', up, down)
+        for down in (0, 1, 2, 5, 10) for up in (1, 2)
+    ])
+    def test_key_file_in_ancestor_outside_repo_not_used(self, _name, up, down):
         del os.environ['OPENAI_API_KEY']
         Path('.api_key').write_text('sk-fake_from_file', encoding='utf-8')
 
-        for one_letter_dir_name in string.ascii_lowercase[:distance]:
-            subdir = Path(one_letter_dir_name)
-            subdir.mkdir()
-            os.chdir(subdir)
+        for name in _UPPER_DIR_NAMES[:up]:
+            _create_and_enter_directory(name)
+
+        dulwich.porcelain.init()
+
+        for name in _LOWER_DIR_NAMES[:down]:
+            _create_and_enter_directory(name)
 
         result = _get_key_if_available()
         self.assertIsNone(result)

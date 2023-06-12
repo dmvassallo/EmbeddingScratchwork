@@ -20,6 +20,7 @@ import sys
 import types
 from typing import Any
 
+# FIXME: Use all dulwich facilities by their fully qualified names for clarity.
 from dulwich.repo import NotGitRepository, Repo
 import openai
 
