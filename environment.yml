@@ -23,6 +23,7 @@ dependencies:
   - ipykernel
   - jupyterlab>=4
   - jupyter-collaboration
+  - nbdime
   - python-graphviz
   - tabulate
 
