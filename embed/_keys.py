@@ -20,8 +20,7 @@ import sys
 import types
 from typing import Any
 
-# FIXME: Use all dulwich facilities by their fully qualified names for clarity.
-from dulwich.repo import NotGitRepository, Repo
+import dulwich.repo
 import openai
 
 _API_KEY_REGEX = re.compile(r'sk-\w+')
@@ -117,8 +116,8 @@ def _read_key_from_file(directory):
 def _read_key_from_ancestors_within_repo():
     """Try to read an API key in higher directories inside a Git repository."""
     try:
-        repo = Repo.discover()
-    except NotGitRepository:
+        repo = dulwich.repo.Repo.discover()
+    except dulwich.repo.NotGitRepository:
         _logger.debug('Not in Git repository, stopping key file search')
         return None
 

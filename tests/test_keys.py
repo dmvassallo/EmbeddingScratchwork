@@ -120,6 +120,8 @@ class TestGetKeyIfAvailable(_bases.TestBase):
         environ_fragment = {'OPENAI_API_KEY': 'sk-fake_from_env'}
         self.enterContext(patch.dict(os.environ, environ_fragment))
 
+    # pylint: disable=missing-function-docstring  # Tests' names describe them.
+
     def test_uses_env_var_when_no_key_file(self):
         result = _get_key_if_available()
         self.assertEqual(result, 'sk-fake_from_env')
@@ -152,60 +154,62 @@ class TestGetKeyIfAvailable(_bases.TestBase):
         self.assertIsNone(result)
 
     @parameterized.expand([
-        (f'up{up}_down{down}', up, down)
-        for down in (0, 1, 2, 5) for up in (1, 2)
+        (f'{above}above_{below}below', above, below)
+        for below in (0, 1, 2, 5) for above in (1, 2)
     ])
-    def test_key_file_outside_repo_not_used(self, _name, up, down):
+    def test_key_file_outside_repo_not_used(self, _name, above, below):
         del os.environ['OPENAI_API_KEY']
         _write_fake_key_file()
-        _create_and_enter_directories(_TWO_CAP_LETTER_DIR_NAMES[:up])
+        _create_and_enter_directories(_TWO_CAP_LETTER_DIR_NAMES[:above])
         dulwich.porcelain.init()
-        _create_and_enter_directories(_ONE_LETTER_DIR_NAMES[:down])
+        _create_and_enter_directories(_ONE_LETTER_DIR_NAMES[:below])
         result = _get_key_if_available()
         self.assertIsNone(result)
 
     @parameterized.expand([
-        (f'up{up}_down{down}', up, down)
-        for down in (0, 1, 3) for up in (0, 1, 3)
+        (f'{above}above_{below}below', above, below)
+        for below in (0, 1, 3) for above in (0, 1, 3)
     ])
-    def test_key_file_inside_repo_used_when_no_env_var(self, _name, up, down):
+    def test_key_file_inside_repo_used_when_no_env_var(self, _name,
+                                                       above, below):
         del os.environ['OPENAI_API_KEY']
         dulwich.porcelain.init()
-        _create_and_enter_directories(_TWO_CAP_LETTER_DIR_NAMES[:up])
+        _create_and_enter_directories(_TWO_CAP_LETTER_DIR_NAMES[:above])
         _write_fake_key_file()
-        _create_and_enter_directories(_ONE_LETTER_DIR_NAMES[:down])
+        _create_and_enter_directories(_ONE_LETTER_DIR_NAMES[:below])
         result = _get_key_if_available()
         self.assertEqual(result, 'sk-fake_from_file')
 
     @parameterized.expand([
-        (f'up{up}_gap{gap}_down{down}', up, gap, down)
-        for down in (0, 1, 3) for gap in (1, 2, 4) for up in (0, 1, 3)
+        (f'{above}above_{between}between_{below}below', above, between, below)
+        for below in (0, 1, 3) for between in (1, 2, 4) for above in (0, 1, 3)
     ])
     def test_key_file_in_outer_nested_repo_not_used(self, _name,
-                                                    up, gap, down):
+                                                    above, between, below):
         del os.environ['OPENAI_API_KEY']
         _write_fake_key_file()
-        _create_and_enter_directories(_THREE_LETTER_DIR_NAMES[:up])
+        _create_and_enter_directories(_THREE_LETTER_DIR_NAMES[:above])
         dulwich.porcelain.init()  # Outer enclosing repo.
-        _create_and_enter_directories(_TWO_CAP_LETTER_DIR_NAMES[:gap])
-        dulwich.porcelain.init()  # Inner enclosed (current) repo.
-        _create_and_enter_directories(_ONE_LETTER_DIR_NAMES[:down])
+        _create_and_enter_directories(_TWO_CAP_LETTER_DIR_NAMES[:between])
+        dulwich.porcelain.init()  # Inner enclosed ("current") repo.
+        _create_and_enter_directories(_ONE_LETTER_DIR_NAMES[:below])
         result = _get_key_if_available()
         self.assertIsNone(result)
 
     @parameterized.expand([
-        (f'up{up}_gap{gap}_down{down}', up, gap, down)
-        for down in (0, 1, 3) for gap in (0, 1, 3) for up in (1, 2, 4)
+        (f'{above}above_{between}between_{below}below', above, between, below)
+        for below in (0, 1, 3) for between in (0, 1, 3) for above in (1, 2, 4)
     ])
-    def test_key_file_in_inner_nested_repo_used_when_no_env_var(self, _name,
-                                                                up, gap, down):
+    def test_key_file_in_inner_nested_repo_used_when_no_env_var(
+        self, _name, above, between, below,
+    ):
         del os.environ['OPENAI_API_KEY']
         dulwich.porcelain.init()  # Outer enclosing repo.
-        _create_and_enter_directories(_THREE_LETTER_DIR_NAMES[:up])
-        dulwich.porcelain.init()  # Inner enclosed (current) repo.
-        _create_and_enter_directories(_TWO_CAP_LETTER_DIR_NAMES[:gap])
+        _create_and_enter_directories(_THREE_LETTER_DIR_NAMES[:above])
+        dulwich.porcelain.init()  # Inner enclosed ("current") repo.
+        _create_and_enter_directories(_TWO_CAP_LETTER_DIR_NAMES[:between])
         _write_fake_key_file()
-        _create_and_enter_directories(_ONE_LETTER_DIR_NAMES[:down])
+        _create_and_enter_directories(_ONE_LETTER_DIR_NAMES[:below])
         result = _get_key_if_available()
         self.assertEqual(result, 'sk-fake_from_file')
 
