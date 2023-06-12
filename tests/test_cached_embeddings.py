@@ -22,7 +22,7 @@ class _TestDiskCacheEmbeddingsBase(_bases.TestDiskCachedBase):
     def setUp(self):
         """Patch ``DEFAULT_DATA_DIR`` and ``DEFAULT_FILE_TYPE``."""
         super().setUp()
-        self._patch('DEFAULT_DATA_DIR', self._dir_path)
+        self._patch('DEFAULT_DATA_DIR', self.dir_path)
         self._patch('DEFAULT_FILE_TYPE', self.file_type)
 
     def _patch(self, attribute_name, new_value):
@@ -40,7 +40,7 @@ class _TestDiskCacheHitBase(_TestDiskCacheEmbeddingsBase):
 
         for file_type in 'json', 'safetensors':
             for path in Path('tests_data').glob(f'*.{file_type}'):
-                shutil.copy(path, self._dir_path)
+                shutil.copy(path, self.dir_path)
 
 
 class TestDiskCacheHitEmbedOneJson(
