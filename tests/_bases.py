@@ -30,7 +30,6 @@ class TestBase(unittest.TestCase):
             This supplies a simplified version of ``TestCase.enterContext`` for
             versions of Python that do not have it.
             """
-            # We must call __enter__ to implement the needed "with"-like logic.
             context = cm.__enter__()  # pylint: disable=unnecessary-dunder-call
             self.addCleanup(lambda: cm.__exit__(*sys.exc_info()))
             return context
@@ -70,7 +69,7 @@ class TestDiskCachedBase(TestEmbedBase):
         """Create a temporary directory."""
         super().setUp()
 
-        # pylint: disable=consider-using-with  # enterContext is like "with".
+        # pylint: disable-next=consider-using-with
         self.dir_path = Path(self.enterContext(TemporaryDirectory()))
 
     @property

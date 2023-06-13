@@ -125,6 +125,7 @@ class TestGetKeyIfAvailable(_bases.TestBase):
         super().setUp()
 
         # Create a temporary directory (that will be cleaned up) and cd to it.
+        # pylint: disable-next=consider-using-with
         self.enterContext(_chdir(self.enterContext(TemporaryDirectory())))
 
         # Patch OPENAI_API_KEY to a fake value in the environment.

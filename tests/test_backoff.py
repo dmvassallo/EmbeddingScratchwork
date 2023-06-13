@@ -79,9 +79,8 @@ class TestBackoff(_bases.TestBase):
         super().setUp()
 
         if 'CI' in os.environ:
-            # pylint: disable=broad-exception-raised  # Error that blocks test.
-            raise Exception(
-                "This test shouldn't run via continuous integration.")
+            message = "This test shouldn't run via continuous integration."
+            raise RuntimeError(message)
 
         self._old_stack_size = threading.stack_size(_STACK_SIZE)
 
