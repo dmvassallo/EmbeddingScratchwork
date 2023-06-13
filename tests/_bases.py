@@ -159,6 +159,15 @@ class TestEmbedManyBase(TestEmbedBase):
 
     # pylint: disable=missing-function-docstring  # Tests' names describe them.
 
+    def test_returns_numpy_array(self):
+        with self.subTest('ndarray'):
+            self.assertIsInstance(self._many, np.ndarray)
+        with self.subTest('float32'):
+            self.assertIsInstance(self._many[0][0], np.float32)
+
+    def test_shape_has_model_dimension(self):
+        self.assertEqual(self._many.shape, (5, embed.DIMENSION))
+
     def test_embeddings_are_normalized(self):
         names = ['your', 'catrun_en', 'catrun_es', 'dogwalk_en', 'dogwalk_es']
         for name, embedding in zip(names, self._many):
@@ -168,15 +177,6 @@ class TestEmbedManyBase(TestEmbedBase):
                     norm, 1.0,
                     places=3,  # Allow a pretty wide margin for rounding error.
                 )
-
-    def test_returns_numpy_array(self):
-        with self.subTest('ndarray'):
-            self.assertIsInstance(self._many, np.ndarray)
-        with self.subTest('float32'):
-            self.assertIsInstance(self._many[0][0], np.float32)
-
-    def test_shape_has_model_dimension(self):
-        self.assertEqual(self._many.shape, (5, embed.DIMENSION))
 
     def test_en_and_es_sentences_are_very_similar(self):
         with self.subTest('catrun'):
