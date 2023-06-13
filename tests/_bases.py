@@ -101,6 +101,22 @@ class TestEmbedOneBase(TestEmbedBase):
         self.assertEqual(result.shape, (embed.DIMENSION,))
 
     @parameterized.expand([
+        ('catrun_en', 'The cat runs.'),
+        ('catrun_es', 'El gato corre.'),
+        ('dogwalk_en', 'The dog walks.'),
+        ('dogwalk_es', 'El perro camina.'),
+        ('lionsleep_en', 'The lion sleeps.'),
+        ('lionsleep_es', 'El león duerme.'),
+    ])
+    def test_embeddings_are_normalized(self, _name, text):
+        embedding = self.func(text)
+        norm = np.linalg.norm(embedding)
+        self.assertAlmostEqual(
+            norm, 1.0,
+            places=3,  # Allow a pretty wide margin for rounding error.
+        )
+
+    @parameterized.expand([
         ('catrun', 'The cat runs.', 'El gato corre.'),
         ('dogwalk', 'The dog walks.', 'El perro camina.'),
         ('lionsleep', 'The lion sleeps.', 'El león duerme.'),
@@ -142,6 +158,16 @@ class TestEmbedManyBase(TestEmbedBase):
         ])
 
     # pylint: disable=missing-function-docstring  # Tests' names describe them.
+
+    def test_embeddings_are_normalized(self):
+        names = ['your', 'catrun_en', 'catrun_es', 'dogwalk_en', 'dogwalk_es']
+        for name, embedding in zip(names, self._many):
+            with self.subTest(name):
+                norm = np.linalg.norm(embedding)
+                self.assertAlmostEqual(
+                    norm, 1.0,
+                    places=3,  # Allow a pretty wide margin for rounding error.
+                )
 
     def test_returns_numpy_array(self):
         with self.subTest('ndarray'):
