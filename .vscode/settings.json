@@ -35,6 +35,7 @@
         "graphvizonline",
         "ipykernel",
         "ipynb",
+        "isort",
         "jupyter",
         "jupyterlab",
         "Kagan",
