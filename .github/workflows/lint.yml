@@ -5,6 +5,7 @@ on: [push, pull_request]
 jobs:
   flake8:
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out source repository
         uses: actions/checkout@v3
@@ -52,3 +53,25 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: pylint.sarif
+
+  isort:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: environment.yml
+
+      - name: Make editable install
+        run: pip install -e .
+
+      - name: isort Check
+        uses: isort/isort-action@v1

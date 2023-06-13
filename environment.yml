@@ -16,6 +16,7 @@ dependencies:
   # For development
   - attrs
   - flake8
+  - isort
   - parameterized
   - pylint
 

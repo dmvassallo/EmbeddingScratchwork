@@ -30,8 +30,8 @@ import unittest
 
 import backoff
 
-from tests import _bases, _helpers
 import embed
+from tests import _bases, _helpers
 
 _STACK_SIZE = 32_768
 """Stack size in bytes for newly created worker threads. Do not change this."""

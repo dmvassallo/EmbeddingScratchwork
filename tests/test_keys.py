@@ -20,7 +20,6 @@ import embed
 from embed._keys import _get_key_if_available
 from tests import _bases
 
-
 if sys.version_info < (3, 11):
     @contextlib.contextmanager
     def _chdir(path):
