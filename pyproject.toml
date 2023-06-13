@@ -8,6 +8,21 @@ authors = [
 ]
 license = "0BSD"
 readme = "README.md"
+homepage = "https://github.com/dmvassallo/EmbeddingScratchwork"
+repository = "https://github.com/dmvassallo/EmbeddingScratchwork"
+keywords = [
+    "embeddings",
+    "similarity",
+    "vector search",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing",
+]
 packages = [
     { include = "embed" },
 ]
