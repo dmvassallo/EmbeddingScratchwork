@@ -16,6 +16,7 @@ dependencies:
   # For development
   - attrs
   - flake8
+  - flake8-pyproject
   - isort
   - parameterized
   - pylint
