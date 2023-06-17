@@ -59,7 +59,7 @@ jobs:
         run: pip install poetry  # TODO: Explore other approaches.
 
       - name: Install the environment
-        run: poetry install --only=main,dev
+        run: poetry install --only=main,test
 
       - name: Print Python version
         run: poetry run python -V

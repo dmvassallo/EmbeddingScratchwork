@@ -38,18 +38,20 @@ orjson = "^3.9.1"
 requests = "^2.31.0"
 safetensors = "^0.3.1"
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.test.dependencies]
 attrs = "^23.1.0"
+parameterized = "^0.9.0"
+pytest = "^7.3.2"
+subaudit = "^0.1.0"
+
+[tool.poetry.group.lint.dependencies]
 flake8 = { version = "^6.0.0", python = ">=3.8.1,<4.0" }
 flake8-pyproject = { version = "^1.2.3", python = ">=3.8.1,<4.0" }
 isort = "^5.12.0"
-parameterized = "^0.9.0"
 pylint = "^2.17.4"
 pylint-actions = "^0.4.0"
 pylint-exit = "^1.2.0"
 pylint-sarif-unofficial = "^0.1.0"
-pytest = "^7.3.2"
-subaudit = "^0.1.0"
 
 [tool.poetry.group.notebook.dependencies]
 graphviz = "^0.20.1"
@@ -99,8 +101,8 @@ legacy_tox_ini = """
     package = wheel
     allowlist_externals = poetry
     commands_pre =
-        poetry export --only=dev --output={env_tmp_dir}/requirements_dev.txt
-        pip install -qr {env_tmp_dir}/requirements_dev.txt
+        poetry export --only=test --output={env_tmp_dir}/requirements_test.txt
+        pip install -qr {env_tmp_dir}/requirements_test.txt
     commands =
         pytest --color=yes
     setenv =
@@ -109,12 +111,18 @@ legacy_tox_ini = """
     [testenv:flake8]
     description = flake8 lint
     basepython = py311
+    commands_pre =
+        poetry export --only=lint --output={env_tmp_dir}/requirements_lint.txt
+        pip install -qr {env_tmp_dir}/requirements_lint.txt
     commands =
         flake8
 
     [testenv:isort]
     description = isort check
     basepython = py311
+    commands_pre =
+        poetry export --only=lint --output={env_tmp_dir}/requirements_lint.txt
+        pip install -qr {env_tmp_dir}/requirements_lint.txt
     commands =
         isort --check .
 """

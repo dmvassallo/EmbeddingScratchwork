@@ -57,6 +57,7 @@
         "pylint",
         "pyproject",
         "pyreverse",
+        "pytest",
         "pyver",
         "repr",
         "safetensors",
