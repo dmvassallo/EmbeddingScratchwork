@@ -13,14 +13,16 @@ dependencies:
   - requests
   - safetensors
 
-  # For development
+  # For testing
   - attrs
+  - parameterized
+  - pytest
+
+  # For linting
   - flake8
   - flake8-pyproject
   - isort
-  - parameterized
   - pylint
-  - pytest
 
   # For notebooks
   - graphviz
