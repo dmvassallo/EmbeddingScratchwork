@@ -60,6 +60,10 @@ pylint-sarif-unofficial = "^0.1.0"
 [tool.poetry.group.notebook.dependencies]
 graphviz = "^0.20.1"
 ipykernel = "^6.23.2"
+ipython = [
+    { version = "~8.12.2", python = "<3.9" },
+    { version = "^8.14.0", python = ">=3.9" },
+]
 jupyter-collaboration = "^1.0.0"
 jupyterlab = "^4.0.2"
 nbdime = "^3.2.1"
