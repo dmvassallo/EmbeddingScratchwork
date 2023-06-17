@@ -17,6 +17,7 @@ dependencies:
   - attrs
   - parameterized
   - pytest
+  - pytest-sugar
 
   # For linting
   - flake8
