@@ -48,6 +48,7 @@ pylint = "^2.17.4"
 pylint-actions = "^0.4.0"
 pylint-exit = "^1.2.0"
 pylint-sarif-unofficial = "^0.1.0"
+pytest = "^7.3.2"
 subaudit = "^0.1.0"
 
 [tool.poetry.group.notebook.dependencies]
@@ -101,7 +102,7 @@ legacy_tox_ini = """
         poetry export --only=dev --output={env_tmp_dir}/requirements_dev.txt
         pip install -qr {env_tmp_dir}/requirements_dev.txt
     commands =
-        python -m unittest
+        pytest --color=yes
     setenv =
         TESTS_CACHE_EMBEDDING_CALLS_IN_MEMORY = yes
 
