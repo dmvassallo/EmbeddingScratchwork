@@ -2804,17 +2804,17 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "polars"
-version = "0.17.15"
+version = "0.18.3"
 description = "Blazingly fast DataFrame library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "polars-0.17.15-cp37-abi3-macosx_10_7_x86_64.whl", hash = "sha256:e14f31799e73cd6aa7a5f28b7acc40fc0b70eb6f8554f8e9246bf7afc620a929"},
-    {file = "polars-0.17.15-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:9ecec1476764d615a0def5a35421e4a8f0f43dbf365cda7f95d79bb29d80da34"},
-    {file = "polars-0.17.15-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0ce049ed923ff2a8902f8925bde0e10722e7a9747133b7d0856feb86000543bd"},
-    {file = "polars-0.17.15-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2f3a723ee318f8f7e7330df82bb27c9efd3c345d3ecd03307389e4e1564f4df6"},
-    {file = "polars-0.17.15-cp37-abi3-win_amd64.whl", hash = "sha256:112300a41b97291486edb604945275f7e5238ec1335f164f028e476c0401fca4"},
-    {file = "polars-0.17.15.tar.gz", hash = "sha256:78a1d520279c0ade91712d19c530d7933e07885d87f09c0cd38daac6260162bf"},
+    {file = "polars-0.18.3-cp37-abi3-macosx_10_7_x86_64.whl", hash = "sha256:0e7d03d0f4a53892ae095f4274a3f8776eb6b6da2ee82a2076636c8319180e32"},
+    {file = "polars-0.18.3-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:90d1ff55d18fa9eafec6455230ace27607ecd5b51c68795c724b6338e3a3314b"},
+    {file = "polars-0.18.3-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:961471351c31645f2db76cbf42c52e84b8a04832cae0111fb16f83599e033cd7"},
+    {file = "polars-0.18.3-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:96befd1c18c0d668a8c50d1833559cbe00536d7b018857a0c0935d6ae60a0052"},
+    {file = "polars-0.18.3-cp37-abi3-win_amd64.whl", hash = "sha256:0950441f464a33da42c8facef6110ece93d15a27a14190176de5cc27dd573d3f"},
+    {file = "polars-0.18.3.tar.gz", hash = "sha256:efc3f629fddb060dc90c2dbd575824c1d662f37294c18c769d28e2bc4d5a1413"},
 ]
 
 [package.extras]
@@ -3154,6 +3154,20 @@ inflection = ">=0.2"
 jsonschema = ">=2.3"
 Markdown = ">=2.4"
 six = ">=1.5.2"
+
+[[package]]
+name = "python-rle"
+version = "0.0.3"
+description = "Run-length encoding for data analysis in Python"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "python-rle-0.0.3.tar.gz", hash = "sha256:4e07dc3c775a4bbc6e2cc7a3102e4cf33f4431e35c7b5fedc863edc44bc7b6aa"},
+    {file = "python_rle-0.0.3-py3-none-any.whl", hash = "sha256:52a086dad15bf98e1242a45f70ff0d7e0a0e9cd0a8bcc91ed36404c4b713c654"},
+]
+
+[package.dependencies]
+tqdm = "*"
 
 [[package]]
 name = "pytz"
@@ -4328,4 +4342,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "84499e5f97726e4551d3666c792f11fbb2fbc991189d152a629f0cd24a3a1959"
+content-hash = "d33b8310ba36066dff9728f0ac5c212664296392d947394c4247e142a8f09a3d"
