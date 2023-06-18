@@ -40,4 +40,5 @@ dependencies:
     - pylint-actions
     - pylint-exit
     - pylint-sarif-unofficial
+    - python-rle
     - subaudit
