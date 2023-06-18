@@ -36,6 +36,7 @@
         "ipykernel",
         "ipynb",
         "isort",
+        "iterwalk",
         "jupyter",
         "jupyterlab",
         "Kagan",
