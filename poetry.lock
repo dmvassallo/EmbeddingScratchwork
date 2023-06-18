@@ -3156,20 +3156,6 @@ Markdown = ">=2.4"
 six = ">=1.5.2"
 
 [[package]]
-name = "python-rle"
-version = "0.0.3"
-description = "Run-length encoding for data analysis in Python"
-optional = false
-python-versions = ">=3.5"
-files = [
-    {file = "python-rle-0.0.3.tar.gz", hash = "sha256:4e07dc3c775a4bbc6e2cc7a3102e4cf33f4431e35c7b5fedc863edc44bc7b6aa"},
-    {file = "python_rle-0.0.3-py3-none-any.whl", hash = "sha256:52a086dad15bf98e1242a45f70ff0d7e0a0e9cd0a8bcc91ed36404c4b713c654"},
-]
-
-[package.dependencies]
-tqdm = "*"
-
-[[package]]
 name = "pytz"
 version = "2023.3"
 description = "World timezone definitions, modern and historical"
@@ -4342,4 +4328,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "ca97810e73d6f0dd9443b0932b856910431f8c6ba342944e1fe4c1b8816571b4"
+content-hash = "ca2cbe9fd8908e790717aad109d927b861d8097d0dd4823a1d1bb6c9c75b762b"
