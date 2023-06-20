@@ -18,9 +18,22 @@ from tests import _bases
 class TestStats(_bases.TestBase):
     """Tests for model dimension and token encoding facilites in ``embed``."""
 
+    # TODO: Decide if we should really have test_model_dimension_is_1536 and
+    #       test_model_context_length_is_8191, given that they contain the same
+    #       information as the code under test. If we can access another source
+    #       to validate this information, then it may make sense to retain it.
+    #       Otherwise, those two test cases may not be very valuable, though
+    #       since other tests rely on these values, that may justify the tests.
+
     def test_model_dimension_is_1536(self):
         """``DIMENSION``'s value is correct for ``text-embedding-ada-002``."""
         self.assertEqual(embed.DIMENSION, 1536)
+
+    def test_model_context_length_is_8191(self):
+        """
+        ``CONTEXT_LENGTH``'s value is correct for ``text-embedding-ada-002``.
+        """
+        self.assertEqual(embed.CONTEXT_LENGTH, 8191)
 
     @parameterized.expand([
         ('The cat runs.', 4),
