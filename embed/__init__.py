@@ -3,6 +3,7 @@
 __all__ = [
     'cached',
     'DIMENSION',
+    'CONTEXT_LENGTH',
     'count_tokens',
     'embed_one',
     'embed_many',
@@ -29,6 +30,11 @@ _keys.initialize(__name__)
 
 DIMENSION = 1536
 """Dimension of the vector space text-embedding-ada-002 embeds texts in."""
+
+CONTEXT_LENGTH = 8191
+"""
+Maximum length in cl100k_base tokens that text-embedding-ada-002 can embed.
+"""
 
 _REQUESTS_TIMEOUT = datetime.timedelta(seconds=60)
 """Connection timeout for ``embed_one_req`` and ``embed_many_req``."""
