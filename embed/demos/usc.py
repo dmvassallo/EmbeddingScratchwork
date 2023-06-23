@@ -4,6 +4,7 @@ __all__ = [
     'USC_STEM',
     'extract_usc',
     'drop_attributes',
+    'show_tails',
 ]
 
 from pathlib import Path
@@ -33,3 +34,10 @@ def drop_attributes(element_text):
     for element in tree.iter():
         element.attrib.clear()
     return ET.tostring(tree, encoding='unicode')
+
+
+def show_tails(root):
+    """Print a report of all elements' tail text in an XML tree."""
+    for _, element in ET.iterwalk(root, events=('start',)):
+        if element.tail and element.tail.strip():
+            print(f'{element}: {element.tail!r}')
