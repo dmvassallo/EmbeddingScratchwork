@@ -11,7 +11,6 @@ __all__ = [
     'full_tabulate_token_counts',
 ]
 
-from decimal import Decimal
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -100,8 +99,8 @@ def with_totals(df_without_totals):
     """Copy a token count table and add a row of totals at the bottom."""
     totals = (
         df_without_totals
-            .sum()
-            .with_columns(pl.Series("Title", ["TOTALS"]))
+        .sum()
+        .with_columns(pl.Series("Title", ["TOTALS"]))
     )
     return pl.concat([df_without_totals, totals])
 
