@@ -3,6 +3,7 @@
 __all__ = [
     'USC_STEM',
     'extract_usc',
+    'drop_attributes',
 ]
 
 from pathlib import Path
@@ -24,3 +25,11 @@ def extract_usc(data_dir):
     if not Path(data_dir, USC_STEM).is_dir():
         with ZipFile(data_dir / f'{USC_STEM}.zip', mode='r') as archive:
             archive.extractall(path=data_dir)
+
+
+def drop_attributes(element_text):
+    """Drop attributes from XML tags."""
+    tree = ET.fromstring(element_text.encode('utf-8'))
+    for element in tree.iter():
+        element.attrib.clear()
+    return ET.tostring(tree, encoding='unicode')
