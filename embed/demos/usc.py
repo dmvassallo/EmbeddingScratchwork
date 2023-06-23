@@ -24,7 +24,7 @@ USC_STEM = 'xml_uscAll@118-3not328'
 def extract_usc(data_dir):
     """Extract the U.S. Code. If the directory already exists, do nothing."""
     if not Path(data_dir, USC_STEM).is_dir():
-        with ZipFile(data_dir / f'{USC_STEM}.zip', mode='r') as archive:
+        with ZipFile(Path(data_dir, f'{USC_STEM}.zip'), mode='r') as archive:
             archive.extractall(path=data_dir)
 
 
