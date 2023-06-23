@@ -44,7 +44,7 @@ safetensors = "^0.3.1"
 [tool.poetry.group.test.dependencies]
 attrs = "^23.1.0"
 parameterized = "^0.9.0"
-pytest = "^7.3.2"
+pytest = "^7.4.0"
 pytest-sugar = "^0.9.7"
 subaudit = "^0.1.0"
 
@@ -59,7 +59,7 @@ pylint-sarif-unofficial = "^0.1.0"
 
 [tool.poetry.group.notebook.dependencies]
 graphviz = "^0.20.1"
-ipykernel = "^6.23.2"
+ipykernel = "^6.23.3"
 ipython = [
     { version = "~8.12.2", python = "<3.9" },
     { version = "^8.14.0", python = ">=3.9" },
@@ -91,7 +91,10 @@ disable = [
     "consider-using-f-string",
     "too-few-public-methods",
 ]
-generated-members = "orjson.*"
+extension-pkg-allow-list = [
+    "blake3",
+    "orjson",
+]
 load-plugins = [
     "pylint_actions",
 ]

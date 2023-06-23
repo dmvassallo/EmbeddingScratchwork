@@ -41,7 +41,7 @@ _logger = logging.getLogger(__name__)
 def _compute_input_hash(text_or_texts):
     """Compute a blake3-based hash of input. Used for building a filename."""
     serialized = orjson.dumps(text_or_texts)
-    hasher = blake3.blake3(serialized)  # pylint: disable=not-callable
+    hasher = blake3.blake3(serialized)
     return hasher.hexdigest()
 
 
