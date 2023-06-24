@@ -4,6 +4,7 @@ __all__ = [
     'USC_STEM',
     'extract_usc',
     'drop_attributes',
+    'serialize_xml',
     'serialize_xml_clean',
     'count_tokens_xml',
     'count_tokens_xml_clean',
@@ -64,8 +65,8 @@ def _validate_safe_archive_entry_name(name):
 
     This is called on names returned by ``namelist`` to reject an archive if it
     looks like it may be trying to trigger a directory traversal vulnerability.
-    The ``extractall`` method covers this, but it still attempts to extract the
-    archive, with modified names.
+    (The ``extractall`` method covers this, but it still attempts to extract
+    the archive, with modified names.)
 
     This does not inspect the actual filesystem. Because we extract USC
     archives into newly created directories only, the target directory should
@@ -142,20 +143,25 @@ def drop_attributes(element_text):
     tree = ET.fromstring(element_text.encode('utf-8'))
     for element in tree.iter():
         element.attrib.clear()
-    return ET.tostring(tree, encoding='unicode')
+    return serialize_xml(tree)
+
+
+def serialize_xml(element):
+    """Convert an XML node to a string."""
+    return ET.tostring(element, encoding='unicode')
 
 
 def serialize_xml_clean(element):
-    """Copy an XML subtree, omitting attributes from all tags."""
+    """Convert an XML node to a string, omitting attributes from all tags."""
     dup = copy.deepcopy(element)
     for subelement in dup.iter():
         subelement.attrib.clear()
-    return ET.tostring(dup, encoding='unicode')
+    return serialize_xml(dup)
 
 
 def count_tokens_xml(element):
     """Count the tokens in an XML element (node or whole tree)."""
-    text = ET.tostring(element, encoding='unicode')
+    text = serialize_xml(element)
     return embed.count_tokens(text)
 
 
