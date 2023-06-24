@@ -52,6 +52,7 @@
         "nbdime",
         "ndarray",
         "nonblocking",
+        "nsmap",
         "numpy",
         "openai",
         "orjson",
