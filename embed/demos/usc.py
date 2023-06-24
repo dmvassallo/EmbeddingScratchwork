@@ -14,6 +14,7 @@ __all__ = [
     'full_tabulate_token_counts',
     'show_tails',
     'show_wrapped',
+    'get_schema_prefix',
     'get_embeddable_elements',
     'is_repealed',
 ]
@@ -266,6 +267,11 @@ def show_wrapped(element, *, width=140, limit=None):
     element_text = ET.tostring(element, encoding='unicode')
     display_text = element_text if limit is None else element_text[:limit]
     print('\n'.join(textwrap.wrap(display_text, width=width)))
+
+
+def get_schema_prefix(root):
+    """Get the brace-enclosed XML schema prefix that qualifies tag names."""
+    return '{%s}' % root.nsmap[None]
 
 
 # FIXME: Avoid breaking up elements like <em> that are not, in a conceptual
