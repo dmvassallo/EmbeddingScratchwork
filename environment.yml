@@ -12,6 +12,8 @@ dependencies:
   - openai
   - orjson
   - polars
+  - pooch
+  - pooch-extra
   - requests
   - safetensors
   - tiktoken

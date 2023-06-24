@@ -12,5 +12,4 @@ __pycache__/
 .api_key
 
 # USC files
-/data/xml_uscAll@118-3not328.zip
-/data/xml_uscAll@118-3not328/
+/data/xml_uscAll@*

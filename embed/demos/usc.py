@@ -27,28 +27,56 @@ from zipfile import ZipFile
 
 from lxml import etree as ET
 import polars as pl
+import pooch
 
 import embed
 
-USC_STEM = 'xml_uscAll@118-3not328'
+USC_STEM = 'xml_uscAll@118-6'
 """Directory name and XML file basename used for U.S. Code files."""
+
+# FIXME: Change this to a fast GitHub mirror with a better compressed archive.
+_URL_PREFIX = 'https://uscode.house.gov/download/releasepoints/us/pl/118/6/'
+"""URL to a remote directory where the U.S. Code can be downloaded."""
+
+_ARCHIVE_HASH = (
+    'sha256:e9c6e8063a4151ce6dc68ee0fcc3adc6e1ec3e5a24f431dab2d6b40ab8f4370d'
+)
+"""SHA256 hash of the U.S. Code archive available in ``_URL_PREFIX``."""
 
 _logger = logging.getLogger(__name__)
 """Logger for messages from this submodule (``embed.demos.usc``)."""
 
 
+def _download_usc(data_dir):
+    """Download the U.S. Code. (Helper function for ``extract_usc``.)"""
+    pooch.retrieve(
+        url=f'{_URL_PREFIX}{USC_STEM}.zip',
+        known_hash=_ARCHIVE_HASH,
+        fname=f'{USC_STEM}.zip',
+        path=data_dir,  # Path to the directory to put it in.
+        progressbar=True,
+    )
+
+
 # FIXME: Check if anything like CVE-2007-4559 applies to zip files.
-def extract_usc(data_dir):
-    """Extract the U.S. Code. If the directory already exists, do nothing."""
+def extract_usc(data_dir, *, download=False):
+    """
+    Extract the U.S. Code. If the directory already exists, do nothing.
+
+    If ``download=True`` and the archive file does not exist (and neither does
+    the directory), then a U.S. Code archive will be downloaded and extracted.
+    """
     # Do nothing if a directory with the expected name already exists.
     subdir = Path(data_dir, USC_STEM)
     if subdir.is_dir():
         return
 
-    # Stop and report failure if the archive does not exist.
+    # If the archive is absent, report failure or download it, as appropriate.
     archive_path = Path(data_dir, f'{USC_STEM}.zip')
     if not archive_path.is_file():
-        raise FileNotFoundError(f'no archive: {archive_path}')
+        if not download:
+            raise FileNotFoundError(f'no archive: {archive_path}')
+        _download_usc(data_dir)
 
     # Create the target directory and extract the archive into it.
     os.mkdir(subdir)
