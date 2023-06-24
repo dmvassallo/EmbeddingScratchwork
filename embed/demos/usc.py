@@ -19,7 +19,9 @@ __all__ = [
 
 import copy
 import logging
+import os
 from pathlib import Path
+import shutil
 import textwrap
 from zipfile import ZipFile
 
@@ -36,17 +38,29 @@ _logger = logging.getLogger(__name__)
 
 
 # FIXME: Check if anything like CVE-2007-4559 applies to zip files.
-#
-# FIXME: Handle how the official USC archive contains "loose" top-level files
-#        rather than a top-level directory.
-#
 def extract_usc(data_dir):
     """Extract the U.S. Code. If the directory already exists, do nothing."""
-    if Path(data_dir, USC_STEM).is_dir():
+    # Do nothing if a directory with the expected name already exists.
+    subdir = Path(data_dir, USC_STEM)
+    if subdir.is_dir():
         return
+
+    # Stop and report failure if the archive does not exist.
     archive_path = Path(data_dir, f'{USC_STEM}.zip')
+    if not archive_path.is_file():
+        raise FileNotFoundError(f'no archive: {archive_path}')
+
+    # Create the target directory and extract the archive into it.
+    os.mkdir(subdir)
     with ZipFile(archive_path, mode='r') as archive:
-        archive.extractall(path=data_dir)
+        archive.extractall(path=subdir)
+
+    # Eliminate extra nesting, if the archive has its own same-named directory.
+    subsubdir = subdir / USC_STEM
+    if subsubdir.is_dir():
+        for entry in subsubdir.iterdir():
+            shutil.move(entry, subdir)
+        os.rmdir(subsubdir)
 
 
 def drop_attributes(element_text):
