@@ -189,10 +189,10 @@ def show_wrapped(element, *, width=140, limit=None):
 
 
 # FIXME: (1) Don't lose text appearing directly in elements whose subelements
-#            we traverse to!
+#            we traverse to. This would happen with "text" and "tail" text.
 #
-#        (2) Avoid traversing into elements like <em> that are not conceptually
-#            logical portions of the U.S. Code.
+#        (2) Avoid breaking up elements like <em> that are not, in a conceptual
+#            sense, specific logical portions of the U.S. Code.
 #
 def get_embeddable_elements(section):
     """Break up an XML tree into elements that are small enough to embed."""
@@ -202,13 +202,20 @@ def get_embeddable_elements(section):
     for _, element in iterator:
         token_count = count_tokens_xml_clean(element)
 
-        if token_count <= embed.CONTEXT_LENGTH:  # We can embed this subtree.
+        if token_count <= embed.CONTEXT_LENGTH:
+            # We can embed this subtree.
             iterator.skip_subtree()
             selection.append(element)
-        elif len(element) == 0:  # We're at the bottom and it's still too big.
+        elif len(element) == 0:
+            # We're at the bottom and it's still too big.
             _logger.error('Too-big leaf %r (%d tokens).', element, token_count)
-        elif element.text and (lost_text := element.text.strip()):
-            _logger.warning('%s: lost text: %r', element.tag, lost_text)
+        else:
+            if element.text and element.text.strip():
+                # We lose this element's "text" text by traversing further.
+                _logger.warning('%s: lost text: %r', element.tag, element.text)
+            if element.tail and element.tail.strip():
+                # We lose this element's "tail" text by traversing further.
+                _logger.warning('%s: lost tail: %r', element.tag, element.tail)
 
     return selection
 
