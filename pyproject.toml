@@ -97,6 +97,7 @@ disable = [
 ]
 extension-pkg-allow-list = [
     "blake3",
+    "lxml",
     "orjson",
 ]
 load-plugins = [
