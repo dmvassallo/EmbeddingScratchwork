@@ -63,6 +63,7 @@
         "pyreverse",
         "pytest",
         "pyver",
+        "rebox",
         "repr",
         "safetensors",
         "sarif",
