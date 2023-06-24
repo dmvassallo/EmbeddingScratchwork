@@ -23,7 +23,7 @@ import os
 from pathlib import Path
 import shutil
 import textwrap
-from zipfile import ZipFile
+import zipfile
 
 from lxml import etree as ET
 import polars as pl
@@ -58,18 +58,49 @@ def _download_usc(data_dir, archive_filename):
     )
 
 
+def _validate_safe_archive_entry_name(name):
+    """
+    Raise ``BadZipFile`` if the name may perform directory traversal.
+
+    This is called on names returned by ``namelist`` to reject an archive if it
+    looks like it may be trying to trigger a directory traversal vulnerability.
+    The ``extractall`` method covers this, but it still attempts to extract the
+    archive, with modified names.
+
+    This does not inspect the actual filesystem. Because we extract USC
+    archives into newly created directories only, the target directory should
+    not already contain symlinks or other entries that facilitate traversal.
+    """
+    path = Path(name)
+    if path.is_absolute():
+        # Absolute paths can extract outside the target directory.
+        raise zipfile.BadZipFile(f'archive has absolute path: {name!r}')
+    if path.root or path.drive:
+        # Non-relative non-absolute paths on Windows can do the same.
+        raise zipfile.BadZipFile(f'archive has non-relative path: {name!r}')
+    if '..' in name:
+        # A ".." component, or "...", "....", etc. on some systems, can
+        # traverse upward. Because we know what is reasonable in a USC
+        # archive, broadly denying paths with ".." anywhere is okay.
+        raise zipfile.BadZipFile(f'archive has name containing "..": {name!r}')
+
+
 def _do_extract_usc(subdir, archive_path):
     """
     Create a target directory, extract the USC, and eliminate extra nesting.
 
-    This does the actual extraction for ``extract_usc``, which calls it after
-    performing some preparatory steps.
+    This checks the archive, creates the directory, and actually extracts the
+    archive. ``extract_usc`` calls this after some preparatory steps.
     """
-    # Create the target directory.
-    os.mkdir(subdir)
+    with zipfile.ZipFile(archive_path, mode='r') as archive:
+        # Screen for names that may perform traversal and treat them as errors.
+        for name in archive.namelist():
+            _validate_safe_archive_entry_name(name)
 
-    # Extract the archive to the target directory.
-    with ZipFile(archive_path, mode='r') as archive:
+        # Create the target directory (now that we know we're going to use it).
+        os.mkdir(subdir)
+
+        # Actually extract the archive.
         archive.extractall(path=subdir)
 
     # Eliminate extra nesting, if the archive has its own same-named directory.
@@ -80,7 +111,6 @@ def _do_extract_usc(subdir, archive_path):
         os.rmdir(subsubdir)
 
 
-# FIXME: Check if anything like CVE-2007-4559 applies to zip files.
 def extract_usc(data_dir, *, download=False):
     """
     Extract the U.S. Code. If the directory already exists, do nothing.
