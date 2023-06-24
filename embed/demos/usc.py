@@ -58,23 +58,6 @@ def _download_usc(data_dir, archive_filename):
     )
 
 
-def _require_usc_archive(data_dir, download):
-    """
-    If the archive is absent, either fail or download it, as appropriate.
-
-    Raises various exceptions on failure. Returns the archive path on success.
-    """
-    archive_filename = f'{USC_STEM}.zip'
-    archive_path = Path(data_dir, archive_filename)
-
-    if not archive_path.is_file():
-        if not download:
-            raise FileNotFoundError(f'no archive: {archive_path}')
-        _download_usc(data_dir, archive_filename)
-
-    return archive_path
-
-
 def _do_extract_usc(subdir, archive_path):
     """
     Create a target directory, extract the USC, and eliminate extra nesting.
@@ -110,8 +93,15 @@ def extract_usc(data_dir, *, download=False):
     if subdir.is_dir():
         return
 
-    # Ensure the archive exists, or raise an exception.
-    archive_path = _require_usc_archive(data_dir, download)
+    # Determine the filename and full path for the archive file.
+    archive_filename = f'{USC_STEM}.zip'
+    archive_path = Path(data_dir, archive_filename)
+
+    # If the archive is absent, either fail or download it, as appropriate.
+    if not archive_path.is_file():
+        if not download:
+            raise FileNotFoundError(f'no archive: {archive_path}')
+        _download_usc(data_dir, archive_filename)
 
     # Actually extract the archive.
     _do_extract_usc(subdir, archive_path)
