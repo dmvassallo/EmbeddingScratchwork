@@ -188,15 +188,12 @@ def show_wrapped(element, *, width=140, limit=None):
     print('\n'.join(textwrap.wrap(display_text, width=width)))
 
 
-# FIXME: (1) Don't lose text appearing directly in elements whose subelements
-#            we traverse to. This would happen with "text" and "tail" text.
-#
-#        (2) Avoid breaking up elements like <em> that are not, in a conceptual
-#            sense, specific logical portions of the U.S. Code.
-#
-def get_embeddable_elements(section):
+# FIXME: Avoid breaking up elements like <em> that are not, in a conceptual
+#        sense, specific logical portions of the U.S. Code.
+def get_embeddable_elements(section, *, strict=True):
     """Break up an XML tree into elements that are small enough to embed."""
     selection = []
+    lost_leaves = lost_texts = lost_tails = 0
     iterator = ET.iterwalk(section, events=('start',))
 
     for _, element in iterator:
@@ -209,13 +206,20 @@ def get_embeddable_elements(section):
         elif len(element) == 0:
             # We're at the bottom and it's still too big.
             _logger.error('Too-big leaf %r (%d tokens).', element, token_count)
+            lost_leaves += 1
         else:
             if element.text and element.text.strip():
                 # We lose this element's "text" text by traversing further.
-                _logger.warning('%s: lost text: %r', element.tag, element.text)
+                _logger.error('%s: lost text: %r', element.tag, element.text)
+                lost_texts += 1
             if element.tail and element.tail.strip():
                 # We lose this element's "tail" text by traversing further.
-                _logger.warning('%s: lost tail: %r', element.tag, element.tail)
+                _logger.error('%s: lost tail: %r', element.tag, element.tail)
+                lost_tails += 1
+
+    if strict and (lost_leaves != 0 or lost_texts != 0 or lost_tails != 0):
+        raise ValueError('selection loses content '
+                         f'({lost_leaves=}, {lost_texts=}, {lost_tails=})')
 
     return selection
 
