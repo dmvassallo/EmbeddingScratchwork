@@ -167,10 +167,11 @@ def show_tails(root):
             print(f'{element}: {element.tail!r}')
 
 
-def show_wrapped(element, *, width=140):
+def show_wrapped(element, *, width=140, limit=None):
     """Print the content of an element, hard-wrapped for readability."""
     element_text = ET.tostring(element, encoding='unicode')
-    print('\n'.join(textwrap.wrap(element_text, width=width)))
+    display_text = element_text if limit is None else element_text[:limit]
+    print('\n'.join(textwrap.wrap(display_text, width=width)))
 
 
 # FIXME: (1) Don't lose text appearing directly in elements whose subelements
