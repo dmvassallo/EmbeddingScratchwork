@@ -12,6 +12,7 @@ __all__ = [
     'with_cost_columns',
     'full_tabulate_token_counts',
     'show_tails',
+    'show_wrapped',
     'get_embeddable_elements',
     'is_repealed',
 ]
@@ -19,6 +20,7 @@ __all__ = [
 import copy
 import logging
 from pathlib import Path
+import textwrap
 from zipfile import ZipFile
 
 from lxml import etree as ET
@@ -163,6 +165,12 @@ def show_tails(root):
     for _, element in ET.iterwalk(root, events=('start',)):
         if element.tail and element.tail.strip():
             print(f'{element}: {element.tail!r}')
+
+
+def show_wrapped(element, *, width=140):
+    """Print the content of an element, hard-wrapped for readability."""
+    element_text = ET.tostring(element, encoding='unicode')
+    print('\n'.join(textwrap.wrap(element_text, width=width)))
 
 
 # FIXME: (1) Don't lose text appearing directly in elements whose subelements
