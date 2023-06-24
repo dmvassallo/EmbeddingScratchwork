@@ -13,3 +13,6 @@ __pycache__/
 
 # USC files
 /data/xml_uscAll@*
+
+# Temporary in-progress downloads
+/data/tmp*

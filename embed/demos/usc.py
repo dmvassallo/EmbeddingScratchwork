@@ -47,15 +47,54 @@ _logger = logging.getLogger(__name__)
 """Logger for messages from this submodule (``embed.demos.usc``)."""
 
 
-def _download_usc(data_dir):
-    """Download the U.S. Code. (Helper function for ``extract_usc``.)"""
+def _download_usc(data_dir, archive_filename):
+    """Download the U.S. Code."""
     pooch.retrieve(
-        url=f'{_URL_PREFIX}{USC_STEM}.zip',
+        url=(_URL_PREFIX + archive_filename),
         known_hash=_ARCHIVE_HASH,
-        fname=f'{USC_STEM}.zip',
+        fname=archive_filename,
         path=data_dir,  # Path to the directory to put it in.
         progressbar=True,
     )
+
+
+def _require_usc_archive(data_dir, download):
+    """
+    If the archive is absent, either fail or download it, as appropriate.
+
+    Raises various exceptions on failure. Returns the archive path on success.
+    """
+    archive_filename = f'{USC_STEM}.zip'
+    archive_path = Path(data_dir, archive_filename)
+
+    if not archive_path.is_file():
+        if not download:
+            raise FileNotFoundError(f'no archive: {archive_path}')
+        _download_usc(data_dir, archive_filename)
+
+    return archive_path
+
+
+def _do_extract_usc(subdir, archive_path):
+    """
+    Create a target directory, extract the USC, and eliminate extra nesting.
+
+    This does the actual extraction for ``extract_usc``, which calls it after
+    performing some preparatory steps.
+    """
+    # Create the target directory.
+    os.mkdir(subdir)
+
+    # Extract the archive to the target directory.
+    with ZipFile(archive_path, mode='r') as archive:
+        archive.extractall(path=subdir)
+
+    # Eliminate extra nesting, if the archive has its own same-named directory.
+    subsubdir = subdir / USC_STEM
+    if subsubdir.is_dir():
+        for entry in subsubdir.iterdir():
+            shutil.move(entry, subdir)
+        os.rmdir(subsubdir)
 
 
 # FIXME: Check if anything like CVE-2007-4559 applies to zip files.
@@ -71,24 +110,11 @@ def extract_usc(data_dir, *, download=False):
     if subdir.is_dir():
         return
 
-    # If the archive is absent, report failure or download it, as appropriate.
-    archive_path = Path(data_dir, f'{USC_STEM}.zip')
-    if not archive_path.is_file():
-        if not download:
-            raise FileNotFoundError(f'no archive: {archive_path}')
-        _download_usc(data_dir)
+    # Ensure the archive exists, or raise an exception.
+    archive_path = _require_usc_archive(data_dir, download)
 
-    # Create the target directory and extract the archive into it.
-    os.mkdir(subdir)
-    with ZipFile(archive_path, mode='r') as archive:
-        archive.extractall(path=subdir)
-
-    # Eliminate extra nesting, if the archive has its own same-named directory.
-    subsubdir = subdir / USC_STEM
-    if subsubdir.is_dir():
-        for entry in subsubdir.iterdir():
-            shutil.move(entry, subdir)
-        os.rmdir(subsubdir)
+    # Actually extract the archive.
+    _do_extract_usc(subdir, archive_path)
 
 
 def drop_attributes(element_text):
