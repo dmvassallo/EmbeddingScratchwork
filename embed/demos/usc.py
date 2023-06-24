@@ -207,8 +207,8 @@ def get_embeddable_elements(section):
             selection.append(element)
         elif len(element) == 0:  # We're at the bottom and it's still too big.
             _logger.error('Too-big leaf %r (%d tokens).', element, token_count)
-        else:
-            pass  # FIXME: Check for text this element directly contains.
+        elif element.text and (lost_text := element.text.strip()):
+            _logger.warning('%s: lost text: %r', element.tag, lost_text)
 
     return selection
 
