@@ -4,23 +4,33 @@ __all__ = [
     'USC_STEM',
     'extract_usc',
     'drop_attributes',
-    'show_tails',
+    'serialize_xml_clean',
+    'count_tokens_xml',
+    'count_tokens_xml_clean',
     'tabulate_token_counts',
     'with_totals',
     'with_cost_columns',
     'full_tabulate_token_counts',
+    'show_tails',
+    'get_embeddable_elements',
+    'is_repealed',
 ]
 
+import copy
+import logging
 from pathlib import Path
 from zipfile import ZipFile
 
 from lxml import etree as ET
 import polars as pl
 
-from embed import count_tokens
+import embed
 
 USC_STEM = 'xml_uscAll@118-3not328'
 """Directory name and XML file basename used for U.S. Code files."""
+
+_logger = logging.getLogger(__name__)
+"""Logger for messages from this submodule (``embed.demos.usc``)."""
 
 
 # FIXME: Check if anything like CVE-2007-4559 applies to zip files.
@@ -38,18 +48,31 @@ def extract_usc(data_dir):
 
 
 def drop_attributes(element_text):
-    """Drop attributes from XML tags."""
+    """Drop attributes from all XML tags in a string."""
     tree = ET.fromstring(element_text.encode('utf-8'))
     for element in tree.iter():
         element.attrib.clear()
     return ET.tostring(tree, encoding='unicode')
 
 
-def show_tails(root):
-    """Print a report of all elements' tail text in an XML tree."""
-    for _, element in ET.iterwalk(root, events=('start',)):
-        if element.tail and element.tail.strip():
-            print(f'{element}: {element.tail!r}')
+def serialize_xml_clean(element):
+    """Copy an XML subtree, omitting attributes from all tags."""
+    dup = copy.deepcopy(element)
+    for subelement in dup.iter():
+        subelement.attrib.clear()
+    return ET.tostring(dup, encoding='unicode')
+
+
+def count_tokens_xml(element):
+    """Count the tokens in an XML element (node or whole tree)."""
+    text = ET.tostring(element, encoding='unicode')
+    return embed.count_tokens(text)
+
+
+def count_tokens_xml_clean(element):
+    """Count the tokens in an XML element (node or whole tree)."""
+    cleaned = serialize_xml_clean(element)
+    return embed.count_tokens(cleaned)
 
 
 def _build_row(path):
@@ -58,8 +81,8 @@ def _build_row(path):
 
     return {
         'Title': path.stem,
-        'Tokens': count_tokens(full_text),
-        'Clean Tokens': count_tokens(drop_attributes(full_text)),
+        'Tokens': embed.count_tokens(full_text),
+        'Clean Tokens': embed.count_tokens(drop_attributes(full_text)),
     }
 
 
@@ -133,3 +156,40 @@ def full_tabulate_token_counts(data_dir, token_cost):
     df_counts = tabulate_token_counts(data_dir)
     df_with_totals = with_totals(df_counts)
     return with_cost_columns(df_with_totals, token_cost)
+
+
+def show_tails(root):
+    """Print a report of all elements' tail text in an XML tree."""
+    for _, element in ET.iterwalk(root, events=('start',)):
+        if element.tail and element.tail.strip():
+            print(f'{element}: {element.tail!r}')
+
+
+# FIXME: (1) Don't lose text appearing directly in elements whose subelements
+#            we traverse to!
+#
+#        (2) Avoid traversing into elements like <em> that are not conceptually
+#            logical portions of the U.S. Code.
+#
+def get_embeddable_elements(section):
+    """Break up an XML tree into elements that are small enough to embed."""
+    selection = []
+    iterator = ET.iterwalk(section, events=('start',))
+
+    for _, element in iterator:
+        token_count = count_tokens_xml_clean(element)
+
+        if token_count <= embed.CONTEXT_LENGTH:  # We can embed this subtree.
+            iterator.skip_subtree()
+            selection.append(element)
+        elif len(element) == 0:  # We're at the bottom and it's still too big.
+            _logger.error('Too-big leaf %r (%d tokens).', element, token_count)
+        else:
+            pass  # FIXME: Check for text this element directly contains.
+
+    return selection
+
+
+def is_repealed(element):
+    """Check if a section or other element of the USC is marked repealed."""
+    return element.get('status') == 'repealed'
