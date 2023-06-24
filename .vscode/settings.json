@@ -58,6 +58,7 @@
         "pipx",
         "prebuild",
         "prebuilds",
+        "progressbar",
         "pylint",
         "pyproject",
         "pyreverse",
