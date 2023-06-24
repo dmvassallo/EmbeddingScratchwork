@@ -45,4 +45,5 @@ dependencies:
     - pylint-actions
     - pylint-exit
     - pylint-sarif-unofficial
+    - python-clock-timer
     - subaudit
