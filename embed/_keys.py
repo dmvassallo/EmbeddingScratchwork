@@ -76,7 +76,7 @@ def _get_key_if_available():
     This checks for the ``OPENAI_API_KEY`` variable, an ``.api_key`` file in
     the current directory, and ``.api_key`` files in higher directories within
     the same Git repository (if the current directory is inside a Git
-    repository), in that order. If no key is found, ``None` is returned.
+    repository), in that order. If no key is found, ``None`` is returned.
     """
     if key := os.getenv('OPENAI_API_KEY', '').rstrip():
         _logger.info('API key found in OPENAI_API_KEY environment variable')
