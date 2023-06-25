@@ -17,6 +17,7 @@ __all__ = [
     'get_schema_prefix',
     'walk_tag',
     'get_direct_sections',
+    'get_embeddable_direct_sections',
     'get_embeddable_elements',
     'is_repealed',
 ]
@@ -292,6 +293,25 @@ def get_direct_sections(root):
         iterator.skip_subtree()
         selection.append(element)
     return selection
+
+
+def get_embeddable_direct_sections(root):
+    """
+    Find "direct sections" small enough to embed if tag attributes are removed.
+
+    Ordinarily one would call ``get_direct_sections`` and operate on the result
+    by both finding the sections that are small enough to embed and by figuring
+    out how to break up the other sections to embed them as well, either using
+    separate approaches or attempting a unified approach (such as the
+    experimental technique of ``get_embeddable_elements``). However, it may be
+    useful to embed just the whole sections that are small enough to embed, for
+    the purpose of experimenting with model performance for the search task.
+    This convenience function is for that purpose.
+    """
+    return [
+        section for section in get_direct_sections(root)
+        if count_tokens_xml_clean(section) <= embed.CONTEXT_LENGTH
+    ]
 
 
 # FIXME: Avoid breaking up elements like <em> that are not, in a conceptual
