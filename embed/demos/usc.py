@@ -39,12 +39,11 @@ import embed
 USC_STEM = 'xml_uscAll@118-6'
 """Directory name and XML file basename used for U.S. Code files."""
 
-# FIXME: Change this to a fast GitHub mirror with a better compressed archive.
-_URL_PREFIX = 'https://uscode.house.gov/download/releasepoints/us/pl/118/6/'
+_URL_PREFIX = 'https://github.com/dmvassallo/usc/raw/main/'
 """URL to a remote directory where the U.S. Code can be downloaded."""
 
 _ARCHIVE_HASH = (
-    'sha256:e9c6e8063a4151ce6dc68ee0fcc3adc6e1ec3e5a24f431dab2d6b40ab8f4370d'
+    'sha256:18088e7ae570dca80bfe42ef65a624c487d5d2d99505277a56f4838834c56ef9'
 )
 """SHA256 hash of the U.S. Code archive available in ``_URL_PREFIX``."""
 
