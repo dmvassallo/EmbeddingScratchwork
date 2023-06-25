@@ -15,6 +15,8 @@ __all__ = [
     'show_tails',
     'show_wrapped',
     'get_schema_prefix',
+    'walk_tag',
+    'get_direct_sections',
     'get_embeddable_elements',
     'is_repealed',
 ]
@@ -272,6 +274,24 @@ def show_wrapped(element, *, width=140, limit=None):
 def get_schema_prefix(root):
     """Get the brace-enclosed XML schema prefix that qualifies tag names."""
     return '{%s}' % root.nsmap[None]
+
+
+def walk_tag(root, tag):
+    """
+    Get a ``start``-event ``iterwalk`` iterator for an unqualified tag name.
+    """
+    qualified_tag = get_schema_prefix(root) + tag
+    return ET.iterwalk(root, events=('start',), tag=qualified_tag)
+
+
+def get_direct_sections(root):
+    """Find all ``<section>``s that are not descendants of ``<section>``s."""
+    selection = []
+    iterator = walk_tag(root, 'section')
+    for _, element in iterator:
+        iterator.skip_subtree()
+        selection.append(element)
+    return selection
 
 
 # FIXME: Avoid breaking up elements like <em> that are not, in a conceptual
