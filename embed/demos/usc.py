@@ -299,13 +299,11 @@ def get_embeddable_direct_sections(root):
     Find "direct sections" small enough to embed if tag attributes are removed.
 
     Ordinarily one would call ``get_direct_sections`` and operate on the result
-    by both finding the sections that are small enough to embed and by figuring
-    out how to break up the other sections to embed them as well, either using
-    separate approaches or attempting a unified approach (such as the
-    experimental technique of ``get_embeddable_elements``). However, it may be
-    useful to embed just the whole sections that are small enough to embed, for
-    the purpose of experimenting with model performance for the search task.
-    This convenience function is for that purpose.
+    by both finding the sections small enough to embed and deciding how to
+    divide the others into embeddable portions (e.g. the experimental technique
+    in ``get_embeddable_elements``). But it can be useful to embed just the
+    sections already small enough, to experiment with model performance on the
+    search task. This convenience function is for that purpose.
     """
     return [
         section for section in get_direct_sections(root)
@@ -316,7 +314,14 @@ def get_embeddable_direct_sections(root):
 # FIXME: Avoid breaking up elements like <em> that are not, in a conceptual
 #        sense, specific logical portions of the U.S. Code.
 def get_embeddable_elements(section, *, strict=True):
-    """Break up an XML tree into elements that are small enough to embed."""
+    """
+    Break up a section into elements to embed once tag attributes are removed.
+
+    If the section will already be small enough to embed after attributes are
+    removed from its tags, this returns a list with that section as its only
+    element.
+    """
+
     selection = []
     lost_leaves = lost_texts = lost_tails = 0
     iterator = ET.iterwalk(section, events=('start',))
