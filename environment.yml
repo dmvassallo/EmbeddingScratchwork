@@ -7,11 +7,16 @@ dependencies:
   - python=3.11
   - backoff
   - dulwich
+  - lxml
   - numpy
   - openai
   - orjson
+  - polars
+  - pooch
+  - pooch-extra
   - requests
   - safetensors
+  - tiktoken
 
   # For testing
   - attrs
@@ -28,6 +33,7 @@ dependencies:
   # For notebooks
   - graphviz
   - ipykernel
+  - ipywidgets
   - jupyterlab>=4
   - jupyter-collaboration
   - nbdime
@@ -41,4 +47,5 @@ dependencies:
     - pylint-actions
     - pylint-exit
     - pylint-sarif-unofficial
+    - python-clock-timer
     - subaudit

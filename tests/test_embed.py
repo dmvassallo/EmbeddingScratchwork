@@ -9,16 +9,47 @@ This does not test the disk caching versions; see ``test_cached_embeddings``.
 
 import unittest
 
+from parameterized import parameterized
+
 import embed
 from tests import _bases
 
 
-class TestConstants(_bases.TestBase):
-    """Tests for public constants in ``embed``."""
+class TestStats(_bases.TestBase):
+    """Tests for model dimension and token encoding facilites in ``embed``."""
+
+    # TODO: Decide if we should really have test_model_dimension_is_1536 and
+    #       test_model_context_length_is_8191, given that they contain the same
+    #       information as the code under test. If we can access another source
+    #       to validate this information, then it may make sense to retain it.
+    #       Otherwise, those two test cases may not be very valuable, though
+    #       since other tests rely on these values, that may justify the tests.
 
     def test_model_dimension_is_1536(self):
         """``DIMENSION``'s value is correct for ``text-embedding-ada-002``."""
         self.assertEqual(embed.DIMENSION, 1536)
+
+    def test_model_context_length_is_8191(self):
+        """
+        ``CONTEXT_LENGTH``'s value is correct for ``text-embedding-ada-002``.
+        """
+        self.assertEqual(embed.CONTEXT_LENGTH, 8191)
+
+    @parameterized.expand([
+        ('The cat runs.', 4),
+        ('El gato corre.', 5),
+        ('The dog walks.', 4),
+        ('El perro camina.', 6),
+        ('Ms. Jones visited the graveyard where she had first explained '
+         'nautical twilight to her curiously intelligent capybara.', 23),
+        ('aerodynamic', 3),
+        (' aerodynamic', 2),  # Often fewer tokens with a leading space.
+        ('孫子兵法', 6),  # With some languages, more tokens than characters.
+    ])
+    def test_count_tokens_counts_cl100k_base_tokens(self, text, expected):
+        """``count_tokens`` counts in the ``cl100k_base`` encoding."""
+        actual = embed.count_tokens(text)
+        self.assertEqual(actual, expected)
 
 
 class TestEmbedOne(_bases.TestEmbedOneBase):

@@ -10,3 +10,9 @@ __pycache__/
 
 # OpenAI API key
 .api_key
+
+# USC files
+/data/xml_uscAll@*
+
+# Temporary in-progress downloads
+/data/tmp*

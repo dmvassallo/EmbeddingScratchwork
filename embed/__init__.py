@@ -3,6 +3,8 @@
 __all__ = [
     'cached',
     'DIMENSION',
+    'CONTEXT_LENGTH',
+    'count_tokens',
     'embed_one',
     'embed_many',
     'embed_one_eu',
@@ -19,6 +21,7 @@ import numpy as np
 import openai
 import openai.embeddings_utils
 import requests
+import tiktoken
 
 from . import _keys, cached
 
@@ -28,8 +31,22 @@ _keys.initialize(__name__)
 DIMENSION = 1536
 """Dimension of the vector space text-embedding-ada-002 embeds texts in."""
 
+CONTEXT_LENGTH = 8191
+"""
+Maximum length in cl100k_base tokens that text-embedding-ada-002 can embed.
+"""
+
 _REQUESTS_TIMEOUT = datetime.timedelta(seconds=60)
 """Connection timeout for ``embed_one_req`` and ``embed_many_req``."""
+
+_encoding = tiktoken.encoding_for_model('text-embedding-ada-002')
+"""An object whose ``encode`` method encodes text as cl100k_base tokens."""
+
+
+def count_tokens(text):
+    """Count how many tokens ``text`` is, in the model's encoding."""
+    # TODO: Find a way to use less memory when counting tokens in long texts.
+    return len(_encoding.encode(text))
 
 
 @backoff.on_exception(backoff.expo, openai.error.RateLimitError)
