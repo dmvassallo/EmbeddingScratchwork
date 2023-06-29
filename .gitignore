@@ -5,8 +5,10 @@ __pycache__/
 .ipynb_checkpoints/
 .jupyter_ystore.db
 
-# Local tox files
+# Local environments
 .tox/
+.venv*/
+venv*/
 
 # OpenAI API key
 .api_key
