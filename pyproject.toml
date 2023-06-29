@@ -69,7 +69,7 @@ ipython = [
     { version = "^8.14.0", python = ">=3.9" },
 ]
 ipywidgets = "^8.0.6"
-jupyter-collaboration = "^1.0.0"
+jupyter-collaboration = "^1.0.1"
 jupyterlab = "^4.0.2"
 nbdime = "^3.2.1"
 python-clock-timer = "^0.4.0"

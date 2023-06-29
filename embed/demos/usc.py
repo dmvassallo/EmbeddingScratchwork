@@ -307,7 +307,7 @@ def get_embeddable_direct_sections(root):
     """
     return [
         section for section in get_direct_sections(root)
-        if count_tokens_xml_clean(section) <= embed.CONTEXT_LENGTH
+        if count_tokens_xml_clean(section) <= embed.TOKEN_LIMIT
     ]
 
 
@@ -329,7 +329,7 @@ def get_embeddable_elements(section, *, strict=True):
     for _, element in iterator:
         token_count = count_tokens_xml_clean(element)
 
-        if token_count <= embed.CONTEXT_LENGTH:
+        if token_count <= embed.TOKEN_LIMIT:
             # We can embed this subtree.
             iterator.skip_subtree()
             selection.append(element)

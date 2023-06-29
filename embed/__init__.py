@@ -3,7 +3,7 @@
 __all__ = [
     'cached',
     'DIMENSION',
-    'CONTEXT_LENGTH',
+    'TOKEN_LIMIT',
     'count_tokens',
     'embed_one',
     'embed_many',
@@ -31,9 +31,13 @@ _keys.initialize(__name__)
 DIMENSION = 1536
 """Dimension of the vector space text-embedding-ada-002 embeds texts in."""
 
-CONTEXT_LENGTH = 8191
+TOKEN_LIMIT = 8191
 """
 Maximum length in cl100k_base tokens that text-embedding-ada-002 can embed.
+
+The text passed to the ``embed_one*`` functions must not exceed this many
+tokens. Each of the texts passed to the ``embed_many*`` functions must not
+exceed it, though the combined length of the separate texts is not bound by it.
 """
 
 _REQUESTS_TIMEOUT = datetime.timedelta(seconds=60)
