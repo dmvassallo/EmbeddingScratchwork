@@ -40,7 +40,7 @@ numpy = [
 openai = { extras = ["embeddings"], version = "^0.27.8" }
 orjson = "^3.9.1"
 polars = "^0.18.4"
-pooch = {extras = ["progress"], version = "^1.7.0"}
+pooch = { extras = ["progress"], version = "^1.7.0" }
 requests = "^2.31.0"
 safetensors = "^0.3.1"
 tiktoken = "^0.4.0"
