@@ -34,6 +34,9 @@ jobs:
       - name: Check out source repository
         uses: actions/checkout@v3
 
+      - name: Install pylint-sarif-unofficial
+        run: pipx install pylint-sarif-unofficial
+
       - name: Set up micromamba
         uses: mamba-org/setup-micromamba@v1
         with:

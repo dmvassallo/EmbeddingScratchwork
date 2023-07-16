@@ -34,10 +34,10 @@ blake3 = "^0.3.3"
 dulwich = "^0.21.5"
 numpy = [
     { version = "~1.24.4", python = "<3.9" },
-    { version = "^1.25.0", python = ">=3.9" },
+    { version = "^1.25.1", python = ">=3.9" },
 ]
 openai = { extras = ["embeddings"], version = "^0.27.8" }
-orjson = "^3.9.1"
+orjson = "^3.9.2"
 requests = "^2.31.0"
 safetensors = "^0.3.1"
 
@@ -55,17 +55,16 @@ isort = "^5.12.0"
 pylint = "^2.17.4"
 pylint-actions = "^0.4.0"
 pylint-exit = "^1.2.0"
-pylint-sarif-unofficial = "^0.1.0"
 
 [tool.poetry.group.notebook.dependencies]
 graphviz = "^0.20.1"
-ipykernel = "^6.23.3"
+ipykernel = "^6.24.0"
 ipython = [
     { version = "~8.12.2", python = "<3.9" },
     { version = "^8.14.0", python = ">=3.9" },
 ]
 jupyter-collaboration = "^1.0.1"
-jupyterlab = "^4.0.2"
+jupyterlab = "^4.0.3"
 nbdime = "^3.2.1"
 tabulate = "^0.9.0"
 
