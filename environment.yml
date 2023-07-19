@@ -10,7 +10,7 @@ dependencies:
   - numpy
   - openai
   - orjson
-  - requests
+  - requests>=2.31.0
   - safetensors
 
   # For testing
