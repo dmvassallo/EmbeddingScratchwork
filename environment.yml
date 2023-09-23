@@ -6,6 +6,7 @@ channels:
 dependencies:
   - python=3.11
   - backoff
+  - blake3
   - dulwich
   - numpy
   - openai
@@ -37,7 +38,6 @@ dependencies:
   # PyPI
   - pip
   - pip:
-    - blake3
     - pylint-actions
     - pylint-exit
     - subaudit
