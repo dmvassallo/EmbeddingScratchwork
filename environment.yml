@@ -9,7 +9,7 @@ dependencies:
   - blake3
   - dulwich
   - numpy
-  - openai
+  - openai<1
   - orjson
   - requests>=2.31.0
   - safetensors
