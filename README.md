@@ -105,8 +105,8 @@ conda activate EmbeddingScratchwork
 pip install -e .
 ```
 
-[`mamba`](https://mamba.readthedocs.io/en/latest/installation.html) may be used
-in place of `conda` if it is installed.
+[`mamba`](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html)
+may be used in place of `conda` if it is installed.
 
 #### Your OpenAI API key
 
