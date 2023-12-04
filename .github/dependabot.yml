@@ -10,6 +10,7 @@ updates:
     groups:
       python-dependencies:
         patterns: ['*']
+        exclude-patterns: ['openai']
 
   - package-ecosystem: github-actions
     directory: '/'
