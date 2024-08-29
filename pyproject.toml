@@ -65,7 +65,7 @@ graphviz = "^0.20.1"
 ipykernel = "^6.28.0"
 ipython = "~8.12.3"
 jupyter-collaboration = "^2.0.1"
-jupyterlab = "^4.0.11"
+jupyterlab = "^4.2.5"
 nbdime = "^4.0.1"
 tabulate = "^0.9.0"
 
