@@ -38,7 +38,7 @@ jobs:
         run: pipx install pylint-sarif-unofficial
 
       - name: Set up micromamba
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v2
         with:
           environment-file: environment.yml
 
@@ -69,7 +69,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up micromamba
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v2
         with:
           environment-file: environment.yml
 
