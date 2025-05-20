@@ -102,11 +102,16 @@ poetry install
 ```sh
 conda env create
 conda activate EmbeddingScratchwork
-pip install -e .
+pip install --no-deps -e .
 ```
 
 [`mamba`](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html)
-may be used in place of `conda` if it is installed.
+may be used in place of `conda` if it is installed. (When using `mamba`, it is
+currently necessary to run `mamba env create -f environment.yml` rather than
+just `mamba env create`.)
+
+`--no-deps` can be omitted to attempt to install any missing dependencies not
+resolved based on `environment.yml`, but that should not be needed.
 
 #### Your OpenAI API key
 
@@ -193,12 +198,20 @@ running dev containers on your own machine.
 
 #### With `poetry`
 
-If you [installed with `poetry`](#installing-with-poetry), run this to start a
-shell with the `poetry`-managed Python virtual environment activated:
+If you [installed with `poetry`](#installing-with-poetry) and you have the
+[`poetry-plugin-shell`](https://github.com/python-poetry/poetry-plugin-shell)
+plugin, run this to start a shell with the `poetry`-managed Python virtual
+environment activated:
 
 ```sh
 poetry shell
 ```
+
+If you don't want to install and use `poetry-plugin-shell`, or if you prefer to
+be able to activate and deactivate the virtual environment in your currently
+running shell process rather than spawning and exiting a subprocess, see the
+Poetry documentation's [per-shell
+instructions](https://python-poetry.org/docs/managing-environments/#activating-the-environment).
 
 #### With `conda`
 
@@ -208,6 +221,8 @@ the `conda` environment in your shell:
 ```sh
 conda activate EmbeddingScratchwork
 ```
+
+(`mamba activate` works in some, but not all, shells and configurations.)
 
 #### With your editor/IDE
 

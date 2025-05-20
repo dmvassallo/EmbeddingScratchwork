@@ -4,15 +4,26 @@ channels:
   - conda-forge
 
 dependencies:
-  - python=3.11
+  - python =3.13
   - backoff
-  - blake3
   - dulwich
   - numpy
-  - openai<1
+  - openai >=0.28.1,<1
   - orjson
-  - requests>=2.31.0
+  - requests >=2.32.0
   - safetensors
+
+  # For `openai[embeddings]`, whose extra dependencies are not listed for the
+  # conda-forge downstream `openai` package since v0.28.1. For details, see:
+  # https://github.com/conda-forge/openai-feedstock/pull/218
+  - matplotlib-base
+  - openpyxl >=3.0.7
+  - pandas >=1.2.3
+  - pandas-stubs >=1.0.1.11
+  - plotly
+  - scikit-learn >=1.0.2
+  - scipy
+  - tenacity >=8.0.1
 
   # For testing
   - attrs
@@ -29,7 +40,7 @@ dependencies:
   # For notebooks
   - graphviz
   - ipykernel
-  - jupyterlab>=4
+  - jupyterlab >=4
   - jupyter-collaboration
   - nbdime
   - python-graphviz
@@ -38,6 +49,7 @@ dependencies:
   # PyPI
   - pip
   - pip:
+    - blake3 >=1
     - pylint-actions
     - pylint-exit
     - subaudit

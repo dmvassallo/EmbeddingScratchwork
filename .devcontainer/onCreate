@@ -1,35 +1,42 @@
 #!/bin/sh
+set -eux
 
-set -eu
-
-# Customize git configuration for shell prompt and terminal colors.
-ln -s -- "$(realpath .devcontainer/git_prompt_activate.bash)" \
-    ~/.git_prompt_activate.bash
+# Customize Git configuration for shell prompt and terminal colors.
+git_prompt_activate_script="$(realpath .devcontainer/git_prompt_activate.bash)"
+ln -s -- "$git_prompt_activate_script" ~/.git_prompt_activate.bash
 printf '\n%s\n' '. ~/.git_prompt_activate.bash' >>~/.bashrc
 git config --global color.diff.new blue
 git config --global devcontainers-theme.hide-status 1
 
 # Set up container-wide Graphviz installation (for when running via Poetry).
-.devcontainer/install-graphviz 8.0.5
+.devcontainer/install-graphviz 12.2.1
 
 # Set up Poetry and its plugins.
 pipx install poetry
-pipx inject poetry poetry-plugin-sort poetry-plugin-up
+pipx inject poetry poetry-plugin-shell poetry-plugin-sort poetry-plugin-up
 
-# Set up Mambaforge, which provides conda and mamba.
-cd /tmp
-wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
-chmod +x Mambaforge-Linux-x86_64.sh
-./Mambaforge-Linux-x86_64.sh -b
-rm Mambaforge-Linux-x86_64.sh
-~/mambaforge/condabin/mamba init --all
-~/mambaforge/condabin/conda config --set auto_activate_base false
-~/mambaforge/condabin/mamba update --all --yes
+# Install Miniforge3, which provides `conda` and `mamba`.
+setup_dir='/tmp/Miniforge3-setup'
+url_prefix='https://github.com/conda-forge/miniforge/releases/latest/download'
+installer='Miniforge3-Linux-x86_64.sh'
+mkdir -- "$setup_dir"
+cd -- "$setup_dir"
+wget -- "$url_prefix/$installer"
+chmod +x -- "$installer"
+"./$installer" -b
 cd -
+rm -r -- "$setup_dir"
+
+# Configure Miniforge3, so the `conda` and `mamba` commands work.
+condabin=~/miniforge3/condabin
+"$condabin/conda" init --all
+"$condabin/mamba" shell init --shell bash
+"$condabin/conda" config --set auto_activate_base false
+"$condabin/mamba" update --all --yes
 
 # Set up project environment for conda/mamba.
-~/mambaforge/condabin/mamba env create
-~/mambaforge/condabin/mamba run --name EmbeddingScratchwork pip install -e .
+"$condabin/mamba" env create -f environment.yml --yes
+"$condabin/mamba" run --name EmbeddingScratchwork pip install --no-deps -e .
 
 # Set up project environment for poetry.
 poetry install
