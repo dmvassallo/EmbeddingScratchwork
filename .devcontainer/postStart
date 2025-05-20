@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2023 Eliah Kagan
+# Copyright (c) 2023, 2025 Eliah Kagan
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted.
@@ -13,7 +13,7 @@
 # OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-set -e
+set -eu
 
 # The pathname to the GitHub Codespaces metadata directory.
 readonly cs_meta_path='/workspaces/.codespaces'
@@ -36,13 +36,17 @@ in_codespace() {
 }
 
 have_manual_conf() {
-    local auto_pattern # POSIX ERE that will match a line that is safe to lose.
+    # POSIX ERE that will match a line that is safe to lose.
+    local auto_pattern
     printf -v auto_pattern '(^|%s)[[:blank:]]*$' "$auto_comment"
+
     test -e "$config_path" && grep -Eqv "$auto_pattern" -- "$config_path"
 }
 
 new_empty_conf() {
-    mkdir -p -- "$(dirname -- "$config_path")"
+    local config_path_dir
+    config_path_dir="$(dirname -- "$config_path")"
+    mkdir -p -- "$config_path_dir"
     : >"$config_path"
 }
 
@@ -52,7 +56,6 @@ append_to_conf() {
 
 generate_conf() {
     local codespace_name url_pattern
-
     codespace_name="$(jq -r .CODESPACE_NAME -- "$cs_vars_path")"
     url_pattern="https://${codespace_name}${url_end_pattern}"
 

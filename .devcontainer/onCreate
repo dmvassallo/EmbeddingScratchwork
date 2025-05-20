@@ -1,6 +1,5 @@
 #!/bin/sh
-
-set -eu
+set -eux
 
 # Customize Git configuration for shell prompt and terminal colors.
 git_prompt_activate_script="$(realpath .devcontainer/git_prompt_activate.bash)"
