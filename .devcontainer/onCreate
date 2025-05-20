@@ -29,12 +29,12 @@ rm -r -- "$setup_dir"
 
 # Configure Miniforge3, so the `conda` and `mamba` commands work.
 condabin=~/miniforge3/condabin
-"$condabin/mamba" init --all
+"$condabin/conda" init --all
 "$condabin/conda" config --set auto_activate_base false
 "$condabin/mamba" update --all --yes
 
 # Set up project environment for conda/mamba.
-"$condabin/mamba" env create -f environment.yml
+"$condabin/mamba" env create -f environment.yml --yes
 "$condabin/mamba" run --name EmbeddingScratchwork pip install --no-deps -e .
 
 # Set up project environment for poetry.
