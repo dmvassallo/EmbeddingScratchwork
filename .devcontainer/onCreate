@@ -30,6 +30,7 @@ rm -r -- "$setup_dir"
 # Configure Miniforge3, so the `conda` and `mamba` commands work.
 condabin=~/miniforge3/condabin
 "$condabin/conda" init --all
+"$condabin/mamba" shell init --shell bash
 "$condabin/conda" config --set auto_activate_base false
 "$condabin/mamba" update --all --yes
 
