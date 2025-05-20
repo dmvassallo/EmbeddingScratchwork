@@ -106,7 +106,7 @@ jobs:
 
       - name: Substitute Python version
         run: |
-          perl -i -spwe 's/^ *- python=\K.+$/$pyver/' -- \
+          perl -i -spwe 's/^ *- python *= *\K.+$/$pyver/' -- \
               -pyver=${{ matrix.python-version }} environment.yml
 
       - name: Set up micromamba
@@ -115,7 +115,7 @@ jobs:
           environment-file: environment.yml
 
       - name: Make editable install
-        run: pip install -e .
+        run: pip install --no-deps -e .
 
       - name: Print Python version
         run: python -V
@@ -161,7 +161,7 @@ jobs:
           environment-file: environment.yml
 
       - name: Make editable install
-        run: pip install -e .
+        run: pip install --no-deps -e .
 
       - name: Print Python version
         run: python -V

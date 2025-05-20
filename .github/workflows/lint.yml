@@ -43,7 +43,7 @@ jobs:
           environment-file: environment.yml
 
       - name: Make editable install
-        run: pip install -e .
+        run: pip install --no-deps -e .
 
       - name: Run pylint, output annotations
         run: |
@@ -74,7 +74,7 @@ jobs:
           environment-file: environment.yml
 
       - name: Make editable install
-        run: pip install -e .
+        run: pip install --no-deps -e .
 
       - name: isort Check
         uses: isort/isort-action@v1
