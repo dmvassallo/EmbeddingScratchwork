@@ -33,7 +33,7 @@ backoff = "^2.2.1"
 blake3 = "^1.0.5"
 dulwich = "^0.22.8"
 numpy = "^2.0.2"
-openai = { extras = ["embeddings"], version = ">=0.28.1,<1.0" }
+openai = { extras = ["embeddings"], version = ">=0.28.1,<2.0" }
 orjson = "^3.10.18"
 requests = "^2.32.4"
 safetensors = "^0.5.3"
