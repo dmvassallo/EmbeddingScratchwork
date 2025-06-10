@@ -6,13 +6,18 @@ updates:
       interval: monthly
     allow:
       - dependency-type: all
-    open-pull-requests-limit: 20
+    ignore:
+      # Keep `openai` below 1.0.0.
+      - dependency-name: openai
+        update-types: ['version-update:semver-major']
     groups:
-      python-dependencies:
+      python:
         patterns: ['*']
-        exclude-patterns: ['openai']
 
-  - package-ecosystem: github-actions
+  - package-ecosystem: actions
     directory: '/'
     schedule:
       interval: daily
+    groups:
+      actions:
+        patterns: ['*']
