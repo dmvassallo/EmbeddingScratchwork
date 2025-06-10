@@ -10,7 +10,7 @@ dependencies:
   - numpy
   - openai >=0.28.1,<1
   - orjson
-  - requests >=2.32.0
+  - requests >=2.32.4
   - safetensors
 
   # For `openai[embeddings]`, whose extra dependencies are not listed for the
