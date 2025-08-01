@@ -31,10 +31,10 @@ packages = [
 python = "^3.9"
 backoff = "^2.2.1"
 blake3 = "^1.0.5"
-dulwich = "^0.23.2"
+dulwich = "^0.24.1"
 numpy = "^2.0.2"
 openai = { extras = ["embeddings"], version = ">=0.28.1,<1.0" }
-orjson = "^3.11.0"
+orjson = "^3.11.1"
 requests = "^2.32.4"
 safetensors = "^0.5.3"
 scipy = "^1.13.1"
@@ -56,7 +56,7 @@ pylint-exit = "^1.2.0"
 
 [tool.poetry.group.notebook.dependencies]
 graphviz = "^0.21"
-ipykernel = "^6.29.5"
+ipykernel = "^6.30.0"
 ipython = "~8.18.1"
 jupyter-collaboration = "^4.1.0"
 jupyterlab = "^4.4.5"
