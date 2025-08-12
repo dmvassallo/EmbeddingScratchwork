@@ -17,7 +17,7 @@ jobs:
       use-mutex: ${{ steps.read-blocking-config-variable.outputs.use-mutex }}
     steps:
       - name: Check out source repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Read TESTS_CI_NONBLOCKING variable
         id: read-blocking-config-variable
@@ -48,7 +48,7 @@ jobs:
 
     steps:
       - name: Check out source repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python environment
         uses: actions/setup-python@v5
@@ -102,7 +102,7 @@ jobs:
 
     steps:
       - name: Check out source repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Substitute Python version
         run: |
@@ -153,7 +153,7 @@ jobs:
 
     steps:
       - name: Check out source repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up micromamba
         uses: mamba-org/setup-micromamba@v2
