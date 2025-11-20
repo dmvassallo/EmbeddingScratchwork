@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out source repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Scan for lines with trailing whitespace
         run: |
           ! git ls-files -z | xargs -0 grep -IHn --color '\s$' --
@@ -18,6 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out source repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Scan for wrong number of trailing newlines
         uses: fernandrone/linelint@0.0.6
